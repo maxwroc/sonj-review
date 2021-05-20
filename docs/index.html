@@ -2,11 +2,20 @@
     <head>
         <title>App Stats</title>
         <style type="text/css">
-            #json-content {
+            #json-content,
+            #search-box-container {
                 background-color: white;
                 border-radius: 10px;
                 border: 1px solid #000;
                 padding: 10px;
+                margin: 20px;
+                max-width: 500px;
+            }
+            #search-box-container input {
+                width: 100%;
+                border: 0;
+                padding: 5px;
+                outline: 0px solid;
             }
         </style>
         <script src="sonj-review.js"></script>
@@ -52,7 +61,7 @@
         </script>
     </head>
     <body style="background-color: #333; color: gray; font-size: 16px; padding: 10px;">
-        <div id="search-box-container"><input type="text" id="search-box"/></div>
+        <div id="search-box-container"><input type="text" id="search-box" placeholder="Type a query and hit enter"/></div>
         <div id="json-content"></div>
     </body>    
 </html>
