@@ -29,12 +29,30 @@
             console.log(data);
 
             window.addEventListener("load", () => {
-                let jsonViewer = new SonjReview.SonjReview(data, "root");
+
+                const searchPlugin = SonjReview.plugins.search(data);
+
+                const searchInput = document.getElementById("search-box");
+                searchInput.addEventListener("keyup", evt => {
+                    if (evt.keyCode == 13) {
+                        searchPlugin.query(searchInput.value);
+                    }
+                })
+
+                let jsonViewer = new SonjReview.JsonViewer(
+                    data, 
+                    "root",
+                    [
+                        SonjReview.plugins.expandAll(),
+                        searchPlugin,
+                    ]
+                    );
                 jsonViewer.render("json-content");
             });
         </script>
     </head>
     <body style="background-color: #333; color: gray; font-size: 16px; padding: 10px;">
+        <div id="search-box-container"><input type="text" id="search-box"/></div>
         <div id="json-content"></div>
     </body>    
 </html>

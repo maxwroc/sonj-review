@@ -41,7 +41,7 @@ export class MiniQuery {
         return this.elem.classList.contains(input);
     }
 
-    clear() {
+    empty() {
         this.elem.innerHTML = "";
     }
 }
