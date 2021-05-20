@@ -1,66 +1,5 @@
+import { $, MiniQuery } from "./mquery";
 import "./style.css";
-
-const ce = (tagName: string, appendTo?: HTMLElement) => {
-    const elem = document.createElement(tagName);
-    appendTo && appendTo.appendChild(elem);
-    return elem;
-}
-
-const simpleTypes = ["boolean", "number", "string"];
-
-const nameElement = (name: string) => {
-    const elem = document.createElement("DIV");
-
-}
-
-class MiniQuery {
-
-    public elem: HTMLElement; 
-
-    constructor(input: string) {
-        this.elem = document.createElement(input);
-    }
-
-    appendTo(target: MiniQuery) {
-        target.elem.appendChild(this.elem);
-        return this;
-    }
-
-    append(child: MiniQuery) {
-        this.elem.appendChild(child.elem);
-        return this;
-    }
-
-    on(eventName: string, handler: (evt: Event) => void) {
-        this.elem.addEventListener(eventName, handler);
-        return this;
-    }
-
-    text(input: string) {
-        this.elem.textContent = input;
-        return this;
-    }
-
-    addClass(...input: string[]) {
-        input.forEach(c => this.elem.classList.add(c));
-        return this;
-    }
-
-    removeClass(input: string) {
-        this.elem.classList.remove(input);
-        return this;
-    }
-
-    hasClass(input: string): boolean {
-        return this.elem.classList.contains(input);
-    }
-
-    clear() {
-        this.elem.innerHTML = "";
-    }
-}
-
-const $ = (input: string) => new MiniQuery(input);
 
 export class SonjReview {
 
@@ -119,14 +58,6 @@ export class SonjReview {
             this.wrapper.addClass(expandedClassName);
             Object.keys(this.data).forEach(propName => new SonjReview(this.data[propName], propName).render(this.childrenWrapper.elem));
         }
-    }
-
-    private renderSimpleType() {
-
-    }
-
-    private renderObjectProperties() {
-        
     }
 }
 
