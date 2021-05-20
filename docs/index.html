@@ -1,9 +1,40 @@
 <html>
     <head>
         <title>App Stats</title>
-        <script src="typescript-project-boilerplate.js"></script>
+        <style type="text/css">
+            #json-content {
+                background-color: white;
+                border-radius: 10px;
+                border: 1px solid #000;
+                padding: 10px;
+            }
+        </style>
+        <script src="sonj-review.js"></script>
+        <script>
+            let data = {
+                arrayOfObjects: [
+                    {
+                        id: 1,
+                        name: "object 1"
+                    },
+                    {
+                        id: 2,
+                        name: "object 2"
+                    }
+                ],
+                arrayOfNumbers: [1,2,3,4,5],
+                arrayOfStrings: ["lorem", "ipsum", "dolor", "sit", "amet"],
+            };
+
+            console.log(data);
+
+            window.addEventListener("load", () => {
+                let jsonViewer = new SonjReview.SonjReview(data, "root");
+                jsonViewer.render("json-content");
+            });
+        </script>
     </head>
     <body style="background-color: #333; color: gray; font-size: 16px; padding: 10px;">
-        
+        <div id="json-content"></div>
     </body>    
 </html>

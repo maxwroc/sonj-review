@@ -1,6 +1,9 @@
+import { basename, join } from 'path';
 import typescript from '@rollup/plugin-typescript';
 import resolve from '@rollup/plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
+import styles from "rollup-plugin-styles";
+import copyBundleFiles from './build/rollup-plugin-copy-bundles';
 import pkg from './package.json';
 
 export default function (args) {
@@ -8,7 +11,9 @@ export default function (args) {
   let targetFileName = pkg.main;
 
   const plugins = [
-    resolve()
+    resolve(),
+    copyBundleFiles('docs'),
+    styles(),
   ];
 
   const target = args.target ? args.target.toUpperCase() : null;
@@ -18,7 +23,7 @@ export default function (args) {
     targetFileName = targetFileName.replace(".js", `.${target.toLowerCase()}.js`);
   }
   else {
-    plugins.push(typescript());
+    plugins.push(typescript({ project: 'tsconfig.json' }));
   }
 
   let sourcemapPathTransform = undefined;
@@ -39,7 +44,7 @@ export default function (args) {
   }
 
   return {
-    external: [],
+    external: ['window'],
     input: 'src/index.ts',
     output: {
       globals: {},
@@ -47,7 +52,8 @@ export default function (args) {
       format: 'iife',
       sourcemap: true,
       sourcemapExcludeSources: true,
-      sourcemapPathTransform: sourcemapPathTransform
+      sourcemapPathTransform: sourcemapPathTransform,
+      name: process.env.npm_package_exportVar
     },
     plugins: plugins,
   }
