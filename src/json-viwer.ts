@@ -78,9 +78,7 @@ export class JsonViewer {
 
             this.renderProperties(this.childrenWrapper, propsToRender);
 
-            this.plugins
-                .filter(p => p.afterRenderProperties)
-                .forEach(p => propsToRender = p.afterRenderProperties!(this, propsToRender));
+            this.plugins.forEach(p => p.afterRenderProperties?.call(null, this, propsToRender));
         }
         else {
             this.wrapper.removeClass(expandedClassName);

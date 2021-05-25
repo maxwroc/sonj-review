@@ -96,9 +96,7 @@ var SonjReview = (function (exports) {
                     .filter(p => p.beforeRenderProperties)
                     .forEach(p => propsToRender = p.beforeRenderProperties(this, propsToRender));
                 this.renderProperties(this.childrenWrapper, propsToRender);
-                this.plugins
-                    .filter(p => p.afterRenderProperties)
-                    .forEach(p => propsToRender = p.afterRenderProperties(this, propsToRender));
+                this.plugins.forEach(p => { var _a; return (_a = p.afterRenderProperties) === null || _a === void 0 ? void 0 : _a.call(null, this, propsToRender); });
             }
             else {
                 this.wrapper.removeClass(expandedClassName);
@@ -117,8 +115,16 @@ var SonjReview = (function (exports) {
 
     const expandAll = () => {
         return {
-            afterRender: (node) => {
-                node.toggleExpand(true);
+            afterRender: node => {
+                node.toggleExpand(true /*forceExpand*/);
+            }
+        };
+    };
+
+    const propertyGroups = () => {
+        return {
+            beforeRenderProperties: (node, properties) => {
+                return properties;
             }
         };
     };
@@ -209,7 +215,8 @@ var SonjReview = (function (exports) {
     var plugins = /*#__PURE__*/Object.freeze({
         __proto__: null,
         expandAll: expandAll,
-        search: search
+        search: search,
+        propertyGroups: propertyGroups
     });
 
     var e=[],t=[];function n(n,r){if(n&&"undefined"!=typeof document){var a,s=!0===r.prepend?"prepend":"append",d=!0===r.singleTag,i="string"==typeof r.container?document.querySelector(r.container):document.getElementsByTagName("head")[0];if(d){var u=e.indexOf(i);-1===u&&(u=e.push(i)-1,t[u]={}),a=t[u]&&t[u][s]?t[u][s]:t[u][s]=c();}else a=c();65279===n.charCodeAt(0)&&(n=n.substring(1)),a.styleSheet?a.styleSheet.cssText+=n:a.appendChild(document.createTextNode(n));}function c(){var e=document.createElement("style");if(e.setAttribute("type","text/css"),r.attributes)for(var t=Object.keys(r.attributes),n=0;n<t.length;n++)e.setAttribute(t[n],r.attributes[t[n]]);var a="prepend"===s?"afterbegin":"beforeend";return i.insertAdjacentElement(a,e),e}}
