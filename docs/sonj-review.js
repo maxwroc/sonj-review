@@ -10,7 +10,12 @@ var SonjReview = (function (exports) {
             return this;
         }
         append(child) {
-            this.elem.appendChild(child.elem);
+            if (Array.isArray(child)) {
+                child.forEach(c => this.elem.appendChild(c.elem));
+            }
+            else {
+                this.elem.appendChild(child.elem);
+            }
             return this;
         }
         on(eventName, handler) {
@@ -34,6 +39,7 @@ var SonjReview = (function (exports) {
         }
         empty() {
             this.elem.innerHTML = "";
+            return this;
         }
     }
     const $ = (input) => new MiniQuery(input);
@@ -121,10 +127,41 @@ var SonjReview = (function (exports) {
         };
     };
 
-    const propertyGroups = () => {
+    /**
+     * Property groups plugin
+     *
+     * @summary It prevents from rendering big number of properties by adding an expandable groups instead
+     *
+     * @param maxPropertiesCount Maximum number of properties to render
+     * @returns Initialized plugin
+     */
+    const propertyGroups = (maxPropertiesCount) => {
+        let nodePropsToRender = null;
         return {
-            beforeRenderProperties: (node, properties) => {
-                return properties;
+            beforeRenderProperties: (node, propertiesToRender) => {
+                nodePropsToRender = propertiesToRender;
+                return propertiesToRender.slice(0, maxPropertiesCount);
+            },
+            afterRenderProperties: (node, renderedProperties) => {
+                if (!nodePropsToRender || nodePropsToRender.length <= maxPropertiesCount) {
+                    return;
+                }
+                let groupStart = maxPropertiesCount;
+                do {
+                    nodePropsToRender = nodePropsToRender.slice(maxPropertiesCount);
+                    let propsToRenderInGroup = nodePropsToRender.slice(0, maxPropertiesCount);
+                    const wrapper = $("div");
+                    $("span")
+                        .text(`${groupStart + 1} - ${groupStart + propsToRenderInGroup.length}`)
+                        .addClass("prop-group")
+                        .on("click", () => {
+                        wrapper.empty();
+                        node.renderProperties(wrapper, propsToRenderInGroup);
+                    })
+                        .appendTo(wrapper);
+                    wrapper.appendTo(node.childrenWrapper);
+                    groupStart += maxPropertiesCount;
+                } while (nodePropsToRender.length > maxPropertiesCount);
             }
         };
     };

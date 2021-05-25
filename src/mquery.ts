@@ -12,8 +12,14 @@ export class MiniQuery {
         return this;
     }
 
-    append(child: MiniQuery) {
-        this.elem.appendChild(child.elem);
+    append(child: MiniQuery | MiniQuery[]) {
+        if (Array.isArray(child)) {
+            child.forEach(c => this.elem.appendChild(c.elem));
+        }
+        else {
+            this.elem.appendChild(child.elem);
+        }
+        
         return this;
     }
 
@@ -43,6 +49,7 @@ export class MiniQuery {
 
     empty() {
         this.elem.innerHTML = "";
+        return this;
     }
 }
 
