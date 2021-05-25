@@ -8,46 +8,41 @@ export const search = (data: any): IQueryPlugin => {
     let pathsToShow: string[] | null = null;
 
     return {
-        init: node => {
+        nodeInit: node => {
             if (rootNode == null) {
+                // the first one is the root one
                 rootNode = node;
             }
         },
-        render: node => {
+        afterRender: node => {
             pathsToShow && node.toggleExpand(true);
         },
-        beforeRenderProperties: node => {
+        beforeRenderProperties: (node, props) => {
             if (!pathsToShow) {
-                console.log("default");
-                return false;
+                return props;
             }
 
-            var propsToRender = Object
-                .keys(node.data)
-                .filter(p => pathsToShow?.some(path => path.startsWith(node.path + "/" + p)));
-
-            console.log(node.path, propsToRender, pathsToShow);
-
-            if (propsToRender.length) {
-                node.renderProperties(node.childrenWrapper, propsToRender);
-            }
-
-            return true; // blocks rendering in the node class
+            return props
+                .filter(p => pathsToShow?.some(path => path.startsWith(node.path + "/" + p)));;
         },
         query: searchString => {
             if (!rootNode) {
                 throw "Root node not initialized"
             }
 
+            // collapse root node
             rootNode.toggleExpand(false);
 
             let resultPromise = searchInternal(data, rootNode.path, searchString)
-            .then(paths => {
-                pathsToShow = paths;
-                pathsToShow.length && rootNode?.toggleExpand(true);
-                pathsToShow = null;
-                return paths;
-            });
+                .then(paths => {
+                    // set the collection off paths to show
+                    pathsToShow = paths;
+                    // trigger expand
+                    pathsToShow.length && rootNode?.toggleExpand(true);
+                    // disable property filtering
+                    pathsToShow = null;
+                    return paths;
+                });
 
             resultPromise.catch(() => {
                 pathsToShow = null;

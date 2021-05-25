@@ -11,7 +11,7 @@ export class JsonViewer {
 
     constructor(public data: any, public path: string, public plugins: IPlugin[]) {
         this.rootName = path.split("/").pop() as string;
-        this.plugins.forEach(p => p.init?.call(null, this));
+        this.plugins.forEach(p => p.nodeInit?.call(null, this));
     }
 
     render(container: HTMLElement | string) {
@@ -50,7 +50,7 @@ export class JsonViewer {
         // update DOM only once at the end
         container.appendChild(this.wrapper.elem);
 
-        this.plugins.forEach(p => p.render?.call(null, this))
+        this.plugins.forEach(p => p.afterRender?.call(null, this))
     }
 
     toggleExpand(expand?: boolean) {
@@ -70,11 +70,17 @@ export class JsonViewer {
         if (expand) {
             this.wrapper.addClass(expandedClassName);
 
-            const blockRendering = this.plugins.some(p => p.beforeRenderProperties?.call(null, this));
+            let propsToRender = Object.keys(this.data);
 
-            if (!blockRendering) {
-                this.renderProperties(this.childrenWrapper, Object.keys(this.data));
-            }
+            this.plugins
+                .filter(p => p.beforeRenderProperties)
+                .forEach(p => propsToRender = p.beforeRenderProperties!(this, propsToRender));
+
+            this.renderProperties(this.childrenWrapper, propsToRender);
+
+            this.plugins
+                .filter(p => p.afterRenderProperties)
+                .forEach(p => propsToRender = p.afterRenderProperties!(this, propsToRender));
         }
         else {
             this.wrapper.removeClass(expandedClassName);

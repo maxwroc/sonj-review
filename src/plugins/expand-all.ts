@@ -3,7 +3,7 @@ import { IPlugin } from "../plugins";
 
 export const expandAll = (): IPlugin => {
     return {
-        render: (node: JsonViewer) => {
+        afterRender: (node: JsonViewer) => {
             node.toggleExpand(true);
         }
     }

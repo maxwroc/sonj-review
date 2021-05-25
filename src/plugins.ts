@@ -8,14 +8,16 @@ export interface IPlugin {
      * Called when node is rendered
      * @param node 
      */
-    render?: { (node: JsonViewer): void };
+    afterRender?: { (node: JsonViewer): void };
 
     /**
      * Called when node is initialized
      */
-    init?: { (node: JsonViewer): void };
+    nodeInit?: { (node: JsonViewer): void };
 
-    beforeRenderProperties?: { (node: JsonViewer): boolean };
+    beforeRenderProperties?: { (node: JsonViewer, properties: string[]): string[] };
+
+    afterRenderProperties?: { (node: JsonViewer, properties: string[]): string[] };
 }
 
 export {
