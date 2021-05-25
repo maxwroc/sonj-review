@@ -90,10 +90,4 @@ export class JsonViewer {
         propsToRender.forEach(propName => 
             new JsonViewer(this.data[propName], this.path + "/" + propName, this.plugins).render(conatiner.elem));
     }
-
-    private getPropertyGroupsToRender() {
-        let groups: string[][] = [];
-        groups.push(Object.keys(this.data));
-        //this.plugins.forEach(p => p.)
-    }
 }

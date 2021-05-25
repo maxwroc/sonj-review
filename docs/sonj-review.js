@@ -112,11 +112,6 @@ var SonjReview = (function (exports) {
         renderProperties(conatiner, propsToRender) {
             propsToRender.forEach(propName => new JsonViewer(this.data[propName], this.path + "/" + propName, this.plugins).render(conatiner.elem));
         }
-        getPropertyGroupsToRender() {
-            let groups = [];
-            groups.push(Object.keys(this.data));
-            //this.plugins.forEach(p => p.)
-        }
     }
 
     const expandAll = () => {
