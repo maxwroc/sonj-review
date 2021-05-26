@@ -1,4 +1,4 @@
-import { IPlugin } from "./plugins";
+import { INameValuePair, IPlugin } from "./plugins";
 import { MiniQuery, $ } from "./mquery";
 
 // TODO: this can break if object key/property contains slash
@@ -18,6 +18,21 @@ export class JsonViewer {
 
     constructor(public data: any, public path: string, public plugins: IPlugin[]) {
         this.nodeName = path.split(pathSeparator).pop() as string;
+
+        switch (typeof(data)) {
+            case "bigint":
+            case "boolean":
+            case "number":
+            case "string":
+                this.isExpandable = false;
+                break;
+            case "object":
+                this.isExpandable = true;
+                break;
+            default:
+                throw "Type not supported";
+        }
+        
         this.plugins.forEach(p => p.nodeInit?.call(null, this));
     }
 
@@ -28,30 +43,29 @@ export class JsonViewer {
 
         const wrapper = $("div").addClass("prop-wrapper");
 
+        const dataToRender: INameValuePair = {
+            name: this.nodeName,
+            value: this.data,
+        }
+
+        this.plugins.forEach(p => p.beforeRender?.call(null, this, dataToRender));
+
         this.header = $("div")
             .addClass("prop-header")
             .appendTo(wrapper)
-            .append($("span").text(this.nodeName).addClass("prop-name"));
+            .append($("span").text(dataToRender.name).addClass("prop-name"));
 
-        switch (typeof(this.data)) {
-            case "bigint":
-            case "boolean":
-            case "number":
-            case "string":
-                this.header
-                    .append($("span").text(":").addClass("prop-separator"))
-                    .append($("span").addClass("prop-value", "prop-type-" + typeof(this.data)).text(this.data as string));
-                break;
-            case "object":
-                this.isExpandable = true;
-                this.childrenWrapper = $("div").addClass("prop-children");
-                this.header
-                    .append($("span").addClass("prop-expand")).on("click", () => this.toggleExpand());
-                wrapper
-                    .append(this.childrenWrapper);
-                break;
-            default:
-                throw "Type not supported";
+        if (this.isExpandable) {
+            this.childrenWrapper = $("div").addClass("prop-children");
+            this.header
+                .append($("span").addClass("prop-expand")).on("click", () => this.toggleExpand());
+            wrapper
+                .append(this.childrenWrapper);
+        }
+        else {
+            this.header
+                .append($("span").text(":").addClass("prop-separator"))
+                .append($("span").addClass("prop-value", "prop-type-" + typeof(dataToRender.value)).text(dataToRender.value.toString()));
         }
 
         this.wrapper = wrapper;

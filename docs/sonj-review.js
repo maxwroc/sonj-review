@@ -48,12 +48,27 @@ var SonjReview = (function (exports) {
     }
     const $ = (input) => new MiniQuery(input);
 
+    // TODO: this can break if object key/property contains slash
+    const pathSeparator = "/";
     class JsonViewer {
         constructor(data, path, plugins) {
             this.data = data;
             this.path = path;
             this.plugins = plugins;
-            this.nodeName = path.split("/").pop();
+            this.nodeName = path.split(pathSeparator).pop();
+            switch (typeof (data)) {
+                case "bigint":
+                case "boolean":
+                case "number":
+                case "string":
+                    this.isExpandable = false;
+                    break;
+                case "object":
+                    this.isExpandable = true;
+                    break;
+                default:
+                    throw "Type not supported";
+            }
             this.plugins.forEach(p => { var _a; return (_a = p.nodeInit) === null || _a === void 0 ? void 0 : _a.call(null, this); });
         }
         render(container) {
@@ -61,29 +76,26 @@ var SonjReview = (function (exports) {
                 container = document.getElementById(container);
             }
             const wrapper = $("div").addClass("prop-wrapper");
+            const dataToRender = {
+                name: this.nodeName,
+                value: this.data,
+            };
+            this.plugins.forEach(p => { var _a; return (_a = p.beforeRender) === null || _a === void 0 ? void 0 : _a.call(null, this, dataToRender); });
             this.header = $("div")
                 .addClass("prop-header")
                 .appendTo(wrapper)
-                .append($("span").text(this.nodeName).addClass("prop-name"));
-            switch (typeof (this.data)) {
-                case "bigint":
-                case "boolean":
-                case "number":
-                case "string":
-                    this.header
-                        .append($("span").text(":").addClass("prop-separator"))
-                        .append($("span").addClass("prop-value", "prop-type-" + typeof (this.data)).text(this.data));
-                    break;
-                case "object":
-                    this.isExpandable = true;
-                    this.childrenWrapper = $("div").addClass("prop-children");
-                    this.header
-                        .append($("span").addClass("prop-expand")).on("click", () => this.toggleExpand());
-                    wrapper
-                        .append(this.childrenWrapper);
-                    break;
-                default:
-                    throw "Type not supported";
+                .append($("span").text(dataToRender.name).addClass("prop-name"));
+            if (this.isExpandable) {
+                this.childrenWrapper = $("div").addClass("prop-children");
+                this.header
+                    .append($("span").addClass("prop-expand")).on("click", () => this.toggleExpand());
+                wrapper
+                    .append(this.childrenWrapper);
+            }
+            else {
+                this.header
+                    .append($("span").text(":").addClass("prop-separator"))
+                    .append($("span").addClass("prop-value", "prop-type-" + typeof (dataToRender.value)).text(dataToRender.value.toString()));
             }
             this.wrapper = wrapper;
             // update DOM only once at the end
@@ -116,7 +128,7 @@ var SonjReview = (function (exports) {
             this.plugins.forEach(p => { var _a; return (_a = p.afterToggleExpand) === null || _a === void 0 ? void 0 : _a.call(null, this, !!expand); });
         }
         renderProperties(conatiner, propsToRender) {
-            propsToRender.forEach(propName => new JsonViewer(this.data[propName], this.path + "/" + propName, this.plugins).render(conatiner.elem));
+            propsToRender.forEach(propName => new JsonViewer(this.data[propName], this.path + pathSeparator + propName, this.plugins).render(conatiner.elem));
         }
     }
 
@@ -325,12 +337,37 @@ var SonjReview = (function (exports) {
         return results;
     }
 
+    let defaultOptions = {
+        maxNameLength: 20,
+        maxValueLength: 40,
+    };
+    const truncate = (options) => {
+        options = options || defaultOptions;
+        const maxNameLength = options.maxNameLength;
+        const maxValueLength = options.maxValueLength;
+        return {
+            beforeRender: (node, dataToRender) => {
+                if (node.isExpandable) {
+                    return;
+                }
+                if (maxNameLength && dataToRender.name.length > maxNameLength) {
+                    dataToRender.name = dataToRender.name.substr(0, maxNameLength - 3) + "...";
+                }
+                const val = dataToRender.value.toString();
+                if (maxValueLength && val.length > maxValueLength) {
+                    dataToRender.value = val.substr(0, maxValueLength - 3) + "...";
+                }
+            }
+        };
+    };
+
     var plugins = /*#__PURE__*/Object.freeze({
         __proto__: null,
         autoExpand: autoExpand,
         search: search,
         propertyGroups: propertyGroups,
-        propertyTeaser: propertyTeaser
+        propertyTeaser: propertyTeaser,
+        truncate: truncate
     });
 
     var e=[],t=[];function n(n,r){if(n&&"undefined"!=typeof document){var a,s=!0===r.prepend?"prepend":"append",d=!0===r.singleTag,i="string"==typeof r.container?document.querySelector(r.container):document.getElementsByTagName("head")[0];if(d){var u=e.indexOf(i);-1===u&&(u=e.push(i)-1,t[u]={}),a=t[u]&&t[u][s]?t[u][s]:t[u][s]=c();}else a=c();65279===n.charCodeAt(0)&&(n=n.substring(1)),a.styleSheet?a.styleSheet.cssText+=n:a.appendChild(document.createTextNode(n));}function c(){var e=document.createElement("style");if(e.setAttribute("type","text/css"),r.attributes)for(var t=Object.keys(r.attributes),n=0;n<t.length;n++)e.setAttribute(t[n],r.attributes[t[n]]);var a="prepend"===s?"afterbegin":"beforeend";return i.insertAdjacentElement(a,e),e}}

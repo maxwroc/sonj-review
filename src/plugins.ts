@@ -4,7 +4,7 @@ import { autoExpand } from "./plugins/auto-expand"
 import { propertyGroups } from "./plugins/property-groups"
 import { propertyTeaser } from "./plugins/property-teaser"
 import { search } from "./plugins/search"
-import { $ } from "./mquery"
+import { truncate } from "./plugins/truncate"
 
 export interface IPlugin {
     /**
@@ -12,6 +12,13 @@ export interface IPlugin {
      * @param node Node for which event is triggered
      */
     nodeInit?: { (node: JsonViewer): void };
+
+    /**
+     * Called before node is rendered
+     * @param node Node for which event is triggered
+     * @param nodeNameValue Node name and it's value to render (can be modified in the plugin)
+     */
+    beforeRender?: { (node: JsonViewer, nodeNameValue: INameValuePair): void }
 
     /**
      * Called when node is rendered
@@ -40,9 +47,15 @@ export interface IPlugin {
     afterToggleExpand?: { (node: JsonViewer, expanded: boolean): void };
 }
 
+export interface INameValuePair {
+    name: string;
+    value: any;
+}
+
 export {
     autoExpand,
     search,
     propertyGroups,
     propertyTeaser,
+    truncate,
 }

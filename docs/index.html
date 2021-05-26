@@ -39,7 +39,11 @@
                     { fname: "John", sname: "Morrison", email: "johny@contoso.com", jobTitle: "Product Manager", manager: "Wendy Jones" },
                     { fname: "Wendy", sname: "Jones", email: "wendy@contoso.com", jobTitle: "CEO", manager: null },
                     { fname: "Lisa", email: "lisa@contoso.com", jobTitle: "Business Admin", manager: "Wendy Jones" },
-                ]
+                ],
+                longStrings: {
+                    "veryLongPropertyNameWhichShouldBeTruncatedAtSomePointAsOtherwiseItIsHardToReadJsonOutput": "thisIsValueWhichIsEvenLongerThanPropertyNameAndAsWellItShouldBeTruncatedAtSomePointItIsVeryCommonThatValuesCanBeVeryLongAndThisCanBreakTheView",
+                    "valueContaining\nNewLines": "every\nline\nis\nimportant"
+                }
             };
 
             console.log(data);
@@ -63,6 +67,7 @@
                         searchPlugin,
                         SonjReview.plugins.propertyGroups(10),
                         SonjReview.plugins.propertyTeaser({ properties: { names: ["fname", "sname", "email"], maxCount: 2 } }),
+                        SonjReview.plugins.truncate(),
                     ]
                     );
                 jsonViewer.render("json-content");
