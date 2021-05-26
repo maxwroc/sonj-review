@@ -20,17 +20,17 @@ export interface IPlugin {
     /**
      * Called before rendering properties
      * @param node Node for which event is triggered
-     * @param properties Properties to render
+     * @param propertiesToRender Properties to render
      * @returns Properties to render
      */
-    beforeRenderProperties?: { (node: JsonViewer, properties: string[]): string[] };
+    beforeRenderProperties?: { (node: JsonViewer, propertiesToRender: string[]): string[] };
 
     /**
      * Called after properties were rendered
      * @param node Node for which event is triggered
-     * @param properties Rendered properties
+     * @param renderedProperties Rendered properties
      */
-    afterRenderProperties?: { (node: JsonViewer, properties: string[]): void };
+    afterRenderProperties?: { (node: JsonViewer, renderedProperties: string[]): void };
 }
 
 export {

@@ -7,6 +7,11 @@ export class MiniQuery {
         this.elem = document.createElement(input);
     }
 
+    attr(name: string, value: string) {
+        this.elem.setAttribute(name, value);
+        return this;
+    }
+
     appendTo(target: MiniQuery) {
         target.elem.appendChild(this.elem);
         return this;
