@@ -1,6 +1,9 @@
 import { IPlugin } from "./plugins";
 import { MiniQuery, $ } from "./mquery";
 
+// TODO: this can break if object key/property contains slash
+const pathSeparator = "/";
+
 export class JsonViewer {
 
     public wrapper: MiniQuery;
@@ -14,7 +17,7 @@ export class JsonViewer {
     public isExpandable: boolean;
 
     constructor(public data: any, public path: string, public plugins: IPlugin[]) {
-        this.nodeName = path.split("/").pop() as string;
+        this.nodeName = path.split(pathSeparator).pop() as string;
         this.plugins.forEach(p => p.nodeInit?.call(null, this));
     }
 
@@ -96,6 +99,6 @@ export class JsonViewer {
 
     renderProperties(conatiner: MiniQuery, propsToRender: string[]) {
         propsToRender.forEach(propName => 
-            new JsonViewer(this.data[propName], this.path + "/" + propName, this.plugins).render(conatiner.elem));
+            new JsonViewer(this.data[propName], this.path + pathSeparator + propName, this.plugins).render(conatiner.elem));
     }
 }
