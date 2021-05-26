@@ -69,11 +69,13 @@ export const propertyGroups = (maxPropertiesCount: number): IPlugin => {
 
 const cssCode = `
 .prop-group {
-    background-color: #dcdcdc;
+    --sonj-group-bgcolor: #dcdcdc;
+    --sonj-group-color: #616161;
+    background-color: var(--sonj-group-bgcolor);
     border-radius: 5px;
     padding: 0 5px;
-    margin: 2px 0 0 10px;
-    color: #616161;
+    margin: 2px 0 0 var(--sonj-prop-indent);
+    color: var(--sonj-group-color);
     display: inline-block;
 }
 `;

@@ -7,10 +7,10 @@ export class JsonViewer {
 
     public childrenWrapper: MiniQuery;
 
-    public rootName: string;
+    public nodeName: string;
 
     constructor(public data: any, public path: string, public plugins: IPlugin[]) {
-        this.rootName = path.split("/").pop() as string;
+        this.nodeName = path.split("/").pop() as string;
         this.plugins.forEach(p => p.nodeInit?.call(null, this));
     }
 
@@ -23,7 +23,7 @@ export class JsonViewer {
         const header = $("div")
             .addClass("prop-header")
             .appendTo(wrapper)
-            .append($("span").text(this.rootName).addClass("prop-name"));
+            .append($("span").text(this.nodeName).addClass("prop-name"));
 
         switch (typeof(this.data)) {
             case "bigint":

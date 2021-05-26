@@ -1,7 +1,16 @@
 
 
+* {
+    /*colors*/
+    --sonj-prop-name: #b863bf;
+    --sonj-prop-type-string: #C41A16;
+    --sonj-prop-type-number: #1C00CF;
+    --sonj-arrow-color: #727272;
+    /*sizes*/
+    --sonj-prop-indent: 12px; 
+}
 .prop-wrapper {
-    padding-left: 12px;
+    padding-left: var(--sonj-prop-indent);
     cursor: default;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Liberation Sans", sans-serif;
     font-size: 14px;
@@ -13,10 +22,10 @@
     margin-right: 5px;
 }
 .prop-name {
-    color: #b863bf;
+    color: var(--sonj-prop-name);
 }
 .prop-value.prop-type-string {
-    color: #C41A16;
+    color: var(--sonj-prop-type-string);
 }
 .prop-value.prop-type-string::before {
     content: '"';
@@ -26,20 +35,20 @@
 }
 .prop-value.prop-type-bigint,
 .prop-value.prop-type-number {
-    color: #1C00CF;
+    color: var(--sonj-prop-type-number);
 }
 .prop-expand {
     position: absolute;
     border: 4px solid transparent;
-    border-top: 6px solid #727272;
+    border-top: 6px solid var(--sonj-arrow-color);
     height: 0;
     width: 0;
-    left: -12px;
+    left: -10px;
     top: 4px;
     transform: rotate(-90deg);
 }
 .prop-expanded > * > .prop-expand {
     transform: rotate(0);
-    left: -15px;
-    top: 8px;
+    left: -12px;
+    top: 6px;
 }
