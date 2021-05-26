@@ -1,8 +1,10 @@
 
 import { JsonViewer } from "./index"
-import { expandAll } from "./plugins/expand-all"
+import { autoExpand } from "./plugins/auto-expand"
 import { propertyGroups } from "./plugins/property-groups"
+import { propertyTeaser } from "./plugins/property-teaser"
 import { search } from "./plugins/search"
+import { $ } from "./mquery"
 
 export interface IPlugin {
     /**
@@ -31,10 +33,16 @@ export interface IPlugin {
      * @param renderedProperties Rendered properties
      */
     afterRenderProperties?: { (node: JsonViewer, renderedProperties: string[]): void };
+
+    /**
+     * Called after expanding/collapsing node
+     */
+    afterToggleExpand?: { (node: JsonViewer, expanded: boolean): void };
 }
 
 export {
-    expandAll,
+    autoExpand,
     search,
     propertyGroups,
+    propertyTeaser,
 }

@@ -9,6 +9,10 @@ export class JsonViewer {
 
     public nodeName: string;
 
+    public header: MiniQuery;
+
+    public isExpandable: boolean;
+
     constructor(public data: any, public path: string, public plugins: IPlugin[]) {
         this.nodeName = path.split("/").pop() as string;
         this.plugins.forEach(p => p.nodeInit?.call(null, this));
@@ -20,7 +24,8 @@ export class JsonViewer {
         }
 
         const wrapper = $("div").addClass("prop-wrapper");
-        const header = $("div")
+
+        this.header = $("div")
             .addClass("prop-header")
             .appendTo(wrapper)
             .append($("span").text(this.nodeName).addClass("prop-name"));
@@ -30,13 +35,14 @@ export class JsonViewer {
             case "boolean":
             case "number":
             case "string":
-                header
+                this.header
                     .append($("span").text(":").addClass("prop-separator"))
                     .append($("span").addClass("prop-value", "prop-type-" + typeof(this.data)).text(this.data as string));
                 break;
             case "object":
+                this.isExpandable = true;
                 this.childrenWrapper = $("div").addClass("prop-children");
-                header
+                this.header
                     .append($("span").addClass("prop-expand")).on("click", () => this.toggleExpand());
                 wrapper
                     .append(this.childrenWrapper);
@@ -54,7 +60,7 @@ export class JsonViewer {
     }
 
     toggleExpand(expand?: boolean) {
-        if (!this.childrenWrapper) {
+        if (!this.isExpandable) {
             return;
         }
 
@@ -84,6 +90,8 @@ export class JsonViewer {
             this.wrapper.removeClass(expandedClassName);
             this.childrenWrapper.empty();
         }
+
+        this.plugins.forEach(p => p.afterToggleExpand?.call(null, this, !!expand));
     }
 
     renderProperties(conatiner: MiniQuery, propsToRender: string[]) {

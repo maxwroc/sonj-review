@@ -61,7 +61,7 @@ var SonjReview = (function (exports) {
                 container = document.getElementById(container);
             }
             const wrapper = $("div").addClass("prop-wrapper");
-            const header = $("div")
+            this.header = $("div")
                 .addClass("prop-header")
                 .appendTo(wrapper)
                 .append($("span").text(this.nodeName).addClass("prop-name"));
@@ -70,13 +70,14 @@ var SonjReview = (function (exports) {
                 case "boolean":
                 case "number":
                 case "string":
-                    header
+                    this.header
                         .append($("span").text(":").addClass("prop-separator"))
                         .append($("span").addClass("prop-value", "prop-type-" + typeof (this.data)).text(this.data));
                     break;
                 case "object":
+                    this.isExpandable = true;
                     this.childrenWrapper = $("div").addClass("prop-children");
-                    header
+                    this.header
                         .append($("span").addClass("prop-expand")).on("click", () => this.toggleExpand());
                     wrapper
                         .append(this.childrenWrapper);
@@ -90,7 +91,7 @@ var SonjReview = (function (exports) {
             this.plugins.forEach(p => { var _a; return (_a = p.afterRender) === null || _a === void 0 ? void 0 : _a.call(null, this); });
         }
         toggleExpand(expand) {
-            if (!this.childrenWrapper) {
+            if (!this.isExpandable) {
                 return;
             }
             const expandedClassName = "prop-expanded";
@@ -112,18 +113,29 @@ var SonjReview = (function (exports) {
                 this.wrapper.removeClass(expandedClassName);
                 this.childrenWrapper.empty();
             }
+            this.plugins.forEach(p => { var _a; return (_a = p.afterToggleExpand) === null || _a === void 0 ? void 0 : _a.call(null, this, !!expand); });
         }
         renderProperties(conatiner, propsToRender) {
             propsToRender.forEach(propName => new JsonViewer(this.data[propName], this.path + "/" + propName, this.plugins).render(conatiner.elem));
         }
     }
 
-    const expandAll = () => {
+    const autoExpand = (depth) => {
         return {
             afterRender: node => {
+                if (depth && (node.path.split("/").length - 1 >= depth)) {
+                    return;
+                }
                 node.toggleExpand(true /*forceExpand*/);
             }
         };
+    };
+
+    const injectCss = (pluginName, cssCode) => {
+        const cssId = `sonj-${pluginName}-css`;
+        if (!document.getElementById(cssId)) {
+            document.head.appendChild($("style").attr("id", cssId).text(cssCode).elem);
+        }
     };
 
     /**
@@ -136,10 +148,7 @@ var SonjReview = (function (exports) {
      */
     const propertyGroups = (maxPropertiesCount) => {
         let propsToRender = {};
-        const cssId = "sonj-propertyGroups-css";
-        if (!document.getElementById(cssId)) {
-            document.head.appendChild($("style").attr("id", cssId).text(cssCode).elem);
-        }
+        injectCss("propertyGroups", cssCode);
         return {
             beforeRenderProperties: (node, propertiesToRender) => {
                 // store collection of properties for afterRenderProperties processing
@@ -188,6 +197,48 @@ var SonjReview = (function (exports) {
     margin: 2px 0 0 var(--sonj-prop-indent);
     color: var(--sonj-group-color);
     display: inline-block;
+}
+`;
+
+    const propertyTeaser = (options) => {
+        injectCss("propertyTeaser", cssCode$1);
+        const getText = (data) => {
+            const parts = [
+                options.showCounts === false ? "" : getPropertyCount(data),
+                getSelectedProperties(data, options)
+            ].filter(p => p != "");
+            return parts.join(" ");
+        };
+        return {
+            afterRender: node => {
+                if (node.isExpandable) {
+                    $("span")
+                        .addClass("prop-value-teaser")
+                        .text(getText(node.data))
+                        .appendTo(node.header);
+                }
+            }
+        };
+    };
+    const getPropertyCount = (data) => Array.isArray(data) ? `[${data.length}]` : `{${Object.keys(data).length}}`;
+    const getSelectedProperties = (data, options) => {
+        if (!options.properties) {
+            return "";
+        }
+        let values = options.properties.names
+            .filter(p => data[p] != undefined)
+            .map(p => ((options.properties.printNames ? p + ":" : "") + data[p]));
+        if (options.properties.maxCount) {
+            values = values.slice(0, options.properties.maxCount);
+        }
+        return values.join(", ");
+    };
+    const cssCode$1 = `
+.prop-expanded > * > .prop-value-teaser {
+    display: none;
+}
+.prop-value-teaser {
+    margin: 0 5px;
 }
 `;
 
@@ -276,9 +327,10 @@ var SonjReview = (function (exports) {
 
     var plugins = /*#__PURE__*/Object.freeze({
         __proto__: null,
-        expandAll: expandAll,
+        autoExpand: autoExpand,
         search: search,
-        propertyGroups: propertyGroups
+        propertyGroups: propertyGroups,
+        propertyTeaser: propertyTeaser
     });
 
     var e=[],t=[];function n(n,r){if(n&&"undefined"!=typeof document){var a,s=!0===r.prepend?"prepend":"append",d=!0===r.singleTag,i="string"==typeof r.container?document.querySelector(r.container):document.getElementsByTagName("head")[0];if(d){var u=e.indexOf(i);-1===u&&(u=e.push(i)-1,t[u]={}),a=t[u]&&t[u][s]?t[u][s]:t[u][s]=c();}else a=c();65279===n.charCodeAt(0)&&(n=n.substring(1)),a.styleSheet?a.styleSheet.cssText+=n:a.appendChild(document.createTextNode(n));}function c(){var e=document.createElement("style");if(e.setAttribute("type","text/css"),r.attributes)for(var t=Object.keys(r.attributes),n=0;n<t.length;n++)e.setAttribute(t[n],r.attributes[t[n]]);var a="prepend"===s?"afterbegin":"beforeend";return i.insertAdjacentElement(a,e),e}}

@@ -1,5 +1,7 @@
-import { $ } from "../mquery";
+
 import { IPlugin } from "../plugins";
+import { injectCss } from "../helpers";
+import { $ } from "../mquery";
 
 /**
  * Property groups plugin
@@ -12,10 +14,7 @@ import { IPlugin } from "../plugins";
 export const propertyGroups = (maxPropertiesCount: number): IPlugin => {
     let propsToRender: { [path: string]: string[] } = {};
 
-    const cssId = "sonj-propertyGroups-css";
-    if (!document.getElementById(cssId)) {
-        document.head.appendChild($("style").attr("id", cssId).text(cssCode).elem);
-    }
+    injectCss("propertyGroups", cssCode);
 
     return {
 
