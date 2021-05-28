@@ -51,6 +51,12 @@ var SonjReview = (function (exports) {
     // TODO: this can break if object key/property contains slash
     const pathSeparator = "/";
     class JsonViewer {
+        /**
+         * Constructor
+         * @param data Node value
+         * @param path Node path (with name in the last chunk/part)
+         * @param plugins Collection of plugins
+         */
         constructor(data, path, plugins) {
             this.data = data;
             this.path = path;
@@ -71,6 +77,10 @@ var SonjReview = (function (exports) {
             }
             this.plugins.forEach(p => { var _a; return (_a = p.nodeInit) === null || _a === void 0 ? void 0 : _a.call(null, this); });
         }
+        /**
+         * Renders node
+         * @param container Container in which node should be rendered
+         */
         render(container) {
             if (typeof (container) == "string") {
                 container = document.getElementById(container);
@@ -102,6 +112,10 @@ var SonjReview = (function (exports) {
             container.appendChild(this.wrapper.elem);
             this.plugins.forEach(p => { var _a; return (_a = p.afterRender) === null || _a === void 0 ? void 0 : _a.call(null, this); });
         }
+        /**
+         * Shows or hides node properties/children
+         * @param expand Whether to force expand/collapse
+         */
         toggleExpand(expand) {
             if (!this.isExpandable) {
                 return;
@@ -127,11 +141,21 @@ var SonjReview = (function (exports) {
             }
             this.plugins.forEach(p => { var _a; return (_a = p.afterToggleExpand) === null || _a === void 0 ? void 0 : _a.call(null, this, !!expand); });
         }
+        /**
+         * Renders node properties
+         * @param conatiner Container in which properties will be added
+         * @param propsToRender List of properties to render
+         */
         renderProperties(conatiner, propsToRender) {
             propsToRender.forEach(propName => new JsonViewer(this.data[propName], this.path + pathSeparator + propName, this.plugins).render(conatiner.elem));
         }
     }
 
+    /**
+     * Plugin for auto-expanding nodes
+     * @param depth Maxmal depth to expand nodes
+     * @returns
+     */
     const autoExpand = (depth) => {
         return {
             afterRender: node => {
@@ -212,6 +236,11 @@ var SonjReview = (function (exports) {
 }
 `;
 
+    /**
+     * Plugin for showing short onformation about the expandable node
+     * @param options Plugin options
+     * @returns Plugin instance
+     */
     const propertyTeaser = (options) => {
         injectCss("propertyTeaser", cssCode$1);
         const getText = (data) => {
@@ -341,17 +370,23 @@ var SonjReview = (function (exports) {
         maxNameLength: 20,
         maxValueLength: 40,
     };
+    /**
+     * Plugin for truncating long node name and/or value
+     * @param options Plugin options
+     * @returns Plugin instance
+     */
     const truncate = (options) => {
         options = options || defaultOptions;
         const maxNameLength = options.maxNameLength;
         const maxValueLength = options.maxValueLength;
         return {
             beforeRender: (node, dataToRender) => {
-                if (node.isExpandable) {
-                    return;
-                }
                 if (maxNameLength && dataToRender.name.length > maxNameLength) {
                     dataToRender.name = dataToRender.name.substr(0, maxNameLength - 3) + "...";
+                }
+                if (node.isExpandable) {
+                    // when node is expandable we don't want to touch it's value
+                    return;
                 }
                 const val = dataToRender.value.toString();
                 if (maxValueLength && val.length > maxValueLength) {

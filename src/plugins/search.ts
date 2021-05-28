@@ -27,7 +27,7 @@ export const search = (data: any): IQueryPlugin => {
         },
         query: searchString => {
             if (!rootNode) {
-                throw "Root node not initialized"
+                throw "Root node not initialized";
             }
 
             // collapse root node

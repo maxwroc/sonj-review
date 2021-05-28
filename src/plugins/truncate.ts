@@ -5,6 +5,11 @@ let defaultOptions: ITruncateOptions = {
     maxValueLength: 40,
 }
 
+/**
+ * Plugin for truncating long node name and/or value
+ * @param options Plugin options
+ * @returns Plugin instance
+ */
 export const truncate = (options: ITruncateOptions): IPlugin => {
 
     options = options || defaultOptions;
@@ -14,12 +19,13 @@ export const truncate = (options: ITruncateOptions): IPlugin => {
 
     return {
         beforeRender: (node, dataToRender) => {
-            if (node.isExpandable) {
-                return;
-            }
-
             if (maxNameLength && dataToRender.name.length > maxNameLength) {
                 dataToRender.name = dataToRender.name.substr(0, maxNameLength - 3) + "...";
+            }
+
+            if (node.isExpandable) {
+                // when node is expandable we don't want to touch it's value
+                return;
             }
 
             const val = dataToRender.value.toString();
@@ -31,6 +37,13 @@ export const truncate = (options: ITruncateOptions): IPlugin => {
 }
 
 export interface ITruncateOptions {
+    /**
+     * Maximum length of node name
+     */
     maxNameLength?: number;
+
+    /**
+     * Maximum length of node value
+     */
     maxValueLength?: number;
 }

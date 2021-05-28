@@ -6,16 +6,37 @@ const pathSeparator = "/";
 
 export class JsonViewer {
 
+    /**
+     * Main wrapper for this node
+     */
     public wrapper: MiniQuery;
 
+    /**
+     * Wrapper for all children
+     */
     public childrenWrapper: MiniQuery;
 
+    /**
+     * Name of the node (property name)
+     */
     public nodeName: string;
 
+    /**
+     * Header node containing name and value (if it's not expandable node)
+     */
     public header: MiniQuery;
 
+    /**
+     * Whether node is expandable
+     */
     public isExpandable: boolean;
 
+    /**
+     * Constructor
+     * @param data Node value
+     * @param path Node path (with name in the last chunk/part)
+     * @param plugins Collection of plugins
+     */
     constructor(public data: any, public path: string, public plugins: IPlugin[]) {
         this.nodeName = path.split(pathSeparator).pop() as string;
 
@@ -36,6 +57,10 @@ export class JsonViewer {
         this.plugins.forEach(p => p.nodeInit?.call(null, this));
     }
 
+    /**
+     * Renders node
+     * @param container Container in which node should be rendered
+     */
     render(container: HTMLElement | string) {
         if (typeof(container) == "string") {
             container = document.getElementById(container) as HTMLElement;
@@ -76,7 +101,11 @@ export class JsonViewer {
         this.plugins.forEach(p => p.afterRender?.call(null, this))
     }
 
-    toggleExpand(expand?: boolean) {
+    /**
+     * Shows or hides node properties/children
+     * @param expand Whether to force expand/collapse
+     */
+    toggleExpand(expand?: boolean): void {
         if (!this.isExpandable) {
             return;
         }
@@ -111,6 +140,11 @@ export class JsonViewer {
         this.plugins.forEach(p => p.afterToggleExpand?.call(null, this, !!expand));
     }
 
+    /**
+     * Renders node properties
+     * @param conatiner Container in which properties will be added
+     * @param propsToRender List of properties to render
+     */
     renderProperties(conatiner: MiniQuery, propsToRender: string[]) {
         propsToRender.forEach(propName => 
             new JsonViewer(this.data[propName], this.path + pathSeparator + propName, this.plugins).render(conatiner.elem));

@@ -2,6 +2,11 @@ import { injectCss } from "../helpers";
 import { IPlugin } from "../plugins";
 import { $ } from "../mquery";
 
+/**
+ * Plugin for showing short onformation about the expandable node
+ * @param options Plugin options
+ * @returns Plugin instance
+ */
 export const propertyTeaser = (options: ITeaserOptions): IPlugin => {
 
     injectCss("propertyTeaser", cssCode);
@@ -28,13 +33,31 @@ export const propertyTeaser = (options: ITeaserOptions): IPlugin => {
 }
 
 export interface ITeaserOptions {
+    /**
+     * Properties which values will be displayed
+     */
     properties?: ITeaserPropertiesOptions;
+
+    /**
+     * Whether to show counts (of array elements )
+     */
     showCounts?: boolean;
 }
 
 interface ITeaserPropertiesOptions {
+    /**
+     * Names of properties to show
+     */
     names: string[];
+
+    /**
+     * Maximum number of properties to show
+     */
     maxCount?: number;
+
+    /**
+     * Whether to print property names next to values
+     */
     printNames?: boolean;
 }
 
