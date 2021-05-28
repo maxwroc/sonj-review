@@ -46,8 +46,6 @@
                 }
             };
 
-            console.log(data);
-
             window.addEventListener("load", () => {
 
                 const searchPlugin = SonjReview.plugins.search(data);
@@ -76,6 +74,6 @@
     </head>
     <body style="background-color: #333; color: gray; font-size: 16px; padding: 10px;">
         <div id="search-box-container"><input type="text" id="search-box" placeholder="Type a query and hit enter"/></div>
-        <div id="json-content"></div>
+        <div id="json-content" class="sonj-container"></div>
     </body>    
 </html>

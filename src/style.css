@@ -9,6 +9,12 @@
     /*sizes*/
     --sonj-prop-indent: 12px; 
 }
+
+.sonj-container {
+    overflow: hidden;
+    overflow-x: auto;
+}
+
 .prop-wrapper {
     padding-left: var(--sonj-prop-indent);
     cursor: default;
@@ -17,6 +23,7 @@
 }
 .prop-header {
     position: relative;
+    white-space: nowrap;
 }
 .prop-separator {
     margin-right: 5px;
@@ -24,6 +31,7 @@
 .prop-name {
     color: var(--sonj-prop-name);
 }
+
 .prop-value.prop-type-string {
     color: var(--sonj-prop-type-string);
 }

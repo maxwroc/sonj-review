@@ -76,5 +76,6 @@ const cssCode = `
     margin: 2px 0 0 var(--sonj-prop-indent);
     color: var(--sonj-group-color);
     display: inline-block;
+    white-space: nowrap;
 }
 `;
