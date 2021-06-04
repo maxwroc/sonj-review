@@ -11,20 +11,20 @@ export interface IPlugin {
      * Called when node is initialized
      * @param node Node for which event is triggered
      */
-    nodeInit?: { (node: JsonViewer): void };
+    nodeInit?: { (context: IPluginContext): void };
 
     /**
      * Called before node is rendered
      * @param node Node for which event is triggered
      * @param nodeNameValue Node name and it's value to render (can be modified in the plugin)
      */
-    beforeRender?: { (node: JsonViewer, nodeNameValue: INameValuePair): void }
+    beforeRender?: { (context: IPluginContext, nodeNameValue: INameValuePair): void }
 
     /**
      * Called when node is rendered
      * @param node Node for which event is triggered
      */
-    afterRender?: { (node: JsonViewer): void };
+    afterRender?: { (context: IPluginContext): void };
 
     /**
      * Called before rendering properties
@@ -32,19 +32,19 @@ export interface IPlugin {
      * @param propertiesToRender Properties to render
      * @returns Properties to render
      */
-    beforeRenderProperties?: { (node: JsonViewer, propertiesToRender: string[]): string[] };
+    beforeRenderProperties?: { (context: IPluginContext, propertiesToRender: string[]): string[] };
 
     /**
      * Called after properties were rendered
      * @param node Node for which event is triggered
      * @param renderedProperties Rendered properties
      */
-    afterRenderProperties?: { (node: JsonViewer, renderedProperties: string[]): void };
+    afterRenderProperties?: { (context: IPluginContext, renderedProperties: string[]): void };
 
     /**
      * Called after expanding/collapsing node
      */
-    afterToggleExpand?: { (node: JsonViewer, expanded: boolean): void };
+    afterToggleExpand?: { (context: IPluginContext, expanded: boolean): void };
 }
 
 export interface INameValuePair {
@@ -58,4 +58,9 @@ export {
     propertyGroups,
     propertyTeaser,
     truncate,
+}
+
+export interface IPluginContext {
+    node: JsonViewer;
+    [key: string]: any;
 }

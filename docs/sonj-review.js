@@ -61,6 +61,10 @@ var SonjReview = (function (exports) {
             this.data = data;
             this.path = path;
             this.plugins = plugins;
+            /**
+             * Plugin context data
+             */
+            this.pluginContext = {};
             this.nodeName = path.split(pathSeparator).pop();
             switch (typeof (data)) {
                 case "bigint":
@@ -75,7 +79,11 @@ var SonjReview = (function (exports) {
                 default:
                     throw "Type not supported";
             }
-            this.plugins.forEach(p => { var _a; return (_a = p.nodeInit) === null || _a === void 0 ? void 0 : _a.call(null, this); });
+            this.plugins.forEach((p, i) => {
+                var _a;
+                this.pluginContext[i] = { node: this };
+                (_a = p.nodeInit) === null || _a === void 0 ? void 0 : _a.call(null, this.pluginContext[i]);
+            });
         }
         /**
          * Renders node
@@ -90,7 +98,7 @@ var SonjReview = (function (exports) {
                 name: this.nodeName,
                 value: this.data,
             };
-            this.plugins.forEach(p => { var _a; return (_a = p.beforeRender) === null || _a === void 0 ? void 0 : _a.call(null, this, dataToRender); });
+            this.plugins.forEach((p, i) => { var _a; return (_a = p.beforeRender) === null || _a === void 0 ? void 0 : _a.call(null, this.pluginContext[i], dataToRender); });
             this.header = $("div")
                 .addClass("prop-header")
                 .appendTo(wrapper)
@@ -110,7 +118,7 @@ var SonjReview = (function (exports) {
             this.wrapper = wrapper;
             // update DOM only once at the end
             container.appendChild(this.wrapper.elem);
-            this.plugins.forEach(p => { var _a; return (_a = p.afterRender) === null || _a === void 0 ? void 0 : _a.call(null, this); });
+            this.plugins.forEach((p, i) => { var _a; return (_a = p.afterRender) === null || _a === void 0 ? void 0 : _a.call(null, this.pluginContext[i]); });
         }
         /**
          * Shows or hides node properties/children
@@ -131,15 +139,15 @@ var SonjReview = (function (exports) {
                 let propsToRender = Object.keys(this.data);
                 this.plugins
                     .filter(p => p.beforeRenderProperties)
-                    .forEach(p => propsToRender = p.beforeRenderProperties(this, propsToRender));
+                    .forEach((p, i) => propsToRender = p.beforeRenderProperties(this.pluginContext[i], propsToRender));
                 this.renderProperties(this.childrenWrapper, propsToRender);
-                this.plugins.forEach(p => { var _a; return (_a = p.afterRenderProperties) === null || _a === void 0 ? void 0 : _a.call(null, this, propsToRender); });
+                this.plugins.forEach((p, i) => { var _a; return (_a = p.afterRenderProperties) === null || _a === void 0 ? void 0 : _a.call(null, this.pluginContext[i], propsToRender); });
             }
             else {
                 this.wrapper.removeClass(expandedClassName);
                 this.childrenWrapper.empty();
             }
-            this.plugins.forEach(p => { var _a; return (_a = p.afterToggleExpand) === null || _a === void 0 ? void 0 : _a.call(null, this, !!expand); });
+            this.plugins.forEach((p, i) => { var _a; return (_a = p.afterToggleExpand) === null || _a === void 0 ? void 0 : _a.call(null, this.pluginContext[i], !!expand); });
         }
         /**
          * Renders node properties
@@ -158,11 +166,11 @@ var SonjReview = (function (exports) {
      */
     const autoExpand = (depth) => {
         return {
-            afterRender: node => {
-                if (depth && (node.path.split("/").length - 1 >= depth)) {
+            afterRender: context => {
+                if (depth && (context.node.path.split("/").length - 1 >= depth)) {
                     return;
                 }
-                node.toggleExpand(true /*forceExpand*/);
+                context.node.toggleExpand(true /*forceExpand*/);
             }
         };
     };
@@ -183,18 +191,18 @@ var SonjReview = (function (exports) {
      * @returns Initialized plugin
      */
     const propertyGroups = (maxPropertiesCount) => {
-        let propsToRender = {};
         injectCss("propertyGroups", cssCode);
         return {
-            beforeRenderProperties: (node, propertiesToRender) => {
+            beforeRenderProperties: (context, propertiesToRender) => {
                 // store collection of properties for afterRenderProperties processing
-                propsToRender[node.path] = propertiesToRender;
+                context.propsToRender = propertiesToRender;
                 // render only max number of properties 
                 return propertiesToRender.slice(0, maxPropertiesCount);
             },
-            afterRenderProperties: (node, renderedProperties) => {
-                let nodePropsToRender = propsToRender[node.path];
-                delete propsToRender[node.path];
+            afterRenderProperties: (context, renderedProperties) => {
+                const path = context.node.path;
+                let nodePropsToRender = context.propsToRender;
+                delete context.propsToRender;
                 // check if there is anything what was not rendered already
                 if (!nodePropsToRender || nodePropsToRender.length <= maxPropertiesCount) {
                     return;
@@ -214,10 +222,10 @@ var SonjReview = (function (exports) {
                         // removing group button
                         wrapper.empty();
                         // rendering properties in the group
-                        node.renderProperties(wrapper, propsToRenderInGroup);
+                        context.node.renderProperties(wrapper, propsToRenderInGroup);
                     })
                         .appendTo(wrapper);
-                    wrapper.appendTo(node.childrenWrapper);
+                    wrapper.appendTo(context.node.childrenWrapper);
                     groupStart += maxPropertiesCount;
                 } while (nodePropsToRender.length > maxPropertiesCount);
             }
@@ -252,12 +260,12 @@ var SonjReview = (function (exports) {
             return parts.join(" ");
         };
         return {
-            afterRender: node => {
-                if (node.isExpandable) {
+            afterRender: context => {
+                if (context.node.isExpandable) {
                     $("span")
                         .addClass("prop-value-teaser")
-                        .text(getText(node.data))
-                        .appendTo(node.header);
+                        .text(getText(context.node.data))
+                        .appendTo(context.node.header);
                 }
             }
         };
@@ -288,21 +296,21 @@ var SonjReview = (function (exports) {
         let rootNode = null;
         let pathsToShow = null;
         return {
-            nodeInit: node => {
+            nodeInit: context => {
                 if (rootNode == null) {
                     // the first one is the root one
-                    rootNode = node;
+                    rootNode = context.node;
                 }
             },
-            afterRender: node => {
-                pathsToShow && node.toggleExpand(true);
+            afterRender: context => {
+                pathsToShow && context.node.toggleExpand(true);
             },
-            beforeRenderProperties: (node, props) => {
+            beforeRenderProperties: (context, props) => {
                 if (!pathsToShow) {
                     return props;
                 }
                 return props
-                    .filter(p => pathsToShow === null || pathsToShow === void 0 ? void 0 : pathsToShow.some(path => path.startsWith(node.path + "/" + p)));
+                    .filter(p => pathsToShow === null || pathsToShow === void 0 ? void 0 : pathsToShow.some(path => path.startsWith(context.node.path + "/" + p)));
             },
             query: searchString => {
                 if (!rootNode) {
@@ -381,11 +389,11 @@ var SonjReview = (function (exports) {
         const maxNameLength = options.maxNameLength;
         const maxValueLength = options.maxValueLength;
         return {
-            beforeRender: (node, dataToRender) => {
+            beforeRender: (context, dataToRender) => {
                 if (maxNameLength && dataToRender.name.length > maxNameLength) {
                     dataToRender.name = dataToRender.name.substr(0, maxNameLength - 3) + "...";
                 }
-                if (node.isExpandable) {
+                if (context.node.isExpandable) {
                     // when node is expandable we don't want to touch it's value
                     return;
                 }
@@ -393,7 +401,7 @@ var SonjReview = (function (exports) {
                 if (maxValueLength && val.length > maxValueLength) {
                     dataToRender.value = val.substr(0, maxValueLength - 3) + "...";
                 }
-            }
+            },
         };
     };
 

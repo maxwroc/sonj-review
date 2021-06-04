@@ -21,12 +21,12 @@ export const propertyTeaser = (options: ITeaserOptions): IPlugin => {
     }
 
     return {
-        afterRender: node => {
-            if (node.isExpandable) {
+        afterRender: context => {
+            if (context.node.isExpandable) {
                 $("span")
                     .addClass("prop-value-teaser")
-                    .text(getText(node.data))
-                    .appendTo(node.header);
+                    .text(getText(context.node.data))
+                    .appendTo(context.node.header);
             }
         }
     }

@@ -1,5 +1,5 @@
 
-import { IPlugin } from "../plugins";
+import { IPlugin, IPluginContext } from "../plugins";
 import { injectCss } from "../helpers";
 import { $ } from "../mquery";
 
@@ -12,24 +12,23 @@ import { $ } from "../mquery";
  * @returns Initialized plugin
  */
 export const propertyGroups = (maxPropertiesCount: number): IPlugin => {
-    let propsToRender: { [path: string]: string[] } = {};
 
     injectCss("propertyGroups", cssCode);
 
     return {
 
-        beforeRenderProperties: (node, propertiesToRender) => {
+        beforeRenderProperties: (context: IGroupsContext, propertiesToRender) => {
             // store collection of properties for afterRenderProperties processing
-            propsToRender[node.path] = propertiesToRender;
+            context.propsToRender = propertiesToRender;
             // render only max number of properties 
             return propertiesToRender.slice(0, maxPropertiesCount);
         },
 
-        afterRenderProperties: (node, renderedProperties) => {
+        afterRenderProperties: (context: IGroupsContext, renderedProperties) => {
+            const path = context.node.path;
+            let nodePropsToRender = context.propsToRender;
 
-            let nodePropsToRender = propsToRender[node.path];
-
-            delete propsToRender[node.path];
+            delete context.propsToRender;
 
             // check if there is anything what was not rendered already
             if (!nodePropsToRender || nodePropsToRender.length <= maxPropertiesCount) {
@@ -53,11 +52,11 @@ export const propertyGroups = (maxPropertiesCount: number): IPlugin => {
                         // removing group button
                         wrapper.empty();
                         // rendering properties in the group
-                        node.renderProperties(wrapper, propsToRenderInGroup);
+                        context.node.renderProperties(wrapper, propsToRenderInGroup);
                     })
                     .appendTo(wrapper);
                 
-                wrapper.appendTo(node.childrenWrapper);
+                wrapper.appendTo(context.node.childrenWrapper);
 
                 groupStart += maxPropertiesCount;
             }
@@ -79,3 +78,7 @@ const cssCode = `
     white-space: nowrap;
 }
 `;
+
+interface IGroupsContext extends IPluginContext {
+    propsToRender?: string[];
+}

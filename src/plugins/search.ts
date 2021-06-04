@@ -8,22 +8,22 @@ export const search = (data: any): IQueryPlugin => {
     let pathsToShow: string[] | null = null;
 
     return {
-        nodeInit: node => {
+        nodeInit: context => {
             if (rootNode == null) {
                 // the first one is the root one
-                rootNode = node;
+                rootNode = context.node;
             }
         },
-        afterRender: node => {
-            pathsToShow && node.toggleExpand(true);
+        afterRender: context => {
+            pathsToShow && context.node.toggleExpand(true);
         },
-        beforeRenderProperties: (node, props) => {
+        beforeRenderProperties: (context, props) => {
             if (!pathsToShow) {
                 return props;
             }
 
             return props
-                .filter(p => pathsToShow?.some(path => path.startsWith(node.path + "/" + p)));;
+                .filter(p => pathsToShow?.some(path => path.startsWith(context.node.path + "/" + p)));;
         },
         query: searchString => {
             if (!rootNode) {

@@ -1,4 +1,4 @@
-import { INameValuePair, IPlugin } from "./plugins";
+import { INameValuePair, IPlugin, IPluginContext } from "./plugins";
 import { MiniQuery, $ } from "./mquery";
 
 // TODO: this can break if object key/property contains slash
@@ -32,6 +32,11 @@ export class JsonViewer {
     public isExpandable: boolean;
 
     /**
+     * Plugin context data
+     */
+    public pluginContext: { [key: number]: IPluginContext } = {};
+
+    /**
      * Constructor
      * @param data Node value
      * @param path Node path (with name in the last chunk/part)
@@ -54,7 +59,10 @@ export class JsonViewer {
                 throw "Type not supported";
         }
         
-        this.plugins.forEach(p => p.nodeInit?.call(null, this));
+        this.plugins.forEach((p, i) => {
+            this.pluginContext[i] = { node: this };
+            p.nodeInit?.call(null, this.pluginContext[i]);
+        });
     }
 
     /**
@@ -73,7 +81,7 @@ export class JsonViewer {
             value: this.data,
         }
 
-        this.plugins.forEach(p => p.beforeRender?.call(null, this, dataToRender));
+        this.plugins.forEach((p, i) => p.beforeRender?.call(null, this.pluginContext[i], dataToRender));
 
         this.header = $("div")
             .addClass("prop-header")
@@ -98,7 +106,7 @@ export class JsonViewer {
         // update DOM only once at the end
         container.appendChild(this.wrapper.elem);
 
-        this.plugins.forEach(p => p.afterRender?.call(null, this))
+        this.plugins.forEach((p, i) => p.afterRender?.call(null, this.pluginContext[i]))
     }
 
     /**
@@ -126,18 +134,18 @@ export class JsonViewer {
 
             this.plugins
                 .filter(p => p.beforeRenderProperties)
-                .forEach(p => propsToRender = p.beforeRenderProperties!(this, propsToRender));
+                .forEach((p, i) => propsToRender = p.beforeRenderProperties!(this.pluginContext[i], propsToRender));
 
             this.renderProperties(this.childrenWrapper, propsToRender);
 
-            this.plugins.forEach(p => p.afterRenderProperties?.call(null, this, propsToRender));
+            this.plugins.forEach((p, i) => p.afterRenderProperties?.call(null, this.pluginContext[i], propsToRender));
         }
         else {
             this.wrapper.removeClass(expandedClassName);
             this.childrenWrapper.empty();
         }
 
-        this.plugins.forEach(p => p.afterToggleExpand?.call(null, this, !!expand));
+        this.plugins.forEach((p, i) => p.afterToggleExpand?.call(null, this.pluginContext[i], !!expand));
     }
 
     /**

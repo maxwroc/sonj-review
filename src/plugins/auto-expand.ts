@@ -7,12 +7,12 @@ import { IPlugin } from "../plugins";
  */
 export const autoExpand = (depth?: number): IPlugin => {
     return {
-        afterRender: node => {
-            if (depth && (node.path.split("/").length - 1 >= depth)) {
+        afterRender: context => {
+            if (depth && (context.node.path.split("/").length - 1 >= depth)) {
                 return;
             }
 
-            node.toggleExpand(true/*forceExpand*/);
+            context.node.toggleExpand(true/*forceExpand*/);
         }
     }
 }
