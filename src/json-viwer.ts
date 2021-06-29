@@ -61,7 +61,7 @@ export class JsonViewer {
         
         this.plugins.forEach((p, i) => {
             this.pluginContext[i] = { node: this };
-            p.nodeInit?.call(null, this.pluginContext[i]);
+            p.nodeInit?.call(p, this.pluginContext[i]);
         });
     }
 
@@ -81,7 +81,7 @@ export class JsonViewer {
             value: this.data,
         }
 
-        this.plugins.forEach((p, i) => p.beforeRender?.call(null, this.pluginContext[i], dataToRender));
+        this.plugins.forEach((p, i) => p.beforeRender?.call(p, this.pluginContext[i], dataToRender));
 
         this.header = $("div")
             .addClass("prop-header")
@@ -106,7 +106,7 @@ export class JsonViewer {
         // update DOM only once at the end
         container.appendChild(this.wrapper.elem);
 
-        this.plugins.forEach((p, i) => p.afterRender?.call(null, this.pluginContext[i]))
+        this.plugins.forEach((p, i) => p.afterRender?.call(p, this.pluginContext[i]))
     }
 
     /**
@@ -138,14 +138,14 @@ export class JsonViewer {
 
             this.renderProperties(this.childrenWrapper, propsToRender);
 
-            this.plugins.forEach((p, i) => p.afterRenderProperties?.call(null, this.pluginContext[i], propsToRender));
+            this.plugins.forEach((p, i) => p.afterRenderProperties?.call(p, this.pluginContext[i], propsToRender));
         }
         else {
             this.wrapper.removeClass(expandedClassName);
             this.childrenWrapper.empty();
         }
 
-        this.plugins.forEach((p, i) => p.afterToggleExpand?.call(null, this.pluginContext[i], !!expand));
+        this.plugins.forEach((p, i) => p.afterToggleExpand?.call(p, this.pluginContext[i], !!expand));
     }
 
     /**

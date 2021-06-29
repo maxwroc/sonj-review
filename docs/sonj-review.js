@@ -45,6 +45,10 @@ var SonjReview = (function (exports) {
             this.elem.innerHTML = "";
             return this;
         }
+        remove() {
+            var _a;
+            (_a = this.elem.parentElement) === null || _a === void 0 ? void 0 : _a.removeChild(this.elem);
+        }
     }
     const $ = (input) => new MiniQuery(input);
 
@@ -82,7 +86,7 @@ var SonjReview = (function (exports) {
             this.plugins.forEach((p, i) => {
                 var _a;
                 this.pluginContext[i] = { node: this };
-                (_a = p.nodeInit) === null || _a === void 0 ? void 0 : _a.call(null, this.pluginContext[i]);
+                (_a = p.nodeInit) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i]);
             });
         }
         /**
@@ -98,7 +102,7 @@ var SonjReview = (function (exports) {
                 name: this.nodeName,
                 value: this.data,
             };
-            this.plugins.forEach((p, i) => { var _a; return (_a = p.beforeRender) === null || _a === void 0 ? void 0 : _a.call(null, this.pluginContext[i], dataToRender); });
+            this.plugins.forEach((p, i) => { var _a; return (_a = p.beforeRender) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i], dataToRender); });
             this.header = $("div")
                 .addClass("prop-header")
                 .appendTo(wrapper)
@@ -118,7 +122,7 @@ var SonjReview = (function (exports) {
             this.wrapper = wrapper;
             // update DOM only once at the end
             container.appendChild(this.wrapper.elem);
-            this.plugins.forEach((p, i) => { var _a; return (_a = p.afterRender) === null || _a === void 0 ? void 0 : _a.call(null, this.pluginContext[i]); });
+            this.plugins.forEach((p, i) => { var _a; return (_a = p.afterRender) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i]); });
         }
         /**
          * Shows or hides node properties/children
@@ -141,13 +145,13 @@ var SonjReview = (function (exports) {
                     .filter(p => p.beforeRenderProperties)
                     .forEach((p, i) => propsToRender = p.beforeRenderProperties(this.pluginContext[i], propsToRender));
                 this.renderProperties(this.childrenWrapper, propsToRender);
-                this.plugins.forEach((p, i) => { var _a; return (_a = p.afterRenderProperties) === null || _a === void 0 ? void 0 : _a.call(null, this.pluginContext[i], propsToRender); });
+                this.plugins.forEach((p, i) => { var _a; return (_a = p.afterRenderProperties) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i], propsToRender); });
             }
             else {
                 this.wrapper.removeClass(expandedClassName);
                 this.childrenWrapper.empty();
             }
-            this.plugins.forEach((p, i) => { var _a; return (_a = p.afterToggleExpand) === null || _a === void 0 ? void 0 : _a.call(null, this.pluginContext[i], !!expand); });
+            this.plugins.forEach((p, i) => { var _a; return (_a = p.afterToggleExpand) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i], !!expand); });
         }
         /**
          * Renders node properties
@@ -292,6 +296,123 @@ var SonjReview = (function (exports) {
 }
 `;
 
+    /**
+     * Plugin for auto-expanding nodes
+     * @param depth Maxmal depth to expand nodes
+     * @returns
+     */
+    const propertyMenu = () => {
+        injectCss("propertyMenu", cssCode$2);
+        return new PropertyMenu();
+    };
+    const cssCode$2 = `
+* {
+    --soji-prop-menu-background: #fff;
+    --soji-prop-menu-border: #727272;
+    --soji-prop-menu-active: #dcdcdc;
+}
+.prop-menu-wrapper {
+    display: inline-block;
+    position: relative;
+}
+.prop-menu-button {
+    border-radius: 5px;
+    padding: 0 5px;
+    margin: 0 5px;
+    opacity: 0;
+    transition: opacity 0.5s;
+    cursor: pointer;
+}
+.prop-header:hover .prop-menu-button {
+    opacity: 1;
+}
+.prop-header .prop-menu-button:hover,
+.prop-menu-open .prop-menu-button {
+    border: 1px solid var(--soji-prop-menu-border);
+    background-color: var(--soji-prop-menu-active);
+    opacity: 1;
+}
+.prop-menu {
+    left: 5px;
+    position: absolute;
+    z-index: 1000;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: var(--soji-prop-menu-background);
+    border: 1px solid var(--soji-prop-menu-border);
+}
+.prop-menu-item {
+    padding: 0 5px;
+}
+.prop-menu-item.enabled:hover {
+    background-color: var(--soji-prop-menu-active);
+    color: black;
+    cursor: pointer;
+}
+`;
+    class PropertyMenu {
+        constructor() {
+            this.menuItems = [];
+            document.body.addEventListener("click", () => this.closeActiveMenu());
+            this.menuItems.push(copyValue);
+            this.menuItems.push(copyFormattedValue);
+        }
+        afterRender(context) {
+            const btn = $("span")
+                .text("...")
+                .addClass("prop-menu-button");
+            const menuWrapper = $("div")
+                .addClass("prop-menu-wrapper")
+                .append(btn)
+                .appendTo(context.node.header);
+            btn.on("click", evt => this.onButtonClick(evt, menuWrapper, context));
+        }
+        closeActiveMenu() {
+            var _a;
+            if (!this.activeMenu) {
+                return;
+            }
+            (_a = this.activeMenu.elem.parentElement) === null || _a === void 0 ? void 0 : _a.classList.remove("prop-menu-open");
+            this.activeMenu.remove();
+            this.activeMenu = undefined;
+        }
+        onButtonClick(evt, wrapper, context) {
+            evt.stopPropagation();
+            this.closeActiveMenu();
+            this.activeMenu = $("div").addClass("prop-menu");
+            this.menuItems.forEach(item => {
+                const isEnabled = item.isEnabled(context);
+                $("div")
+                    .text(item.text)
+                    .addClass("prop-menu-item", isEnabled ? "enabled" : "disabled")
+                    .on("click", evt => {
+                    item.onClick(context);
+                    evt.stopPropagation();
+                    isEnabled && this.closeActiveMenu();
+                })
+                    .appendTo(this.activeMenu);
+            });
+            this.activeMenu.appendTo(wrapper);
+            wrapper.addClass("prop-menu-open");
+        }
+    }
+    const copyValue = {
+        text: "Copy value",
+        isEnabled: context => true,
+        onClick: context => {
+            navigator.clipboard.writeText(context.node.isExpandable ? JSON.stringify(context.node.data) : context.node.data);
+        }
+    };
+    const copyFormattedValue = {
+        text: "Copy formatted value",
+        isEnabled: context => {
+            return context.node.isExpandable;
+        },
+        onClick: context => {
+            navigator.clipboard.writeText(context.node.isExpandable ? JSON.stringify(context.node.data, null, 2) : context.node.data);
+        }
+    };
+
     const search = (data) => {
         let rootNode = null;
         let pathsToShow = null;
@@ -411,7 +532,8 @@ var SonjReview = (function (exports) {
         search: search,
         propertyGroups: propertyGroups,
         propertyTeaser: propertyTeaser,
-        truncate: truncate
+        truncate: truncate,
+        propertyMenu: propertyMenu
     });
 
     var e=[],t=[];function n(n,r){if(n&&"undefined"!=typeof document){var a,s=!0===r.prepend?"prepend":"append",d=!0===r.singleTag,i="string"==typeof r.container?document.querySelector(r.container):document.getElementsByTagName("head")[0];if(d){var u=e.indexOf(i);-1===u&&(u=e.push(i)-1,t[u]={}),a=t[u]&&t[u][s]?t[u][s]:t[u][s]=c();}else a=c();65279===n.charCodeAt(0)&&(n=n.substring(1)),a.styleSheet?a.styleSheet.cssText+=n:a.appendChild(document.createTextNode(n));}function c(){var e=document.createElement("style");if(e.setAttribute("type","text/css"),r.attributes)for(var t=Object.keys(r.attributes),n=0;n<t.length;n++)e.setAttribute(t[n],r.attributes[t[n]]);var a="prepend"===s?"afterbegin":"beforeend";return i.insertAdjacentElement(a,e),e}}

@@ -56,6 +56,10 @@ export class MiniQuery {
         this.elem.innerHTML = "";
         return this;
     }
+
+    remove() {
+        this.elem.parentElement?.removeChild(this.elem);
+    }
 }
 
 export const $ = (input: string) => new MiniQuery(input);
