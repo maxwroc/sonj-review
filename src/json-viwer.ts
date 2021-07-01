@@ -50,10 +50,11 @@ export class JsonViewer {
             case "boolean":
             case "number":
             case "string":
+            case "undefined":
                 this.isExpandable = false;
                 break;
             case "object":
-                this.isExpandable = true;
+                this.isExpandable = data != null;
                 break;
             default:
                 throw "Type not supported";
@@ -96,9 +97,10 @@ export class JsonViewer {
                 .append(this.childrenWrapper);
         }
         else {
+            const textValue = dataToRender.value === undefined ? "undefined" : (dataToRender.value === null ? "null" : dataToRender.value.toString());
             this.header
                 .append($("span").text(":").addClass("prop-separator"))
-                .append($("span").addClass("prop-value", "prop-type-" + typeof(dataToRender.value)).text(dataToRender.value.toString()));
+                .append($("span").addClass("prop-value", "prop-type-" + typeof(dataToRender.value)).text(textValue));
         }
 
         this.wrapper = wrapper;

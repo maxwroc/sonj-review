@@ -5,6 +5,7 @@
     --sonj-prop-name: #b863bf;
     --sonj-prop-type-string: #C41A16;
     --sonj-prop-type-number: #1C00CF;
+    --sonj-prop-type-undefined: #444444;
     --sonj-arrow-color: #727272;
     /*sizes*/
     --sonj-prop-indent: 12px; 
@@ -45,6 +46,11 @@
 .prop-value.prop-type-bigint,
 .prop-value.prop-type-number {
     color: var(--sonj-prop-type-number);
+}
+.prop-value.prop-type-undefined,
+.prop-value.prop-type-object {
+    color: var(--sonj-prop-type-undefined);
+    font-style: italic;
 }
 .prop-expand {
     position: absolute;

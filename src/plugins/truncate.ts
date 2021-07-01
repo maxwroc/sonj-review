@@ -23,7 +23,7 @@ export const truncate = (options: ITruncateOptions): IPlugin => {
                 dataToRender.name = dataToRender.name.substr(0, maxNameLength - 3) + "...";
             }
 
-            if (context.node.isExpandable) {
+            if (context.node.isExpandable || dataToRender.value === null || dataToRender.value === undefined) {
                 // when node is expandable we don't want to touch it's value
                 return;
             }

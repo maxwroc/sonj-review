@@ -75,10 +75,11 @@ var SonjReview = (function (exports) {
                 case "boolean":
                 case "number":
                 case "string":
+                case "undefined":
                     this.isExpandable = false;
                     break;
                 case "object":
-                    this.isExpandable = true;
+                    this.isExpandable = data != null;
                     break;
                 default:
                     throw "Type not supported";
@@ -115,9 +116,10 @@ var SonjReview = (function (exports) {
                     .append(this.childrenWrapper);
             }
             else {
+                const textValue = dataToRender.value === undefined ? "undefined" : (dataToRender.value === null ? "null" : dataToRender.value.toString());
                 this.header
                     .append($("span").text(":").addClass("prop-separator"))
-                    .append($("span").addClass("prop-value", "prop-type-" + typeof (dataToRender.value)).text(dataToRender.value.toString()));
+                    .append($("span").addClass("prop-value", "prop-type-" + typeof (dataToRender.value)).text(textValue));
             }
             this.wrapper = wrapper;
             // update DOM only once at the end
@@ -564,7 +566,7 @@ var SonjReview = (function (exports) {
                 if (maxNameLength && dataToRender.name.length > maxNameLength) {
                     dataToRender.name = dataToRender.name.substr(0, maxNameLength - 3) + "...";
                 }
-                if (context.node.isExpandable) {
+                if (context.node.isExpandable || dataToRender.value === null || dataToRender.value === undefined) {
                     // when node is expandable we don't want to touch it's value
                     return;
                 }
@@ -588,7 +590,7 @@ var SonjReview = (function (exports) {
 
     var e=[],t=[];function n(n,r){if(n&&"undefined"!=typeof document){var a,s=!0===r.prepend?"prepend":"append",d=!0===r.singleTag,i="string"==typeof r.container?document.querySelector(r.container):document.getElementsByTagName("head")[0];if(d){var u=e.indexOf(i);-1===u&&(u=e.push(i)-1,t[u]={}),a=t[u]&&t[u][s]?t[u][s]:t[u][s]=c();}else a=c();65279===n.charCodeAt(0)&&(n=n.substring(1)),a.styleSheet?a.styleSheet.cssText+=n:a.appendChild(document.createTextNode(n));}function c(){var e=document.createElement("style");if(e.setAttribute("type","text/css"),r.attributes)for(var t=Object.keys(r.attributes),n=0;n<t.length;n++)e.setAttribute(t[n],r.attributes[t[n]]);var a="prepend"===s?"afterbegin":"beforeend";return i.insertAdjacentElement(a,e),e}}
 
-    var css = "\r\n\r\n* {\r\n    /*colors*/\r\n    --sonj-prop-name: #b863bf;\r\n    --sonj-prop-type-string: #C41A16;\r\n    --sonj-prop-type-number: #1C00CF;\r\n    --sonj-arrow-color: #727272;\r\n    /*sizes*/\r\n    --sonj-prop-indent: 12px; \r\n}\r\n\r\n.sonj-container {\r\n    overflow: hidden;\r\n    overflow-x: auto;\r\n}\r\n\r\n.prop-wrapper {\r\n    padding-left: var(--sonj-prop-indent);\r\n    cursor: default;\r\n    font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Liberation Sans\", sans-serif;\r\n    font-size: 14px;\r\n}\r\n.prop-header {\r\n    position: relative;\r\n    display: inline-block;\r\n    white-space: nowrap;\r\n}\r\n.prop-separator {\r\n    margin-right: 5px;\r\n}\r\n.prop-name {\r\n    color: var(--sonj-prop-name);\r\n}\r\n\r\n.prop-value.prop-type-string {\r\n    color: var(--sonj-prop-type-string);\r\n}\r\n.prop-value.prop-type-string::before {\r\n    content: '\"';\r\n}\r\n.prop-value.prop-type-string::after {\r\n    content: '\"';\r\n}\r\n.prop-value.prop-type-bigint,\r\n.prop-value.prop-type-number {\r\n    color: var(--sonj-prop-type-number);\r\n}\r\n.prop-expand {\r\n    position: absolute;\r\n    border: 4px solid transparent;\r\n    border-top: 6px solid var(--sonj-arrow-color);\r\n    height: 0;\r\n    width: 0;\r\n    left: -10px;\r\n    top: 4px;\r\n    transform: rotate(-90deg);\r\n}\r\n.prop-expanded > * > .prop-expand {\r\n    transform: rotate(0);\r\n    left: -12px;\r\n    top: 6px;\r\n}";
+    var css = "\r\n\r\n* {\r\n    /*colors*/\r\n    --sonj-prop-name: #b863bf;\r\n    --sonj-prop-type-string: #C41A16;\r\n    --sonj-prop-type-number: #1C00CF;\r\n    --sonj-prop-type-undefined: #444444;\r\n    --sonj-arrow-color: #727272;\r\n    /*sizes*/\r\n    --sonj-prop-indent: 12px; \r\n}\r\n\r\n.sonj-container {\r\n    overflow: hidden;\r\n    overflow-x: auto;\r\n}\r\n\r\n.prop-wrapper {\r\n    padding-left: var(--sonj-prop-indent);\r\n    cursor: default;\r\n    font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Liberation Sans\", sans-serif;\r\n    font-size: 14px;\r\n}\r\n.prop-header {\r\n    position: relative;\r\n    display: inline-block;\r\n    white-space: nowrap;\r\n}\r\n.prop-separator {\r\n    margin-right: 5px;\r\n}\r\n.prop-name {\r\n    color: var(--sonj-prop-name);\r\n}\r\n\r\n.prop-value.prop-type-string {\r\n    color: var(--sonj-prop-type-string);\r\n}\r\n.prop-value.prop-type-string::before {\r\n    content: '\"';\r\n}\r\n.prop-value.prop-type-string::after {\r\n    content: '\"';\r\n}\r\n.prop-value.prop-type-bigint,\r\n.prop-value.prop-type-number {\r\n    color: var(--sonj-prop-type-number);\r\n}\r\n.prop-value.prop-type-undefined,\r\n.prop-value.prop-type-object {\r\n    color: var(--sonj-prop-type-undefined);\r\n    font-style: italic;\r\n}\r\n.prop-expand {\r\n    position: absolute;\r\n    border: 4px solid transparent;\r\n    border-top: 6px solid var(--sonj-arrow-color);\r\n    height: 0;\r\n    width: 0;\r\n    left: -10px;\r\n    top: 4px;\r\n    transform: rotate(-90deg);\r\n}\r\n.prop-expanded > * > .prop-expand {\r\n    transform: rotate(0);\r\n    left: -12px;\r\n    top: 6px;\r\n}";
     n(css,{});
 
     exports.JsonViewer = JsonViewer;
