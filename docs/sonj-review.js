@@ -143,9 +143,11 @@ var SonjReview = (function (exports) {
             if (expand) {
                 this.wrapper.addClass(expandedClassName);
                 let propsToRender = Object.keys(this.data);
-                this.plugins
-                    .filter(p => p.beforeRenderProperties)
-                    .forEach((p, i) => propsToRender = p.beforeRenderProperties(this.pluginContext[i], propsToRender));
+                this.plugins.forEach((p, i) => {
+                    if (p.beforeRenderProperties) {
+                        propsToRender = p.beforeRenderProperties(this.pluginContext[i], propsToRender);
+                    }
+                });
                 this.renderProperties(this.childrenWrapper, propsToRender);
                 this.plugins.forEach((p, i) => { var _a; return (_a = p.afterRenderProperties) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i], propsToRender); });
             }

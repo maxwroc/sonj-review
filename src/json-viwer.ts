@@ -132,11 +132,13 @@ export class JsonViewer {
         if (expand) {
             this.wrapper.addClass(expandedClassName);
 
-            let propsToRender = Object.keys(this.data);
+            let propsToRender = Object.keys(this.data) as string[];
 
-            this.plugins
-                .filter(p => p.beforeRenderProperties)
-                .forEach((p, i) => propsToRender = p.beforeRenderProperties!(this.pluginContext[i], propsToRender));
+            this.plugins.forEach((p, i) => {
+                if (p.beforeRenderProperties) {
+                    propsToRender = p.beforeRenderProperties(this.pluginContext[i], propsToRender);
+                }
+            });
 
             this.renderProperties(this.childrenWrapper, propsToRender);
 
