@@ -116,7 +116,7 @@ class PropertyMenu implements IPlugin {
     private adjustPosition() {
         const menuElem = this.activeMenu!.elem;
 
-        const containerRect = this.rootNode.wrapper.elem.parentElement!.getBoundingClientRect();
+        const containerRect = this.rootNode.wrapper.elem.getBoundingClientRect();
         const menuRect = menuElem.getBoundingClientRect();
 
         let style = "";

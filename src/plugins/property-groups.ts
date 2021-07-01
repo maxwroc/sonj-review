@@ -1,4 +1,3 @@
-
 import { IPlugin, IPluginContext } from "../plugins";
 import { injectCss } from "../helpers";
 import { $ } from "../mquery";

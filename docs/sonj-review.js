@@ -385,7 +385,7 @@ var SonjReview = (function (exports) {
          */
         adjustPosition() {
             const menuElem = this.activeMenu.elem;
-            const containerRect = this.rootNode.wrapper.elem.parentElement.getBoundingClientRect();
+            const containerRect = this.rootNode.wrapper.elem.getBoundingClientRect();
             const menuRect = menuElem.getBoundingClientRect();
             let style = "";
             if (menuRect.right >= containerRect.right) {
