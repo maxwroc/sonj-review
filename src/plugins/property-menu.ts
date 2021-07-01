@@ -7,11 +7,11 @@ import { JsonViewer } from "../json-viwer";
  * Plugin for menu rendered next to each property
  * @returns Menu plugin
  */
-export const propertyMenu = (): IPlugin => {
+export const propertyMenu = (menuItems: IPropertyMenuItem[] = []): IPlugin => {
 
     injectCss("propertyMenu", cssCode);
 
-    return new PropertyMenu();
+    return new PropertyMenu(menuItems);
 }
 
 /**
@@ -34,6 +34,7 @@ class PropertyMenu implements IPlugin {
 
         // adding default menu items
         if (menuItems.length == 0) {
+            this.menuItems.push(copyName);
             this.menuItems.push(copyValue);
             this.menuItems.push(copyFormattedValue);
         }
@@ -86,18 +87,18 @@ class PropertyMenu implements IPlugin {
         this.activeMenu = $("div").addClass("prop-menu");
 
         this.menuItems.forEach(item => {
-            if (!item.isVisible(context)) {
+            if (item.isHidden?.call(item, context)) {
                 return;
             }
 
-            const isEnabled = item.isEnabled(context);
+            const isDisabled = item.isDisabled?.call(item, context);
             $("div")
                 .text(item.text)
-                .addClass("prop-menu-item", isEnabled ? "enabled" : "disabled")
+                .addClass("prop-menu-item", isDisabled ? "disabled" : "enabled")
                 .on("click", evt => {
                     item.onClick(context);
                     evt.stopPropagation();
-                    isEnabled && this.closeActiveMenu();
+                    !isDisabled && this.closeActiveMenu();
                 })
                 .appendTo(this.activeMenu!)
             });
@@ -133,29 +134,39 @@ class PropertyMenu implements IPlugin {
     }
 }
 
+const copyName: IPropertyMenuItem = {
+    text: "Copy name",
+    onClick: context => {
+        navigator.clipboard.writeText(context.node.nodeName);
+    }
+};
 
 const copyValue: IPropertyMenuItem = {
     text: "Copy value",
-    isEnabled: context => true,
-    isVisible: context => true,
     onClick: context => {
         navigator.clipboard.writeText(context.node.isExpandable ? JSON.stringify(context.node.data) : context.node.data);
     }
-}
+};
 
 const copyFormattedValue: IPropertyMenuItem = {
     text: "Copy formatted JSON",
-    isEnabled: context => true,
-    isVisible: context => context.node.isExpandable,
+    isHidden: context => !context.node.isExpandable,
     onClick: context => {
         navigator.clipboard.writeText(context.node.isExpandable ? JSON.stringify(context.node.data, null, 2) : context.node.data);
     }
-}
+};
+
+
+/**
+ * Exposing menu items (they can be used with custom menu items)
+ */
+((<any>propertyMenu)["items"]) = { copyName, copyValue, copyFormattedValue };
+
 
 interface IPropertyMenuItem {
     text: string;
-    isEnabled: (context: IPluginContext) => boolean;
-    isVisible: (context: IPluginContext) => boolean;
+    isDisabled?: (context: IPluginContext) => boolean;
+    isHidden?: (context: IPluginContext) => boolean;
     onClick: (context: IPluginContext) => void;
 }
 

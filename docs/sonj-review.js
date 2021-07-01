@@ -300,9 +300,9 @@ var SonjReview = (function (exports) {
      * Plugin for menu rendered next to each property
      * @returns Menu plugin
      */
-    const propertyMenu = () => {
+    const propertyMenu = (menuItems = []) => {
         injectCss("propertyMenu", cssCode$2);
-        return new PropertyMenu();
+        return new PropertyMenu(menuItems);
     };
     /**
      * Plugin main class
@@ -313,6 +313,7 @@ var SonjReview = (function (exports) {
             document.body.addEventListener("click", () => this.closeActiveMenu());
             // adding default menu items
             if (menuItems.length == 0) {
+                this.menuItems.push(copyName);
                 this.menuItems.push(copyValue);
                 this.menuItems.push(copyFormattedValue);
             }
@@ -356,17 +357,18 @@ var SonjReview = (function (exports) {
             this.closeActiveMenu();
             this.activeMenu = $("div").addClass("prop-menu");
             this.menuItems.forEach(item => {
-                if (!item.isVisible(context)) {
+                var _a, _b;
+                if ((_a = item.isHidden) === null || _a === void 0 ? void 0 : _a.call(item, context)) {
                     return;
                 }
-                const isEnabled = item.isEnabled(context);
+                const isDisabled = (_b = item.isDisabled) === null || _b === void 0 ? void 0 : _b.call(item, context);
                 $("div")
                     .text(item.text)
-                    .addClass("prop-menu-item", isEnabled ? "enabled" : "disabled")
+                    .addClass("prop-menu-item", isDisabled ? "disabled" : "enabled")
                     .on("click", evt => {
                     item.onClick(context);
                     evt.stopPropagation();
-                    isEnabled && this.closeActiveMenu();
+                    !isDisabled && this.closeActiveMenu();
                 })
                     .appendTo(this.activeMenu);
             });
@@ -393,22 +395,29 @@ var SonjReview = (function (exports) {
             }
         }
     }
+    const copyName = {
+        text: "Copy name",
+        onClick: context => {
+            navigator.clipboard.writeText(context.node.nodeName);
+        }
+    };
     const copyValue = {
         text: "Copy value",
-        isEnabled: context => true,
-        isVisible: context => true,
         onClick: context => {
             navigator.clipboard.writeText(context.node.isExpandable ? JSON.stringify(context.node.data) : context.node.data);
         }
     };
     const copyFormattedValue = {
         text: "Copy formatted JSON",
-        isEnabled: context => true,
-        isVisible: context => context.node.isExpandable,
+        isHidden: context => !context.node.isExpandable,
         onClick: context => {
             navigator.clipboard.writeText(context.node.isExpandable ? JSON.stringify(context.node.data, null, 2) : context.node.data);
         }
     };
+    /**
+     * Exposing menu items (they can be used with custom menu items)
+     */
+    (propertyMenu["items"]) = { copyName, copyValue, copyFormattedValue };
     const cssCode$2 = `
 * {
     --soji-prop-menu-background: #fff;
