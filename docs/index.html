@@ -65,7 +65,7 @@
                         searchPlugin,
                         SonjReview.plugins.propertyGroups(10),
                         SonjReview.plugins.propertyTeaser({ properties: { names: ["fname", "sname", "email"], maxCount: 2 } }),
-                        SonjReview.plugins.truncate(),
+                        SonjReview.plugins.truncate({ showLength: true, enableShowFull: true }),
                         SonjReview.plugins.propertyMenu(),
                     ]
                     );

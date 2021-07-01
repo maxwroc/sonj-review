@@ -7,6 +7,8 @@
     --sonj-prop-type-number: #1C00CF;
     --sonj-prop-type-undefined: #444444;
     --sonj-arrow-color: #727272;
+    --sonj-secondary-bgcolor: #dcdcdc;
+    --sonj-secondary-color: #616161;
     /*sizes*/
     --sonj-prop-indent: 12px; 
 }
@@ -66,4 +68,10 @@
     transform: rotate(0);
     left: -12px;
     top: 6px;
+}
+.prop-pill {
+    background-color: var(--sonj-secondary-bgcolor);
+    color: var(--sonj-secondary-color);
+    border-radius: 5px;
+    padding: 0 5px;
 }

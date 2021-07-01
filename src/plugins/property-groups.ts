@@ -46,7 +46,7 @@ export const propertyGroups = (maxPropertiesCount: number): IPlugin => {
                 // group clickable element / button
                 $("span")
                     .text(`${groupStart + 1} - ${groupStart + propsToRenderInGroup.length}`)
-                    .addClass("prop-group")
+                    .addClass("prop-group", "prop-pill")
                     .on("click", () => {
                         // removing group button
                         wrapper.empty();
@@ -66,13 +66,7 @@ export const propertyGroups = (maxPropertiesCount: number): IPlugin => {
 
 const cssCode = `
 .prop-group {
-    --sonj-group-bgcolor: #dcdcdc;
-    --sonj-group-color: #616161;
-    background-color: var(--sonj-group-bgcolor);
-    border-radius: 5px;
-    padding: 0 5px;
     margin: 2px 0 0 var(--sonj-prop-indent);
-    color: var(--sonj-group-color);
     display: inline-block;
     white-space: nowrap;
 }

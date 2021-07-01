@@ -3,8 +3,13 @@ export class MiniQuery {
 
     public elem: HTMLElement; 
 
-    constructor(input: string) {
-        this.elem = document.createElement(input);
+    constructor(input: string | HTMLElement) {
+        if (typeof(input) == "string") {
+            this.elem = document.createElement(input);
+        }
+        else {
+            this.elem = input;
+        }
     }
 
     attr(name: string, value: string) {
@@ -62,4 +67,4 @@ export class MiniQuery {
     }
 }
 
-export const $ = (input: string) => new MiniQuery(input);
+export const $ = (input: string | HTMLElement) => new MiniQuery(input);
