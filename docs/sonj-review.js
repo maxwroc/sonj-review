@@ -297,20 +297,25 @@ var SonjReview = (function (exports) {
 `;
 
     /**
-     * Plugin for auto-expanding nodes
-     * @param depth Maxmal depth to expand nodes
-     * @returns
+     * Plugin for menu rendered next to each property
+     * @returns Menu plugin
      */
     const propertyMenu = () => {
         injectCss("propertyMenu", cssCode$2);
         return new PropertyMenu();
     };
+    /**
+     * Plugin main class
+     */
     class PropertyMenu {
-        constructor() {
-            this.menuItems = [];
+        constructor(menuItems = []) {
+            this.menuItems = menuItems;
             document.body.addEventListener("click", () => this.closeActiveMenu());
-            this.menuItems.push(copyValue);
-            this.menuItems.push(copyFormattedValue);
+            // adding default menu items
+            if (menuItems.length == 0) {
+                this.menuItems.push(copyValue);
+                this.menuItems.push(copyFormattedValue);
+            }
         }
         nodeInit(context) {
             if (this.rootNode == null) {
@@ -326,8 +331,11 @@ var SonjReview = (function (exports) {
                 .addClass("prop-menu-wrapper")
                 .append(btn)
                 .appendTo(context.node.header);
-            btn.on("click", evt => this.onButtonClick(evt, menuWrapper, context));
+            btn.on("click", evt => this.renderMenu(evt, menuWrapper, context));
         }
+        /**
+         * Closes currently opened menu
+         */
         closeActiveMenu() {
             var _a;
             if (!this.activeMenu) {
@@ -337,7 +345,13 @@ var SonjReview = (function (exports) {
             this.activeMenu.remove();
             this.activeMenu = undefined;
         }
-        onButtonClick(evt, wrapper, context) {
+        /**
+         * Renders menu
+         * @param evt Mouse event from menu button click
+         * @param wrapper Menu wrapper
+         * @param context Context for current node
+         */
+        renderMenu(evt, wrapper, context) {
             evt.stopPropagation();
             this.closeActiveMenu();
             this.activeMenu = $("div").addClass("prop-menu");
@@ -360,6 +374,9 @@ var SonjReview = (function (exports) {
             wrapper.addClass("prop-menu-open");
             this.adjustPosition();
         }
+        /**
+         * Adjusts menu position to make sure it is visible
+         */
         adjustPosition() {
             const menuElem = this.activeMenu.elem;
             const containerRect = this.rootNode.wrapper.elem.parentElement.getBoundingClientRect();

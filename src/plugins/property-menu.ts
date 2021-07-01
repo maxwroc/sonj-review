@@ -4,9 +4,8 @@ import { $, MiniQuery } from "../mquery";
 import { JsonViewer } from "../json-viwer";
 
 /**
- * Plugin for auto-expanding nodes
- * @param depth Maxmal depth to expand nodes
- * @returns 
+ * Plugin for menu rendered next to each property
+ * @returns Menu plugin
  */
 export const propertyMenu = (): IPlugin => {
 
@@ -15,19 +14,29 @@ export const propertyMenu = (): IPlugin => {
     return new PropertyMenu();
 }
 
+/**
+ * Plugin main class
+ */
 class PropertyMenu implements IPlugin {
 
+    /**
+     * Currently visible menu (it can be the only one)
+     */
     private activeMenu: MiniQuery | undefined;
 
+    /**
+     * Root node
+     */
     private rootNode: JsonViewer;
 
-    private menuItems: IPropertyMenuItem[] = [];
-
-    constructor() {
+    constructor(private menuItems: IPropertyMenuItem[] = []) {
         document.body.addEventListener("click", () => this.closeActiveMenu());
 
-        this.menuItems.push(copyValue);
-        this.menuItems.push(copyFormattedValue);
+        // adding default menu items
+        if (menuItems.length == 0) {
+            this.menuItems.push(copyValue);
+            this.menuItems.push(copyFormattedValue);
+        }
     }
 
     nodeInit(context: IPluginContext) {
@@ -47,9 +56,12 @@ class PropertyMenu implements IPlugin {
             .append(btn)
             .appendTo(context.node.header);
 
-        btn.on("click", evt => this.onButtonClick(evt as MouseEvent, menuWrapper, context));
+        btn.on("click", evt => this.renderMenu(evt as MouseEvent, menuWrapper, context));
     }
 
+    /**
+     * Closes currently opened menu
+     */
     private closeActiveMenu() {
         if (!this.activeMenu) {
             return;
@@ -60,7 +72,13 @@ class PropertyMenu implements IPlugin {
         this.activeMenu = undefined;
     }
 
-    private onButtonClick(evt: MouseEvent, wrapper: MiniQuery, context: IPluginContext) {
+    /**
+     * Renders menu
+     * @param evt Mouse event from menu button click
+     * @param wrapper Menu wrapper
+     * @param context Context for current node
+     */
+    private renderMenu(evt: MouseEvent, wrapper: MiniQuery, context: IPluginContext) {
         evt.stopPropagation();
 
         this.closeActiveMenu();
@@ -91,6 +109,9 @@ class PropertyMenu implements IPlugin {
         this.adjustPosition();
     }
 
+    /**
+     * Adjusts menu position to make sure it is visible
+     */
     private adjustPosition() {
         const menuElem = this.activeMenu!.elem;
 
