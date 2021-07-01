@@ -23,6 +23,7 @@
 }
 .prop-header {
     position: relative;
+    display: inline-block;
     white-space: nowrap;
 }
 .prop-separator {
