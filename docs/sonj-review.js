@@ -305,57 +305,18 @@ var SonjReview = (function (exports) {
         injectCss("propertyMenu", cssCode$2);
         return new PropertyMenu();
     };
-    const cssCode$2 = `
-* {
-    --soji-prop-menu-background: #fff;
-    --soji-prop-menu-border: #727272;
-    --soji-prop-menu-active: #dcdcdc;
-}
-.prop-menu-wrapper {
-    display: inline-block;
-    position: relative;
-}
-.prop-menu-button {
-    border-radius: 5px;
-    padding: 0 5px;
-    margin: 0 5px;
-    opacity: 0;
-    transition: opacity 0.5s;
-    cursor: pointer;
-}
-.prop-header:hover .prop-menu-button {
-    opacity: 1;
-}
-.prop-header .prop-menu-button:hover,
-.prop-menu-open .prop-menu-button {
-    border: 1px solid var(--soji-prop-menu-border);
-    background-color: var(--soji-prop-menu-active);
-    opacity: 1;
-}
-.prop-menu {
-    left: 5px;
-    position: absolute;
-    z-index: 1000;
-    border-radius: 5px;
-    overflow: hidden;
-    background-color: var(--soji-prop-menu-background);
-    border: 1px solid var(--soji-prop-menu-border);
-}
-.prop-menu-item {
-    padding: 0 5px;
-}
-.prop-menu-item.enabled:hover {
-    background-color: var(--soji-prop-menu-active);
-    color: black;
-    cursor: pointer;
-}
-`;
     class PropertyMenu {
         constructor() {
             this.menuItems = [];
             document.body.addEventListener("click", () => this.closeActiveMenu());
             this.menuItems.push(copyValue);
             this.menuItems.push(copyFormattedValue);
+        }
+        nodeInit(context) {
+            if (this.rootNode == null) {
+                // the first one is the root one
+                this.rootNode = context.node;
+            }
         }
         afterRender(context) {
             const btn = $("span")
@@ -381,6 +342,9 @@ var SonjReview = (function (exports) {
             this.closeActiveMenu();
             this.activeMenu = $("div").addClass("prop-menu");
             this.menuItems.forEach(item => {
+                if (!item.isVisible(context)) {
+                    return;
+                }
                 const isEnabled = item.isEnabled(context);
                 $("div")
                     .text(item.text)
@@ -394,24 +358,84 @@ var SonjReview = (function (exports) {
             });
             this.activeMenu.appendTo(wrapper);
             wrapper.addClass("prop-menu-open");
+            this.adjustPosition();
+        }
+        adjustPosition() {
+            const menuElem = this.activeMenu.elem;
+            const containerRect = this.rootNode.wrapper.elem.parentElement.getBoundingClientRect();
+            const menuRect = menuElem.getBoundingClientRect();
+            let style = "";
+            if (menuRect.right >= containerRect.right) {
+                style += "left: auto; right: 0;";
+            }
+            if (menuRect.bottom >= containerRect.bottom) {
+                style += `bottom: ${menuRect.top - menuElem.parentElement.getBoundingClientRect().top}px;`;
+            }
+            if (style != "") {
+                this.activeMenu.attr("style", style);
+            }
         }
     }
     const copyValue = {
         text: "Copy value",
         isEnabled: context => true,
+        isVisible: context => true,
         onClick: context => {
             navigator.clipboard.writeText(context.node.isExpandable ? JSON.stringify(context.node.data) : context.node.data);
         }
     };
     const copyFormattedValue = {
-        text: "Copy formatted value",
-        isEnabled: context => {
-            return context.node.isExpandable;
-        },
+        text: "Copy formatted JSON",
+        isEnabled: context => true,
+        isVisible: context => context.node.isExpandable,
         onClick: context => {
             navigator.clipboard.writeText(context.node.isExpandable ? JSON.stringify(context.node.data, null, 2) : context.node.data);
         }
     };
+    const cssCode$2 = `
+* {
+    --soji-prop-menu-background: #fff;
+    --soji-prop-menu-border: #b1b1b1;
+    --soji-prop-menu-active: #dcdcdc;
+}
+.prop-menu-wrapper {
+    display: inline-block;
+    position: relative;
+    margin-left: 5px;
+}
+.prop-menu-button {
+    border-radius: 5px;
+    padding: 0 5px;
+    opacity: 0;
+    transition: opacity 0.5s;
+    cursor: pointer;
+}
+.prop-header:hover .prop-menu-button {
+    opacity: 1;
+}
+.prop-header .prop-menu-button:hover,
+.prop-menu-open .prop-menu-button {
+    border: 1px solid var(--soji-prop-menu-border);
+    background-color: var(--soji-prop-menu-active);
+    opacity: 1;
+}
+.prop-menu {
+    position: absolute;
+    z-index: 1000;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: var(--soji-prop-menu-background);
+    border: 1px solid var(--soji-prop-menu-border);
+}
+.prop-menu-item {
+    padding: 2px 5px;
+}
+.prop-menu-item.enabled:hover {
+    background-color: var(--soji-prop-menu-active);
+    color: black;
+    cursor: pointer;
+}
+`;
 
     const search = (data) => {
         let rootNode = null;
