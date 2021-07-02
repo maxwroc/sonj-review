@@ -2,11 +2,6 @@ import { IPlugin, IPluginContext } from "../plugins";
 import { $ } from "../mquery";
 import { injectCss } from "../helpers";
 
-let defaultOptions: ITruncateOptions = {
-    maxNameLength: 20,
-    maxValueLength: 40,
-}
-
 /**
  * Plugin for truncating long node name and/or value
  * @param options Plugin options
@@ -50,25 +45,34 @@ export const truncate = (options: ITruncateOptions): IPlugin => {
             }
 
             if (context.fullValueLength) {
-                addLengthInfoPill(context, ".prop-value", context.fullValueLength);
+                addLengthInfoPill(context, false, context.fullValueLength, options.enableShowFull);
             }
 
             if (context.fullNameLength) {
-                addLengthInfoPill(context, ".prop-name", context.fullNameLength);
+                addLengthInfoPill(context, true, context.fullNameLength, options.enableShowFull);
             }
 
         }
     }
 }
 
-function addLengthInfoPill(context: IPluginContext, targetElemSelector: string, length: number) {
-    const targetElem = $(context.node.header.elem.querySelector(targetElemSelector) as HTMLElement);
+function addLengthInfoPill(context: IPluginContext, isNameElement: boolean, length: number, enableShowingFull: boolean | string | undefined) {
+    const targetElem = $(context.node.header.elem.querySelector(isNameElement ? ".prop-name" : ".prop-value") as HTMLElement);
     targetElem.addClass("prop-truncated");
 
-    return $("span")
+    const pill = $("span")
         .addClass("prop-pill", "prop-length")
         .text(formatBytes(length))
         .appendTo(targetElem);
+
+    if (enableShowingFull) {
+        pill
+            .addClass("prop-clickable")
+            .attr("title", typeof(enableShowingFull) == "string" ? enableShowingFull : "Show full value")
+            .on("click", () => {
+                targetElem.empty().text(isNameElement ? context.node.nodeName : context.node.data)
+            });
+    }
 }
 
 function formatBytes(bytes: number, decimals = 1): string {
@@ -118,7 +122,7 @@ export interface ITruncateOptions {
     /**
      * Whether to make length info button clickable
      */
-    //enableShowFull?: boolean;
+    enableShowFull?: boolean | string;
 }
 
 interface ITruncateContext extends IPluginContext {

@@ -581,21 +581,29 @@ var SonjReview = (function (exports) {
                     return;
                 }
                 if (context.fullValueLength) {
-                    addLengthInfoPill(context, ".prop-value", context.fullValueLength);
+                    addLengthInfoPill(context, false, context.fullValueLength, options.enableShowFull);
                 }
                 if (context.fullNameLength) {
-                    addLengthInfoPill(context, ".prop-name", context.fullNameLength);
+                    addLengthInfoPill(context, true, context.fullNameLength, options.enableShowFull);
                 }
             }
         };
     };
-    function addLengthInfoPill(context, targetElemSelector, length) {
-        const targetElem = $(context.node.header.elem.querySelector(targetElemSelector));
+    function addLengthInfoPill(context, isNameElement, length, enableShowingFull) {
+        const targetElem = $(context.node.header.elem.querySelector(isNameElement ? ".prop-name" : ".prop-value"));
         targetElem.addClass("prop-truncated");
-        return $("span")
+        const pill = $("span")
             .addClass("prop-pill", "prop-length")
             .text(formatBytes(length))
             .appendTo(targetElem);
+        if (enableShowingFull) {
+            pill
+                .addClass("prop-clickable")
+                .attr("title", typeof (enableShowingFull) == "string" ? enableShowingFull : "Show full value")
+                .on("click", () => {
+                targetElem.empty().text(isNameElement ? context.node.nodeName : context.node.data);
+            });
+        }
     }
     function formatBytes(bytes, decimals = 1) {
         if (bytes === 0)
@@ -634,7 +642,7 @@ var SonjReview = (function (exports) {
 
     var e=[],t=[];function n(n,r){if(n&&"undefined"!=typeof document){var a,s=!0===r.prepend?"prepend":"append",d=!0===r.singleTag,i="string"==typeof r.container?document.querySelector(r.container):document.getElementsByTagName("head")[0];if(d){var u=e.indexOf(i);-1===u&&(u=e.push(i)-1,t[u]={}),a=t[u]&&t[u][s]?t[u][s]:t[u][s]=c();}else a=c();65279===n.charCodeAt(0)&&(n=n.substring(1)),a.styleSheet?a.styleSheet.cssText+=n:a.appendChild(document.createTextNode(n));}function c(){var e=document.createElement("style");if(e.setAttribute("type","text/css"),r.attributes)for(var t=Object.keys(r.attributes),n=0;n<t.length;n++)e.setAttribute(t[n],r.attributes[t[n]]);var a="prepend"===s?"afterbegin":"beforeend";return i.insertAdjacentElement(a,e),e}}
 
-    var css = "\r\n\r\n* {\r\n    /*colors*/\r\n    --sonj-prop-name: #b863bf;\r\n    --sonj-prop-type-string: #C41A16;\r\n    --sonj-prop-type-number: #1C00CF;\r\n    --sonj-prop-type-undefined: #444444;\r\n    --sonj-arrow-color: #727272;\r\n    --sonj-secondary-bgcolor: #dcdcdc;\r\n    --sonj-secondary-color: #616161;\r\n    /*sizes*/\r\n    --sonj-prop-indent: 12px; \r\n}\r\n\r\n.sonj-container {\r\n    overflow: hidden;\r\n    overflow-x: auto;\r\n}\r\n\r\n.prop-wrapper {\r\n    padding-left: var(--sonj-prop-indent);\r\n    cursor: default;\r\n    font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Liberation Sans\", sans-serif;\r\n    font-size: 14px;\r\n}\r\n.prop-header {\r\n    position: relative;\r\n    display: inline-block;\r\n    white-space: nowrap;\r\n}\r\n.prop-separator {\r\n    margin-right: 5px;\r\n}\r\n.prop-name {\r\n    color: var(--sonj-prop-name);\r\n}\r\n\r\n.prop-value.prop-type-string {\r\n    color: var(--sonj-prop-type-string);\r\n}\r\n.prop-value.prop-type-string::before {\r\n    content: '\"';\r\n}\r\n.prop-value.prop-type-string::after {\r\n    content: '\"';\r\n}\r\n.prop-value.prop-type-bigint,\r\n.prop-value.prop-type-number {\r\n    color: var(--sonj-prop-type-number);\r\n}\r\n.prop-value.prop-type-undefined,\r\n.prop-value.prop-type-object {\r\n    color: var(--sonj-prop-type-undefined);\r\n    font-style: italic;\r\n}\r\n.prop-expand {\r\n    position: absolute;\r\n    border: 4px solid transparent;\r\n    border-top: 6px solid var(--sonj-arrow-color);\r\n    height: 0;\r\n    width: 0;\r\n    left: -10px;\r\n    top: 4px;\r\n    transform: rotate(-90deg);\r\n}\r\n.prop-expanded > * > .prop-expand {\r\n    transform: rotate(0);\r\n    left: -12px;\r\n    top: 6px;\r\n}\r\n.prop-pill {\r\n    background-color: var(--sonj-secondary-bgcolor);\r\n    color: var(--sonj-secondary-color);\r\n    border-radius: 5px;\r\n    padding: 0 5px;\r\n}";
+    var css = "\r\n\r\n* {\r\n    /*colors*/\r\n    --sonj-prop-name: #b863bf;\r\n    --sonj-prop-type-string: #C41A16;\r\n    --sonj-prop-type-number: #1C00CF;\r\n    --sonj-prop-type-undefined: #444444;\r\n    --sonj-arrow-color: #727272;\r\n    --sonj-secondary-bgcolor: #dcdcdc;\r\n    --sonj-secondary-color: #616161;\r\n    /*sizes*/\r\n    --sonj-prop-indent: 12px; \r\n}\r\n\r\n.sonj-container {\r\n    overflow: hidden;\r\n    overflow-x: auto;\r\n}\r\n\r\n.prop-wrapper {\r\n    padding-left: var(--sonj-prop-indent);\r\n    cursor: default;\r\n    font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Liberation Sans\", sans-serif;\r\n    font-size: 14px;\r\n}\r\n.prop-header {\r\n    position: relative;\r\n    display: inline-block;\r\n    white-space: nowrap;\r\n}\r\n.prop-separator {\r\n    margin-right: 5px;\r\n}\r\n.prop-name {\r\n    color: var(--sonj-prop-name);\r\n}\r\n\r\n.prop-value.prop-type-string {\r\n    color: var(--sonj-prop-type-string);\r\n}\r\n.prop-value.prop-type-string::before {\r\n    content: '\"';\r\n}\r\n.prop-value.prop-type-string::after {\r\n    content: '\"';\r\n}\r\n.prop-value.prop-type-bigint,\r\n.prop-value.prop-type-number {\r\n    color: var(--sonj-prop-type-number);\r\n}\r\n.prop-value.prop-type-undefined,\r\n.prop-value.prop-type-object {\r\n    color: var(--sonj-prop-type-undefined);\r\n    font-style: italic;\r\n}\r\n.prop-expand {\r\n    position: absolute;\r\n    border: 4px solid transparent;\r\n    border-top: 6px solid var(--sonj-arrow-color);\r\n    height: 0;\r\n    width: 0;\r\n    left: -10px;\r\n    top: 4px;\r\n    transform: rotate(-90deg);\r\n}\r\n.prop-expanded > * > .prop-expand {\r\n    transform: rotate(0);\r\n    left: -12px;\r\n    top: 6px;\r\n}\r\n.prop-pill {\r\n    background-color: var(--sonj-secondary-bgcolor);\r\n    color: var(--sonj-secondary-color);\r\n    border-radius: 5px;\r\n    padding: 0 5px;\r\n}\r\n\r\n.prop-clickable {\r\n    cursor: pointer;\r\n}";
     n(css,{});
 
     exports.JsonViewer = JsonViewer;
