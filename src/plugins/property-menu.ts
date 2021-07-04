@@ -173,9 +173,10 @@ interface IPropertyMenuItem {
 
 const cssCode = `
 * {
-    --soji-prop-menu-background: #fff;
-    --soji-prop-menu-border: #b1b1b1;
-    --soji-prop-menu-active: #dcdcdc;
+    --sonj-prop-menu-background: var(--sonj-primary-bgcolor);
+    --sonj-prop-menu-border: var(--sonj-secondary-bgcolor);
+    --sonj-prop-menu-active: var(--sonj-secondary-bgcolor);
+    --sonj-prop-menu-active-color: #000;
 }
 .prop-menu-wrapper {
     display: inline-block;
@@ -194,24 +195,25 @@ const cssCode = `
 }
 .prop-header .prop-menu-button:hover,
 .prop-menu-open .prop-menu-button {
-    border: 1px solid var(--soji-prop-menu-border);
-    background-color: var(--soji-prop-menu-active);
+    border: 0px solid var(--sonj-prop-menu-border);
+    background-color: var(--sonj-prop-menu-active);
     opacity: 1;
 }
 .prop-menu {
+    color: var(--sonj-secondary-color);
     position: absolute;
     z-index: 1000;
     border-radius: 5px;
     overflow: hidden;
-    background-color: var(--soji-prop-menu-background);
-    border: 1px solid var(--soji-prop-menu-border);
+    background-color: var(--sonj-prop-menu-background);
+    border: 1px solid var(--sonj-prop-menu-border);
 }
 .prop-menu-item {
     padding: 2px 5px;
 }
 .prop-menu-item.enabled:hover {
-    background-color: var(--soji-prop-menu-active);
-    color: black;
+    background-color: var(--sonj-prop-menu-active);
+    color: var(--sonj-prop-menu-active-color);
     cursor: pointer;
 }
 `;

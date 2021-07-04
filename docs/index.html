@@ -2,13 +2,25 @@
     <head>
         <title>Sonj Review</title>
         <style type="text/css">
+
+
+            * {
+                --primary-color: #f0f0f0;
+                --secondary-color: #d6d6d6;
+                --primary-bgcolor: #333;
+                --secondary-bgcolor: #222;
+            }
+
+            .container {
+                border-radius: 10px;
+                padding: 10px;
+                margin: 20px;
+            }
+
             #json-content,
             #search-box-container {
                 background-color: white;
-                border-radius: 10px;
                 border: 1px solid #000;
-                padding: 10px;
-                margin: 20px;
                 max-width: 500px;
             }
             #search-box-container input {
@@ -17,64 +29,129 @@
                 padding: 5px;
                 outline: 0px solid;
             }
+
+            body {
+                background: var(--primary-bgcolor);
+                color: var(--secondary-color);
+                display: flex;
+                justify-content: center;
+                font-size: 16px; 
+                padding: 10px;
+            }
+
+            #header {
+                color: var(--primary-color);
+                font-size: 20px;
+                white-space: nowrap;
+                text-shadow: 0 2px 2px rgba(#000, 0.9);
+                padding: 10px;
+                margin: 20px;
+            }
+
+            #main-container {
+                display: flex;
+            }
+
+            #info-container {
+                font-family: monospace;
+            }
+
+            h1 {
+                font-size: inherit;
+            }
+            h2 {
+                color: var(--primary-color);
+                font-size: 120%;
+                border-top: 1px solid rgb(59, 59, 59);
+                padding-top: 15px;
+                margin-top: 20px;
+            }
+
+            .input-field,
+            .plugin {
+                border-radius: 10px;
+                padding: 10px;
+                background-color: var(--secondary-bgcolor);
+            }
+            .input-field input {
+                background-color: var(--secondary-bgcolor);
+                color: var(--secondary-color);
+                width: 100%;
+                border: 0;
+            }
+            .input-field input:focus {
+                outline: none;
+            }
+            .plugin {
+                margin-bottom: 10px;
+            }
+            .plugin .name {
+                cursor: pointer;
+            }
+            .plugin .name input[type=checkbox] {
+                float: right;
+            }
         </style>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
+        <script src="scramble.js"></script>
         <script src="sonj-review.js"></script>
-        <script>
-            let data = {
-                arrayOfObjects: [
-                    {
-                        id: 1,
-                        name: "object 1"
-                    },
-                    {
-                        id: 2,
-                        name: "object 2"
-                    }
-                ],
-                arrayOfNumbers: [1,2,3,4,5],
-                arrayOfStrings: ["lorem", "ipsum", "dolor", "sit", "amet"],
-                lotOfElements: ["Lorem", "ipsum", "dolor", "sit", "amet,", "consectetur", "adipiscing", "elit,", "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua.", "Ut", "enim", "ad", "minim", "veniam,", "quis", "nostrud", "exercitation", "ullamco", "laboris", "nisi", "ut", "aliquip", "ex", "ea", "commodo", "consequat.", "Duis", "aute", "irure", "dolor", "in", "reprehenderit", "in", "voluptate", "velit", "esse", "cillum", "dolore", "eu", "fugiat", "nulla", "pariatur.", "Excepteur", "sint", "occaecat", "cupidatat", "non", "proident,", "sunt", "in", "culpa", "qui", "officia", "deserunt", "mollit", "anim", "id", "est", "laborum"],
-                lotOfProperties: {"Lorem":{"test":1,"number":2},"ipsum":{"test":1,"number":2},"dolor":{"test":1,"number":2},"sit":{"test":1,"number":2},"amet":{"test":1,"number":2},"consectetur":{"test":1,"number":2},"adipiscing":{"test":1,"number":2},"elit,":{"test":1,"number":2},"sed":{"test":1,"number":2},"do":{"test":1,"number":2},"eiusmod":{"test":1,"number":2},"tempor":{"test":1,"number":2},"incididunt":{"test":1,"number":2},"ut":{"test":1,"number":2},"labore":{"test":1,"number":2},"et":{"test":1,"number":2},"dolore":{"test":1,"number":2},"magna":{"test":1,"number":2},"aliqua.":{"test":1,"number":2},"Ut":{"test":1,"number":2},"enim":{"test":1,"number":2},"ad":{"test":1,"number":2},"minim":{"test":1,"number":2},"veniam,":{"test":1,"number":2},"quis":{"test":1,"number":2},"nostrud":{"test":1,"number":2},"exercitation":{"test":1,"number":2},"ullamco":{"test":1,"number":2},"laboris":{"test":1,"number":2},"nisi":{"test":1,"number":2},"aliquip":{"test":1,"number":2},"ex":{"test":1,"number":2},"ea":{"test":1,"number":2},"commodo":{"test":1,"number":2},"consequat.":{"test":1,"number":2},"Duis":{"test":1,"number":2},"aute":{"test":1,"number":2},"irure":{"test":1,"number":2},"in":{"test":1,"number":2},"reprehenderit":{"test":1,"number":2},"voluptate":{"test":1,"number":2},"velit":{"test":1,"number":2},"esse":{"test":1,"number":2},"cillum":{"test":1,"number":2},"eu":{"test":1,"number":2},"fugiat":{"test":1,"number":2},"nulla":{"test":1,"number":2},"pariatur.":{"test":1,"number":2},"Excepteur":{"test":1,"number":2},"sint":{"test":1,"number":2},"occaecat":{"test":1,"number":2},"cupidatat":{"test":1,"number":2},"non":{"test":1,"number":2},"proident,":{"test":1,"number":2},"sunt":{"test":1,"number":2},"culpa":{"test":1,"number":2},"qui":{"test":1,"number":2},"officia":{"test":1,"number":2},"deserunt":{"test":1,"number":2},"mollit":{"test":1,"number":2},"anim":{"test":1,"number":2},"id":{"test":1,"number":2},"est":{"test":1,"number":2},"laborum":{"test":1,"number":2}},
-                objects: [
-                    { fname: "John", sname: "Morrison", email: "johny@contoso.com", jobTitle: "Product Manager", manager: "Wendy Jones" },
-                    { fname: "Wendy", sname: "Jones", email: "wendy@contoso.com", jobTitle: "CEO", manager: null },
-                    { fname: "Lisa", email: "lisa@contoso.com", jobTitle: "Business Admin", manager: "Wendy Jones" },
-                ],
-                longStrings: {
-                    "veryLongPropertyNameWhichShouldBeTruncatedAtSomePointAsOtherwiseItIsHardToReadJsonOutput": "thisIsValueWhichIsEvenLongerThanPropertyNameAndAsWellItShouldBeTruncatedAtSomePointItIsVeryCommonThatValuesCanBeVeryLongAndThisCanBreakTheView",
-                    "valueContaining\nNewLines": "every\nline\nis\nimportant"
-                }
-            };
-
-            window.addEventListener("load", () => {
-
-                const searchPlugin = SonjReview.plugins.search(data);
-
-                const searchInput = document.getElementById("search-box");
-                searchInput.addEventListener("keyup", evt => {
-                    if (evt.keyCode == 13) {
-                        searchPlugin.query(searchInput.value);
-                    }
-                });
-
-                let jsonViewer = new SonjReview.JsonViewer(
-                    data, 
-                    "root",
-                    [
-                        SonjReview.plugins.autoExpand(2),
-                        searchPlugin,
-                        SonjReview.plugins.propertyGroups(10),
-                        SonjReview.plugins.propertyTeaser({ properties: { names: ["fname", "sname", "email"], maxCount: 2 } }),
-                        SonjReview.plugins.truncate({ showLength: true, enableShowFull: true }),
-                        SonjReview.plugins.propertyMenu(),
-                    ]
-                    );
-                jsonViewer.render("json-content");
-            });
-        </script>
+        <script src="index.js"></script>
     </head>
-    <body style="background-color: #333; color: gray; font-size: 16px; padding: 10px;">
-        <div id="search-box-container"><input type="text" id="search-box" placeholder="Type a query and hit enter"/></div>
-        <div id="json-content" class="sonj-container"></div>
+    <body>
+        <div id="main-container">
+            <div id="info-container">
+                <div id="header" class="container"><span data-rotate="json,sonj"></span>-<span data-rotate="viewer,review"></span></div>
+                <div class="content container">
+                    <h1>Yet another JSON viewer</h1>
+                    <h2>Features</h2>
+                    <ul>
+                        <li>View any size of JSON as long your browser can parse/load it</li>
+                        <li>Easy to extend functionality</li>
+                        <li>Easy to adjust appearance / CSS</li>
+                        <li>Built-in plugins
+                            <ul>
+                                <li>Search</li>
+                                <li>Teaser</li>
+                                <li>Auto expand</li>
+                                <li>Groups</li>
+                                <li>Truncate</li>
+                                <li>Actions menu</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    
+                    <h2>Try it yourself</h2>
+                    <div class="input-field"><input type="text" placeholder="Paste custom JSON here" id="custom-json" /></div>
+
+                    <p>Plugins</p>
+                    <div class="plugin">
+                        <div class="name">Search<input type="checkbox" checked="checked" data-plugin="search" /></div>
+                    </div>
+                    <div class="plugin">
+                        <div class="name">Teaser<input type="checkbox" checked="checked" data-plugin="teaser" /></div>
+                    </div>
+                    <div class="plugin">
+                        <div class="name">Auto expand<input type="checkbox" checked="checked" data-plugin="auto-expand" /></div>
+                    </div>
+                    <div class="plugin">
+                        <div class="name">Groups<input type="checkbox" checked="checked" data-plugin="groups" /></div>
+                    </div>
+                    <div class="plugin">
+                        <div class="name">Truncate<input type="checkbox" checked="checked" data-plugin="truncate" /></div>
+                    </div>
+                    <div class="plugin">
+                        <div class="name">Actions menu<input type="checkbox" checked="checked" data-plugin="actions-menu" /></div>
+                    </div>
+
+                    <h2>Info</h2>
+                    <p></p>
+                    <p>Default theme is based on the chrome dev tools JSON colors.</p>
+                </div>
+            </div>
+            <div id="demo-container">
+                <div id="search-box-container" class="container"><input type="text" id="search-box" placeholder="Type a query and hit enter"/></div>
+                <div id="json-content" class="container sonj-container"></div>
+            </div>
+        </div>
     </body>    
 </html>

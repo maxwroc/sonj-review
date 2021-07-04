@@ -1,7 +1,7 @@
 {
   "name": "sonj-review",
   "version": "0.1.0",
-  "description": "Typescript project boilerplate",
+  "description": "Extensible JSON Viewer",
   "main": "dist/sonj-review.js",
   "exportVar": "SonjReview",
   "type": "module",

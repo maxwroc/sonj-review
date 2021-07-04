@@ -423,9 +423,10 @@ var SonjReview = (function (exports) {
     (propertyMenu["items"]) = { copyName, copyValue, copyFormattedValue };
     const cssCode$2 = `
 * {
-    --soji-prop-menu-background: #fff;
-    --soji-prop-menu-border: #b1b1b1;
-    --soji-prop-menu-active: #dcdcdc;
+    --sonj-prop-menu-background: var(--sonj-primary-bgcolor);
+    --sonj-prop-menu-border: var(--sonj-secondary-bgcolor);
+    --sonj-prop-menu-active: var(--sonj-secondary-bgcolor);
+    --sonj-prop-menu-active-color: #000;
 }
 .prop-menu-wrapper {
     display: inline-block;
@@ -444,24 +445,25 @@ var SonjReview = (function (exports) {
 }
 .prop-header .prop-menu-button:hover,
 .prop-menu-open .prop-menu-button {
-    border: 1px solid var(--soji-prop-menu-border);
-    background-color: var(--soji-prop-menu-active);
+    border: 0px solid var(--sonj-prop-menu-border);
+    background-color: var(--sonj-prop-menu-active);
     opacity: 1;
 }
 .prop-menu {
+    color: var(--sonj-secondary-color);
     position: absolute;
     z-index: 1000;
     border-radius: 5px;
     overflow: hidden;
-    background-color: var(--soji-prop-menu-background);
-    border: 1px solid var(--soji-prop-menu-border);
+    background-color: var(--sonj-prop-menu-background);
+    border: 1px solid var(--sonj-prop-menu-border);
 }
 .prop-menu-item {
     padding: 2px 5px;
 }
 .prop-menu-item.enabled:hover {
-    background-color: var(--soji-prop-menu-active);
-    color: black;
+    background-color: var(--sonj-prop-menu-active);
+    color: var(--sonj-prop-menu-active-color);
     cursor: pointer;
 }
 `;
@@ -642,7 +644,7 @@ var SonjReview = (function (exports) {
 
     var e=[],t=[];function n(n,r){if(n&&"undefined"!=typeof document){var a,s=!0===r.prepend?"prepend":"append",d=!0===r.singleTag,i="string"==typeof r.container?document.querySelector(r.container):document.getElementsByTagName("head")[0];if(d){var u=e.indexOf(i);-1===u&&(u=e.push(i)-1,t[u]={}),a=t[u]&&t[u][s]?t[u][s]:t[u][s]=c();}else a=c();65279===n.charCodeAt(0)&&(n=n.substring(1)),a.styleSheet?a.styleSheet.cssText+=n:a.appendChild(document.createTextNode(n));}function c(){var e=document.createElement("style");if(e.setAttribute("type","text/css"),r.attributes)for(var t=Object.keys(r.attributes),n=0;n<t.length;n++)e.setAttribute(t[n],r.attributes[t[n]]);var a="prepend"===s?"afterbegin":"beforeend";return i.insertAdjacentElement(a,e),e}}
 
-    var css = "\r\n\r\n* {\r\n    /*colors*/\r\n    --sonj-prop-name: #b863bf;\r\n    --sonj-prop-type-string: #C41A16;\r\n    --sonj-prop-type-number: #1C00CF;\r\n    --sonj-prop-type-undefined: #444444;\r\n    --sonj-arrow-color: #727272;\r\n    --sonj-secondary-bgcolor: #dcdcdc;\r\n    --sonj-secondary-color: #616161;\r\n    /*sizes*/\r\n    --sonj-prop-indent: 12px; \r\n}\r\n\r\n.sonj-container {\r\n    overflow: hidden;\r\n    overflow-x: auto;\r\n}\r\n\r\n.prop-wrapper {\r\n    padding-left: var(--sonj-prop-indent);\r\n    cursor: default;\r\n    font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Liberation Sans\", sans-serif;\r\n    font-size: 14px;\r\n}\r\n.prop-header {\r\n    position: relative;\r\n    display: inline-block;\r\n    white-space: nowrap;\r\n}\r\n.prop-separator {\r\n    margin-right: 5px;\r\n}\r\n.prop-name {\r\n    color: var(--sonj-prop-name);\r\n}\r\n\r\n.prop-value.prop-type-string {\r\n    color: var(--sonj-prop-type-string);\r\n}\r\n.prop-value.prop-type-string::before {\r\n    content: '\"';\r\n}\r\n.prop-value.prop-type-string::after {\r\n    content: '\"';\r\n}\r\n.prop-value.prop-type-bigint,\r\n.prop-value.prop-type-number {\r\n    color: var(--sonj-prop-type-number);\r\n}\r\n.prop-value.prop-type-undefined,\r\n.prop-value.prop-type-object {\r\n    color: var(--sonj-prop-type-undefined);\r\n    font-style: italic;\r\n}\r\n.prop-expand {\r\n    position: absolute;\r\n    border: 4px solid transparent;\r\n    border-top: 6px solid var(--sonj-arrow-color);\r\n    height: 0;\r\n    width: 0;\r\n    left: -10px;\r\n    top: 4px;\r\n    transform: rotate(-90deg);\r\n}\r\n.prop-expanded > * > .prop-expand {\r\n    transform: rotate(0);\r\n    left: -12px;\r\n    top: 6px;\r\n}\r\n.prop-pill {\r\n    background-color: var(--sonj-secondary-bgcolor);\r\n    color: var(--sonj-secondary-color);\r\n    border-radius: 5px;\r\n    padding: 0 5px;\r\n}\r\n\r\n.prop-clickable {\r\n    cursor: pointer;\r\n}";
+    var css = "\r\n\r\n* {\r\n    /*colors*/\r\n    --sonj-prop-name: #b863bf;\r\n    --sonj-prop-type-string: #C41A16;\r\n    --sonj-prop-type-number: #1C00CF;\r\n    --sonj-prop-type-undefined: #444444;\r\n    --sonj-arrow-color: #727272;\r\n    --sonj-primary-color: #909090;\r\n    --sonj-primary-bgcolor: #fff;\r\n    --sonj-secondary-bgcolor: #dedede;\r\n    --sonj-secondary-color: #808080;\r\n    /*sizes*/\r\n    --sonj-prop-indent: 12px; \r\n}\r\n\r\n.sonj-container {\r\n    overflow: hidden;\r\n    overflow-x: auto;\r\n    color: var(--sonj-primary-color);\r\n}\r\n\r\n.prop-wrapper {\r\n    padding-left: var(--sonj-prop-indent);\r\n    cursor: default;\r\n    font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", \"Liberation Sans\", sans-serif;\r\n    font-size: 14px;\r\n}\r\n.prop-header {\r\n    position: relative;\r\n    display: inline-block;\r\n    white-space: nowrap;\r\n}\r\n.prop-separator {\r\n    margin-right: 5px;\r\n}\r\n.prop-name {\r\n    color: var(--sonj-prop-name);\r\n}\r\n\r\n.prop-value.prop-type-string {\r\n    color: var(--sonj-prop-type-string);\r\n}\r\n.prop-value.prop-type-string::before {\r\n    content: '\"';\r\n}\r\n.prop-value.prop-type-string::after {\r\n    content: '\"';\r\n}\r\n.prop-value.prop-type-bigint,\r\n.prop-value.prop-type-number {\r\n    color: var(--sonj-prop-type-number);\r\n}\r\n.prop-value.prop-type-undefined,\r\n.prop-value.prop-type-object {\r\n    color: var(--sonj-prop-type-undefined);\r\n    font-style: italic;\r\n}\r\n.prop-expand {\r\n    position: absolute;\r\n    border: 4px solid transparent;\r\n    border-top: 6px solid var(--sonj-arrow-color);\r\n    height: 0;\r\n    width: 0;\r\n    left: -10px;\r\n    top: 4px;\r\n    transform: rotate(-90deg);\r\n}\r\n.prop-expanded > * > .prop-expand {\r\n    transform: rotate(0);\r\n    left: -12px;\r\n    top: 6px;\r\n}\r\n.prop-pill {\r\n    background-color: var(--sonj-secondary-bgcolor);\r\n    color: var(--sonj-secondary-color);\r\n    border-radius: 5px;\r\n    padding: 0 5px;\r\n}\r\n\r\n.prop-clickable {\r\n    cursor: pointer;\r\n}";
     n(css,{});
 
     exports.JsonViewer = JsonViewer;

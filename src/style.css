@@ -7,8 +7,10 @@
     --sonj-prop-type-number: #1C00CF;
     --sonj-prop-type-undefined: #444444;
     --sonj-arrow-color: #727272;
-    --sonj-secondary-bgcolor: #dcdcdc;
-    --sonj-secondary-color: #616161;
+    --sonj-primary-color: #909090;
+    --sonj-primary-bgcolor: #fff;
+    --sonj-secondary-bgcolor: #dedede;
+    --sonj-secondary-color: #808080;
     /*sizes*/
     --sonj-prop-indent: 12px; 
 }
@@ -16,6 +18,7 @@
 .sonj-container {
     overflow: hidden;
     overflow-x: auto;
+    color: var(--sonj-primary-color);
 }
 
 .prop-wrapper {
