@@ -14,5 +14,9 @@ Yet another json viewer lib.
 * Extensible
 * Easy to adjust CSS
 
+## Demo 
+
+https://maxwroc.github.io/sonj-review/
+
 
 
