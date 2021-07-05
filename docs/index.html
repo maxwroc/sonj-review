@@ -3,7 +3,6 @@
         <title>Sonj Review</title>
         <style type="text/css">
 
-
             * {
                 --primary-color: #f0f0f0;
                 --secondary-color: #d6d6d6;
@@ -17,11 +16,20 @@
                 margin: 20px;
             }
 
+            #demo-container {
+                display: flex;
+                flex-direction: column;
+                width: 550px;
+            }
+            #json-content {
+                flex-grow: 1;
+                overflow-y: auto;
+            }
+
             #json-content,
             #search-box-container {
                 background-color: white;
                 border: 1px solid #000;
-                max-width: 500px;
             }
             #search-box-container input {
                 width: 100%;
@@ -33,8 +41,6 @@
             body {
                 background: var(--primary-bgcolor);
                 color: var(--secondary-color);
-                display: flex;
-                justify-content: center;
                 font-size: 16px; 
                 padding: 10px;
             }
@@ -50,6 +56,8 @@
 
             #main-container {
                 display: flex;
+                margin: 0 auto;
+                max-width: 1200px;
             }
 
             #info-container {
@@ -62,7 +70,7 @@
             h2 {
                 color: var(--primary-color);
                 font-size: 120%;
-                border-top: 1px solid rgb(59, 59, 59);
+                border-top: 1px solid var(--secondary-bgcolor);
                 padding-top: 15px;
                 margin-top: 20px;
             }
@@ -90,6 +98,23 @@
             }
             .plugin .name input[type=checkbox] {
                 float: right;
+            }
+
+            
+    
+
+            @media screen and (max-width: 1000px) {
+                body {
+                    padding: 0;
+                    margin: 0;
+                }
+                #main-container {
+                    flex-direction: column;
+                    width: 550px;
+                }
+                #info-container {
+                    width: 550px;
+                }
             }
         </style>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.2.0/zepto.min.js"></script>
