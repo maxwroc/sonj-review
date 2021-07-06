@@ -1,4 +1,7 @@
 # sonj-review / json-viewer
+[![npm](https://img.shields.io/npm/dm/sonj-review?label=npm%20downloads)](https://www.npmjs.com/package/sonj-review)
+[![npm version](https://img.shields.io/npm/v/sonj-review?color=blue)](https://www.npmjs.com/package/sonj-review)
+
 Yet another json viewer lib. 
 
 ## Features
