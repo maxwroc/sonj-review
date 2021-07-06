@@ -12,7 +12,6 @@ export default function (args) {
 
   const plugins = [
     resolve(),
-    copyBundleFiles('docs'),
     styles(),
   ];
 
@@ -35,12 +34,17 @@ export default function (args) {
       })
     );
 
+    targetFileName = targetFileName.replace(".js", ".min.js");
+
     let repoRoot = pkg.repository.url
       .replace("https://github.com", "https://raw.githubusercontent.com")
       .replace(/.git$/, "");
     repoRoot += "/";
 
     sourcemapPathTransform = file => repoRoot + "v" + pkg.version + file.substr(2);
+  }
+  else {
+    plugins.push(copyBundleFiles('docs'));
   }
 
   return {
