@@ -1,5 +1,5 @@
 
-export class MiniQuery {
+export class MiniQuery implements SonjReview.IMiniQuery {
 
     public elem: HTMLElement; 
 

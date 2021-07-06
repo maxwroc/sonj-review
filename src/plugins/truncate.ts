@@ -1,4 +1,3 @@
-import { IPlugin, IPluginContext } from "../plugins";
 import { $ } from "../mquery";
 import { injectCss } from "../helpers";
 
@@ -7,7 +6,7 @@ import { injectCss } from "../helpers";
  * @param options Plugin options
  * @returns Plugin instance
  */
-export const truncate = (options: ITruncateOptions): IPlugin => {
+export const truncate = (options: ITruncateOptions): SonjReview.IPlugin => {
 
     injectCss("truncatePlugin", cssCode);
 
@@ -56,7 +55,7 @@ export const truncate = (options: ITruncateOptions): IPlugin => {
     }
 }
 
-function addLengthInfoPill(context: IPluginContext, isNameElement: boolean, length: number, enableShowingFull: boolean | string | undefined) {
+function addLengthInfoPill(context: SonjReview.IPluginContext, isNameElement: boolean, length: number, enableShowingFull: boolean | string | undefined) {
     const targetElem = $(context.node.header.elem.querySelector(isNameElement ? ".prop-name" : ".prop-value") as HTMLElement);
     targetElem.addClass("prop-truncated");
 
@@ -125,7 +124,7 @@ export interface ITruncateOptions {
     enableShowFull?: boolean | string;
 }
 
-interface ITruncateContext extends IPluginContext {
+interface ITruncateContext extends SonjReview.IPluginContext {
     fullNameLength?: number;
     fullValueLength?: number;
 }

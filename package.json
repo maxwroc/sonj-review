@@ -1,8 +1,9 @@
 {
   "name": "sonj-review",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Extensible JSON Viewer",
   "main": "dist/sonj-review.js",
+  "types": "src/sonj-review.d.ts",
   "exportVar": "SonjReview",
   "type": "module",
   "scripts": {
@@ -20,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/maxwroc/sonj-review/issues"
   },
-  "homepage": "https://github.com/maxwroc/sonj-review#readme",
+  "homepage": "https://maxwroc.github.io/sonj-review/",
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^9.0.0",
     "@rollup/plugin-typescript": "^6.0.0",

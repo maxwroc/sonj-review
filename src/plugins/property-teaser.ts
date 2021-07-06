@@ -1,5 +1,4 @@
 import { injectCss } from "../helpers";
-import { IPlugin } from "../plugins";
 import { $ } from "../mquery";
 
 /**
@@ -7,7 +6,7 @@ import { $ } from "../mquery";
  * @param options Plugin options
  * @returns Plugin instance
  */
-export const propertyTeaser = (options: ITeaserOptions): IPlugin => {
+export const propertyTeaser = (options: ITeaserOptions): SonjReview.IPlugin => {
 
     injectCss("propertyTeaser", cssCode);
 

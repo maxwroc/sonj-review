@@ -1,4 +1,3 @@
-import { IPlugin, IPluginContext } from "../plugins";
 import { injectCss } from "../helpers";
 import { $, MiniQuery } from "../mquery";
 import { JsonViewer } from "../json-viwer";
@@ -7,7 +6,7 @@ import { JsonViewer } from "../json-viwer";
  * Plugin for menu rendered next to each property
  * @returns Menu plugin
  */
-export const propertyMenu = (menuItems: IPropertyMenuItem[] = []): IPlugin => {
+export const propertyMenu = (menuItems: IPropertyMenuItem[] = []): SonjReview.IPlugin => {
 
     injectCss("propertyMenu", cssCode);
 
@@ -17,7 +16,7 @@ export const propertyMenu = (menuItems: IPropertyMenuItem[] = []): IPlugin => {
 /**
  * Plugin main class
  */
-class PropertyMenu implements IPlugin {
+class PropertyMenu implements SonjReview.IPlugin {
 
     /**
      * Currently visible menu (it can be the only one)
@@ -40,14 +39,14 @@ class PropertyMenu implements IPlugin {
         }
     }
 
-    nodeInit(context: IPluginContext) {
+    nodeInit(context: SonjReview.IPluginContext) {
         if (this.rootNode == null) {
             // the first one is the root one
             this.rootNode = context.node;
         }
     }
 
-    afterRender(context: IPluginContext) {
+    afterRender(context: SonjReview.IPluginContext) {
         const btn = $("span")
             .text("...")
             .addClass("prop-menu-button");
@@ -79,7 +78,7 @@ class PropertyMenu implements IPlugin {
      * @param wrapper Menu wrapper
      * @param context Context for current node
      */
-    private renderMenu(evt: MouseEvent, wrapper: MiniQuery, context: IPluginContext) {
+    private renderMenu(evt: MouseEvent, wrapper: MiniQuery, context: SonjReview.IPluginContext) {
         evt.stopPropagation();
 
         this.closeActiveMenu();
@@ -165,9 +164,9 @@ const copyFormattedValue: IPropertyMenuItem = {
 
 interface IPropertyMenuItem {
     text: string;
-    isDisabled?: (context: IPluginContext) => boolean;
-    isHidden?: (context: IPluginContext) => boolean;
-    onClick: (context: IPluginContext) => void;
+    isDisabled?: (context: SonjReview.IPluginContext) => boolean;
+    isHidden?: (context: SonjReview.IPluginContext) => boolean;
+    onClick: (context: SonjReview.IPluginContext) => void;
 }
 
 

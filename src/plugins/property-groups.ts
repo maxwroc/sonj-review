@@ -1,4 +1,3 @@
-import { IPlugin, IPluginContext } from "../plugins";
 import { injectCss } from "../helpers";
 import { $ } from "../mquery";
 
@@ -10,7 +9,7 @@ import { $ } from "../mquery";
  * @param maxPropertiesCount Maximum number of properties to render
  * @returns Initialized plugin
  */
-export const propertyGroups = (maxPropertiesCount: number): IPlugin => {
+export const propertyGroups = (maxPropertiesCount: number): SonjReview.IPlugin => {
 
     injectCss("propertyGroups", cssCode);
 
@@ -72,6 +71,6 @@ const cssCode = `
 }
 `;
 
-interface IGroupsContext extends IPluginContext {
+interface IGroupsContext extends SonjReview.IPluginContext {
     propsToRender?: string[];
 }

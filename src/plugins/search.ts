@@ -1,5 +1,4 @@
 import { JsonViewer } from "../index";
-import { IPlugin } from "../plugins";
 
 export const search = (data: any): IQueryPlugin => {
 
@@ -53,7 +52,7 @@ export const search = (data: any): IQueryPlugin => {
     }
 }
 
-interface IQueryPlugin extends IPlugin {
+interface IQueryPlugin extends SonjReview.IPlugin {
     query: (searchString: string) => Promise<string[]>;
 }
 

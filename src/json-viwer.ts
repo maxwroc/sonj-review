@@ -1,10 +1,9 @@
-import { INameValuePair, IPlugin, IPluginContext } from "./plugins";
 import { MiniQuery, $ } from "./mquery";
 
 // TODO: this can break if object key/property contains slash
 const pathSeparator = "/";
 
-export class JsonViewer {
+export class JsonViewer implements SonjReview.IJsonViever {
 
     /**
      * Main wrapper for this node
@@ -34,7 +33,7 @@ export class JsonViewer {
     /**
      * Plugin context data
      */
-    public pluginContext: { [key: number]: IPluginContext } = {};
+    public pluginContext: { [key: number]: SonjReview.IPluginContext } = {};
 
     /**
      * Constructor
@@ -42,7 +41,7 @@ export class JsonViewer {
      * @param path Node path (with name in the last chunk/part)
      * @param plugins Collection of plugins
      */
-    constructor(public data: any, public path: string, public plugins: IPlugin[]) {
+    constructor(public data: any, public path: string, public plugins: SonjReview.IPlugin[]) {
         this.nodeName = path.split(pathSeparator).pop() as string;
 
         switch (typeof(data)) {
@@ -77,7 +76,7 @@ export class JsonViewer {
 
         const wrapper = $("div").addClass("prop-wrapper");
 
-        const dataToRender: INameValuePair = {
+        const dataToRender: SonjReview.INameValuePair = {
             name: this.nodeName,
             value: this.data,
         }
