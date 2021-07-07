@@ -149,6 +149,11 @@ const menuPlugin = SonjReview.plugins.propertyMenu([
 ]);
 ```
 
+## CDN
+
+* unpkg: [[sonj-review.min.js](https://unpkg.com/sonj-review/dist/sonj-review.min.js)]
+* jsdelivr: [[sonj-review.min.js](https://cdn.jsdelivr.net/npm/sonj-review/dist/sonj-review.min.js)]
+
 ## Development
 
 This component is still under development so please be aware that there might be breaking changes in the next releases!
