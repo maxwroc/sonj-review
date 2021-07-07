@@ -15,7 +15,7 @@
     "type": "git",
     "url": "https://github.com/maxwroc/sonj-review.git"
   },
-  "keywords": [],
+  "keywords": ["json", "viewer", "json-viewer", "sonj", "sonj-review"],
   "author": "Max Chodorowski",
   "license": "MIT",
   "bugs": {
