@@ -9,7 +9,7 @@ import { $ } from "../mquery";
  * @param maxPropertiesCount Maximum number of properties to render
  * @returns Initialized plugin
  */
-export const propertyGroups = (maxPropertiesCount: number): SonjReview.IPlugin => {
+export const propertyGroups: SonjReview.IPropertyGroupsPluginInitializer = (maxPropertiesCount) => {
 
     injectCss("propertyGroups", cssCode);
 

@@ -6,7 +6,7 @@ import { $ } from "../mquery";
  * @param options Plugin options
  * @returns Plugin instance
  */
-export const propertyTeaser = (options: ITeaserOptions): SonjReview.IPlugin => {
+export const propertyTeaser: SonjReview.ITeaserPluginInitializer = (options) => {
 
     injectCss("propertyTeaser", cssCode);
 
@@ -31,38 +31,9 @@ export const propertyTeaser = (options: ITeaserOptions): SonjReview.IPlugin => {
     }
 }
 
-export interface ITeaserOptions {
-    /**
-     * Properties which values will be displayed
-     */
-    properties?: ITeaserPropertiesOptions;
-
-    /**
-     * Whether to show counts (of array elements )
-     */
-    showCounts?: boolean;
-}
-
-interface ITeaserPropertiesOptions {
-    /**
-     * Names of properties to show
-     */
-    names: string[];
-
-    /**
-     * Maximum number of properties to show
-     */
-    maxCount?: number;
-
-    /**
-     * Whether to print property names next to values
-     */
-    printNames?: boolean;
-}
-
 const getPropertyCount = (data: any) => Array.isArray(data) ? `[${data.length}]` : `{${Object.keys(data).length}}`;
 
-const getSelectedProperties = (data: any, options: ITeaserOptions) => {
+const getSelectedProperties = (data: any, options: SonjReview.ITeaserOptions) => {
     if (!options.properties) {
         return "";
     }
