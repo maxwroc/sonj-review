@@ -7,6 +7,14 @@ declare module SonjReview {
     
     interface IJsonViever {
         /**
+         * Initializes JsonViewer class
+         * @param data Object to display as JSON
+         * @param rootNodeName Name of the root node
+         * @param plugins List of the plugins
+         */
+         new(data: any, rootNodeName: string, plugins?: IPlugin[]): IJsonViever;
+         
+        /**
          * Main wrapper for this node
          */
         wrapper: IMiniQuery;
