@@ -1,7 +1,7 @@
 
 declare module SonjReview {
 
-    export var JsonViewer: IJsonViever;
+    export var JsonViewer: IJsonViewerConstructor;
 
     export var plugins: { 
         autoExpand: IAutoExpandPluginInitializer;
@@ -13,15 +13,17 @@ declare module SonjReview {
         [name: string]: IPluginInitializer;
     };
     
-    interface IJsonViever {
+    interface IJsonViewerConstructor {
         /**
          * Initializes JsonViewer class
          * @param data Object to display as JSON
          * @param rootNodeName Name of the root node
          * @param plugins List of the plugins
          */
-         new(data: any, rootNodeName: string, plugins?: IPlugin[]): IJsonViever;
-         
+         new(data: any, rootNodeName: string, plugins: IPlugin[]): IJsonViever;
+    }
+
+    interface IJsonViever {         
         /**
          * Main wrapper for this node
          */
