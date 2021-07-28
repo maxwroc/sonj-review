@@ -1,6 +1,6 @@
 import { JsonViewer } from "../index";
 
-export const search = (data: any): IQueryPlugin => {
+export const search: SonjReview.ISearchPluginInitializer = (data) => {
 
     let rootNode: JsonViewer | null = null;
 
@@ -52,9 +52,6 @@ export const search = (data: any): IQueryPlugin => {
     }
 }
 
-interface IQueryPlugin extends SonjReview.IPlugin {
-    query: (searchString: string) => Promise<string[]>;
-}
 
 function searchInternal(data: any, root: string, query: string): Promise<string[]> {
     return new Promise((resolve, reject) => {

@@ -3,7 +3,15 @@ declare module SonjReview {
 
     export var JsonViewer: IJsonViever;
 
-    export var plugins: { [name: string]: IPluginInitializer };
+    export var plugins: { 
+        autoExpand: IAutoExpandPluginInitializer;
+        search: ISearchPluginInitializer;
+        propertyGroups: IPropertyGroupsPluginInitializer;
+        propertyTeaser: ITeaserPluginInitializer;
+        truncate: ITruncatePluginInitializer,
+        propertyMenu: IPropertyMenuPluginInitializer;
+        [name: string]: IPluginInitializer;
+    };
     
     interface IJsonViever {
         /**
@@ -148,5 +156,89 @@ declare module SonjReview {
     interface INameValuePair {
         name: string;
         value: any;
+    }
+
+    /** PLUGIN INTERFACES */
+
+    interface ISearchPluginInitializer {
+        (data: any): ISearchPlugin;
+    }
+    interface ISearchPlugin extends IPlugin {
+        query: (searchString: string) => Promise<string[]>;
+    }
+
+    interface ITeaserPluginInitializer {
+        (options: ITeaserOptions): IPlugin;
+    }
+    interface ITeaserOptions {
+        /**
+         * Properties which values will be displayed
+         */
+        properties?: ITeaserPropertiesOptions;
+    
+        /**
+         * Whether to show counts (of array elements )
+         */
+        showCounts?: boolean;
+    }
+    interface ITeaserPropertiesOptions {
+        /**
+         * Names of properties to show
+         */
+        names: string[];
+    
+        /**
+         * Maximum number of properties to show
+         */
+        maxCount?: number;
+    
+        /**
+         * Whether to print property names next to values
+         */
+        printNames?: boolean;
+    }
+    
+    interface IPropertyMenuPluginInitializer {
+        (menuItems?: IPropertyMenuItem[]): IPlugin
+    }
+    interface IPropertyMenuItem {
+        text: string;
+        isDisabled?: (context: SonjReview.IPluginContext) => boolean;
+        isHidden?: (context: SonjReview.IPluginContext) => boolean;
+        onClick: (context: SonjReview.IPluginContext) => void;
+    }
+
+    interface IPropertyGroupsPluginInitializer {
+        (maxPropertiesCount: number): IPlugin
+    }
+
+    interface IAutoExpandPluginInitializer {
+        (depth?: number): IPlugin
+    }
+
+    interface ITruncatePluginInitializer {
+        (options: ITruncateOptions): IPlugin
+    }
+    
+    interface ITruncateOptions {
+        /**
+         * Maximum length of node name
+         */
+        maxNameLength?: number;
+
+        /**
+         * Maximum length of node value
+         */
+        maxValueLength?: number;
+
+        /**
+         * Whether to show length (on hover) when truncated
+         */
+        showLength?: boolean;
+
+        /**
+         * Whether to make length info button clickable
+         */
+        enableShowFull?: boolean | string;
     }
 }

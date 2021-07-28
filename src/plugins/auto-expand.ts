@@ -3,7 +3,7 @@
  * @param depth Maxmal depth to expand nodes
  * @returns 
  */
-export const autoExpand = (depth?: number): SonjReview.IPlugin => {
+export const autoExpand: SonjReview.IAutoExpandPluginInitializer = (depth) => {
     return {
         afterRender: context => {
             if (depth && (context.node.path.split("/").length - 1 >= depth)) {

@@ -6,7 +6,7 @@ import { JsonViewer } from "../json-viwer";
  * Plugin for menu rendered next to each property
  * @returns Menu plugin
  */
-export const propertyMenu = (menuItems: IPropertyMenuItem[] = []): SonjReview.IPlugin => {
+export const propertyMenu = (menuItems: SonjReview.IPropertyMenuItem[] = []): SonjReview.IPlugin => {
 
     injectCss("propertyMenu", cssCode);
 
@@ -28,7 +28,7 @@ class PropertyMenu implements SonjReview.IPlugin {
      */
     private rootNode: JsonViewer;
 
-    constructor(private menuItems: IPropertyMenuItem[] = []) {
+    constructor(private menuItems: SonjReview.IPropertyMenuItem[] = []) {
         document.body.addEventListener("click", () => this.closeActiveMenu());
 
         // adding default menu items
@@ -133,21 +133,21 @@ class PropertyMenu implements SonjReview.IPlugin {
     }
 }
 
-const copyName: IPropertyMenuItem = {
+const copyName: SonjReview.IPropertyMenuItem = {
     text: "Copy name",
     onClick: context => {
         navigator.clipboard.writeText(context.node.nodeName);
     }
 };
 
-const copyValue: IPropertyMenuItem = {
+const copyValue: SonjReview.IPropertyMenuItem = {
     text: "Copy value",
     onClick: context => {
         navigator.clipboard.writeText(context.node.isExpandable ? JSON.stringify(context.node.data) : context.node.data);
     }
 };
 
-const copyFormattedValue: IPropertyMenuItem = {
+const copyFormattedValue: SonjReview.IPropertyMenuItem = {
     text: "Copy formatted JSON",
     isHidden: context => !context.node.isExpandable,
     onClick: context => {
@@ -160,14 +160,6 @@ const copyFormattedValue: IPropertyMenuItem = {
  * Exposing menu items (they can be used with custom menu items)
  */
 ((<any>propertyMenu)["items"]) = { copyName, copyValue, copyFormattedValue };
-
-
-interface IPropertyMenuItem {
-    text: string;
-    isDisabled?: (context: SonjReview.IPluginContext) => boolean;
-    isHidden?: (context: SonjReview.IPluginContext) => boolean;
-    onClick: (context: SonjReview.IPluginContext) => void;
-}
 
 
 const cssCode = `

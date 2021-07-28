@@ -6,7 +6,7 @@ import { injectCss } from "../helpers";
  * @param options Plugin options
  * @returns Plugin instance
  */
-export const truncate = (options: ITruncateOptions): SonjReview.IPlugin => {
+export const truncate: SonjReview.ITruncatePluginInitializer = (options) => {
 
     injectCss("truncatePlugin", cssCode);
 
@@ -101,28 +101,6 @@ const cssCode = `
     opacity: 1;
 }
 `;
-
-export interface ITruncateOptions {
-    /**
-     * Maximum length of node name
-     */
-    maxNameLength?: number;
-
-    /**
-     * Maximum length of node value
-     */
-    maxValueLength?: number;
-
-    /**
-     * Whether to show length (on hover) when truncated
-     */
-    showLength?: boolean;
-
-    /**
-     * Whether to make length info button clickable
-     */
-    enableShowFull?: boolean | string;
-}
 
 interface ITruncateContext extends SonjReview.IPluginContext {
     fullNameLength?: number;
