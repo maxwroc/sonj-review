@@ -29,6 +29,6 @@ version-resolver:
       - 'patch'
   default: patch
 template: |
-  ## Changes
+  ![GitHub Releases (by Release)](https://img.shields.io/github/downloads/maxwroc/sonj-review/v$NEXT_MINOR_VERSION/total)
 
   $CHANGES
