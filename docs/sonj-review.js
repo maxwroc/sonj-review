@@ -297,6 +297,7 @@ var SonjReview = (function (exports) {
 }
 .prop-value-teaser {
     margin: 0 5px;
+    color: var(--sonj-primary-color);
 }
 `;
     const trimString = (text, maxLength) => {
