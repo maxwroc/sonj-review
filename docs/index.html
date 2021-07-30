@@ -95,12 +95,29 @@
             }
             .plugin .name {
                 cursor: pointer;
+                display: flex;
             }
-            .plugin .name input[type=checkbox] {
-                float: right;
+            .plugin .name label {
+                flex: 1;
+                cursor: pointer;
             }
 
-            
+            .plugin > input {
+                display: none;
+            }
+            .plugin > textarea {
+                display: none;
+                width: 100%;
+                margin-top: 5px; 
+                padding: 5px;
+                border: 1px solid var(--primary-bgcolor);
+                background-color: var( --secondary-bgcolor);
+                color: var( --primary-color);
+                resize: vertical;
+            }
+            .plugin > input:checked + textarea {
+                display: initial;
+            }
     
 
             @media screen and (max-width: 1000px) {
@@ -149,25 +166,7 @@
                     <div class="input-field"><input type="text" placeholder="Paste custom JSON here" id="custom-json" /></div>
 
                     <p>Plugins</p>
-                    <div class="plugin">
-                        <div class="name">Auto expand<input type="checkbox" checked="checked" data-plugin="auto-expand" /></div>
-                    </div>
-                    <div class="plugin">
-                        <div class="name">Search<input type="checkbox" checked="checked" data-plugin="search" /></div>
-                    </div>
-                    <div class="plugin">
-                        <div class="name">Groups<input type="checkbox" checked="checked" data-plugin="groups" /></div>
-                    </div>
-                    <div class="plugin">
-                        <div class="name">Teaser<input type="checkbox" checked="checked" data-plugin="teaser" /></div>
-                    </div>
-                    <div class="plugin">
-                        <div class="name">Truncate<input type="checkbox" checked="checked" data-plugin="truncate" /></div>
-                    </div>
-                    <div class="plugin">
-                        <div class="name">Actions menu<input type="checkbox" checked="checked" data-plugin="actions-menu" /></div>
-                    </div>
-
+                    <div id="plugin-container"></div>
                     <h2>Info</h2>
                     <p></p>
                     <p>Default theme is based on the chrome dev tools JSON colors.</p>
