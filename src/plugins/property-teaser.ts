@@ -46,8 +46,6 @@ const getSelectedProperties = (data: any, options: SonjReview.ITeaserOptions) =>
         values = values.slice(0, options.properties.maxCount);
     }
 
-    console.log(options, options.maxTotalLenght);
-
     return trimString(values.map(v => trimString(v, options.properties!.maxValueLength)).join(", "), options.maxTotalLenght);
 }
 
