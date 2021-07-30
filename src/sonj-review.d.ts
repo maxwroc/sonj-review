@@ -182,6 +182,11 @@ declare module SonjReview {
          * Whether to show counts (of array elements )
          */
         showCounts?: boolean;
+
+        /**
+         * Maximum length of the entire teaser text
+         */
+        maxTotalLenght?: number;
     }
     interface ITeaserPropertiesOptions {
         /**
@@ -198,6 +203,11 @@ declare module SonjReview {
          * Whether to print property names next to values
          */
         printNames?: boolean;
+
+        /**
+         * Maximum length of the single property value
+         */
+        maxValueLength?: number;
     }
     
     interface IPropertyMenuPluginInitializer {

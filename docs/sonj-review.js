@@ -283,12 +283,13 @@ var SonjReview = (function (exports) {
             return "";
         }
         let values = options.properties.names
-            .filter(p => data[p] != undefined)
+            .filter(p => data[p] != undefined && data[p] != "")
             .map(p => ((options.properties.printNames ? p + ":" : "") + data[p]));
         if (options.properties.maxCount) {
             values = values.slice(0, options.properties.maxCount);
         }
-        return values.join(", ");
+        console.log(options, options.maxTotalLenght);
+        return trimString(values.map(v => trimString(v, options.properties.maxValueLength)).join(", "), options.maxTotalLenght);
     };
     const cssCode$1 = `
 .prop-expanded > * > .prop-value-teaser {
@@ -298,6 +299,12 @@ var SonjReview = (function (exports) {
     margin: 0 5px;
 }
 `;
+    const trimString = (text, maxLength) => {
+        if (!maxLength || !text || text.length <= maxLength) {
+            return text;
+        }
+        return text.substr(0, maxLength - 3) + "...";
+    };
 
     /**
      * Plugin for menu rendered next to each property
@@ -564,7 +571,6 @@ var SonjReview = (function (exports) {
         return {
             beforeRender: (context, dataToRender) => {
                 if (maxNameLength && dataToRender.name.length > maxNameLength) {
-                    console.log("name", context.node.path);
                     context.fullNameLength = dataToRender.name.length;
                     dataToRender.name = dataToRender.name.substr(0, maxNameLength - 3) + "...";
                 }
