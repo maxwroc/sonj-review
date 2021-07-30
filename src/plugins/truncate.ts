@@ -22,7 +22,6 @@ export const truncate: SonjReview.ITruncatePluginInitializer = (options) => {
     return {
         beforeRender: (context: ITruncateContext, dataToRender) => {
             if (maxNameLength && dataToRender.name.length > maxNameLength) {
-                console.log("name", context.node.path);
                 context.fullNameLength = dataToRender.name.length;
                 dataToRender.name = dataToRender.name.substr(0, maxNameLength - 3) + "...";
             }
