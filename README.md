@@ -82,7 +82,11 @@ const teaserPlugin = SonjReview.plugins.propertyTeaser({
         maxCount: 2,
         // whether to print property name next to the value
         printNames: false,
+        // max length of the single value
+        maxValueLength: 20,
     },
+    // max length of the total teaser length
+    maxTotalLenght: 40,
     // whether to display counts (of array items or properties)
     showCounts: true,
 }));;

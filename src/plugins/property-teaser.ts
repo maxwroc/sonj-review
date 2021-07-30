@@ -39,14 +39,14 @@ const getSelectedProperties = (data: any, options: SonjReview.ITeaserOptions) =>
     }
 
     let values = options.properties.names
-        .filter(p => data[p] != undefined)
+        .filter(p => data[p] != undefined && data[p] != "")
         .map(p => ((options.properties!.printNames ? p + ":" : "") + data[p])) as string[];
 
     if (options.properties.maxCount) {
         values = values.slice(0, options.properties.maxCount);
     }
 
-    return values.join(", ");
+    return trimString(values.map(v => trimString(v, options.properties!.maxValueLength)).join(", "), options.maxTotalLenght);
 }
 
 const cssCode = `
@@ -58,3 +58,11 @@ const cssCode = `
     color: var(--sonj-primary-color);
 }
 `;
+
+const trimString = (text: string, maxLength: number | undefined): string => {
+    if (!maxLength || !text || text.length <= maxLength) {
+        return text;
+    }
+
+    return text.substr(0, maxLength - 3) + "...";
+}
