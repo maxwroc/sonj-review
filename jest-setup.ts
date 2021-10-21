@@ -36,7 +36,7 @@ const testPageHtml = `
     </head>
     <style type="text/css">
         * {
-            font-family: monospace !important;
+            font-family: sans-serif !important;
         }
     </style>
 <body>
