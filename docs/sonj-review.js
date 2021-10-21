@@ -102,6 +102,9 @@ var SonjReview = (function (exports) {
         render(container) {
             if (typeof (container) == "string") {
                 container = document.getElementById(container);
+                if (!container) {
+                    throw new Error(`Container element with id '${container}' not found`);
+                }
             }
             const wrapper = $("div").addClass("prop-wrapper");
             const dataToRender = {
