@@ -2,6 +2,7 @@ import { setupJestScreenshot } from "jest-screenshot";
 import { writeFileSync, unlinkSync, realpathSync } from "fs";
 
 setupJestScreenshot({
+    detectAntialiasing: true,
     reportDir: "test/__report__"
 });
 
