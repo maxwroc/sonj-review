@@ -33,6 +33,11 @@ const testPageHtml = `
         <title>Test page</title>
         <script src="../dist/sonj-review.js" type="text/javascript"></script>
     </head>
+    <style type="text/css">
+        * {
+            font-family: sans-serif !important;
+        }
+    </style>
 <body>
     <div id="viewer" style="display: inline-block; padding: 5px;"></div>
 </body>
