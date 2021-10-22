@@ -1,6 +1,6 @@
+import { setupTest } from "../jest-setup";
 
-
-
+beforeEach(() => setupTest());
 
 test("Root element rendered", async () => {
     const elem = await initPageAndReturnViewerElem({ test: 1 });
@@ -17,22 +17,9 @@ test("Root element expanded", async () => {
     expect(await elem!.screenshot()).toMatchImageSnapshot();
 });
 
-test("Root element clicked twice", async () => {
-    const elem = await initPageAndReturnViewerElem({ number: 1, string: "test string", float: 3.456, bool: true });
-
-    // get the root node
-    const root = await page.$("#root");
-    // expand
-    await root!.click();
-    // collapse
-    await root!.click();
-
-    expect(await elem!.screenshot()).toMatchImageSnapshot();
-});
-
 test("Empty arrays and objects not expandable", async () => {
     const elem = await initPageAndReturnViewerElem({ arrayNode: [], objectNode: {} });
-  
+
     const root = await page.$("#root");
     await root!.click();
 
