@@ -72,6 +72,9 @@ export class JsonViewer implements SonjReview.IJsonViever {
     render(container: HTMLElement | string) {
         if (typeof(container) == "string") {
             container = document.getElementById(container) as HTMLElement;
+            if (!container) {
+                throw new Error(`Container element with id '${container}' not found`);
+            }
         }
 
         const wrapper = $("div").addClass("prop-wrapper");
