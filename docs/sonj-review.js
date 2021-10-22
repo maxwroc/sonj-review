@@ -84,7 +84,7 @@ var SonjReview = (function (exports) {
                     this.isExpandable = false;
                     break;
                 case "object":
-                    this.isExpandable = data != null;
+                    this.isExpandable = data != null && Object.keys(data).length > 0;
                     break;
                 default:
                     throw "Type not supported";
@@ -124,10 +124,9 @@ var SonjReview = (function (exports) {
                     .append(this.childrenWrapper);
             }
             else {
-                const textValue = dataToRender.value === undefined ? "undefined" : (dataToRender.value === null ? "null" : dataToRender.value.toString());
                 this.header
                     .append($("span").text(":").addClass("prop-separator"))
-                    .append($("span").addClass("prop-value", "prop-type-" + typeof (dataToRender.value)).text(textValue));
+                    .append($("span").addClass("prop-value", "prop-type-" + typeof (dataToRender.value)).text(getTextValue(dataToRender.value)));
             }
             this.wrapper = wrapper;
             // update DOM only once at the end
@@ -174,6 +173,21 @@ var SonjReview = (function (exports) {
             propsToRender.forEach(propName => new JsonViewer(this.data[propName], this.path + pathSeparator + propName, this.plugins).render(conatiner.elem));
         }
     }
+    const getTextValue = (val) => {
+        if (val === undefined) {
+            return "undefined";
+        }
+        if (val === null) {
+            return "null";
+        }
+        if (typeof (val) == "object") {
+            if (Array.isArray(val)) {
+                return "[]";
+            }
+            return "{}";
+        }
+        return val.toString();
+    };
 
     /**
      * Plugin for auto-expanding nodes

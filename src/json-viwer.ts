@@ -53,7 +53,7 @@ export class JsonViewer implements SonjReview.IJsonViever {
                 this.isExpandable = false;
                 break;
             case "object":
-                this.isExpandable = data != null;
+                this.isExpandable = data != null && Object.keys(data).length > 0;
                 break;
             default:
                 throw "Type not supported";
@@ -99,10 +99,9 @@ export class JsonViewer implements SonjReview.IJsonViever {
                 .append(this.childrenWrapper);
         }
         else {
-            const textValue = dataToRender.value === undefined ? "undefined" : (dataToRender.value === null ? "null" : dataToRender.value.toString());
             this.header
                 .append($("span").text(":").addClass("prop-separator"))
-                .append($("span").addClass("prop-value", "prop-type-" + typeof(dataToRender.value)).text(textValue));
+                .append($("span").addClass("prop-value", "prop-type-" + typeof(dataToRender.value)).text(getTextValue(dataToRender.value)));
         }
 
         this.wrapper = wrapper;
@@ -164,3 +163,23 @@ export class JsonViewer implements SonjReview.IJsonViever {
             new JsonViewer(this.data[propName], this.path + pathSeparator + propName, this.plugins).render(conatiner.elem));
     }
 }
+
+const getTextValue = (val: any): string => {
+    if (val === undefined) {
+        return "undefined";
+    }
+
+    if (val === null) {
+        return "null";
+    }
+
+    if (typeof(val) == "object") {
+        if (Array.isArray(val)) {
+            return "[]";
+        }
+
+        return "{}";
+    }
+
+    return val.toString();
+} 
