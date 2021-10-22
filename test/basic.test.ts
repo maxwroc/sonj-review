@@ -1,6 +1,6 @@
+import { setupTest } from "../jest-setup";
 
-
-
+beforeEach(() => setupTest());
 
 test("Root element rendered", async () => {
     const elem = await initPageAndReturnViewerElem({ test: 1 });
@@ -11,36 +11,33 @@ test("Root element rendered", async () => {
 test("Root element expanded", async () => {
     const elem = await initPageAndReturnViewerElem({ number: 1, string: "test string", float: 3.456, bool: true, emptyArray: [], emptyObject: {} });
 
-    const root = await page.$("#root");
-    await root!.click();
+    await page.click("#root");
     
-    expect(await elem!.screenshot()).toMatchImageSnapshot();
-});
-
-test("Root element clicked twice", async () => {
-    const elem = await initPageAndReturnViewerElem({ number: 1, string: "test string", float: 3.456, bool: true });
-
-    // get the root node
-    const root = await page.$("#root");
-    // expand
-    await root!.click();
-    // collapse
-    await root!.click();
-
     expect(await elem!.screenshot()).toMatchImageSnapshot();
 });
 
 test("Empty arrays and objects not expandable", async () => {
     const elem = await initPageAndReturnViewerElem({ arrayNode: [], objectNode: {} });
-  
-    const root = await page.$("#root");
-    await root!.click();
+
+    await page.click("#root");
 
     const arrayNodeElem = await page.$("#root-arrayNode");
     const objectNodeElem = await page.$("#root-objectNode");
 
     expect(await arrayNodeElem!.$(".prop-expand") !== null).toBeFalsy();
     expect(await objectNodeElem!.$(".prop-expand") !== null).toBeFalsy();
+});
+
+test("Root element clicked twice", async () => {
+    const elem = await initPageAndReturnViewerElem({ number: 1 });
+
+    // check if element is not visible
+    expect(await page.$("#root-number")).toBeFalsy();
+
+    await page.click("#root");
+
+    // check if element is visible
+    expect(await page.$("#root-number")).toBeTruthy();
 });
 
 const initPageAndReturnViewerElem = async (data: any) => {
