@@ -8,6 +8,7 @@
   "type": "commonjs",
   "scripts": {
     "build": "rollup -c",
+    "build+test": "npm run build && npm run test",
     "release": "rollup --environment RELEASE -c",
     "watch": "rollup -c --watch",
     "test": "jest"
