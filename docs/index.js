@@ -43,14 +43,14 @@ const availablePlugins = {
         init: (plugins, options, data) => {
             const searchPlugin = SonjReview.plugins.search(data);
 
-                const searchInput = document.getElementById("search-box");
-                searchInput.addEventListener("keyup", evt => {
-                    if (evt.keyCode == 13) {
-                        searchPlugin.query(searchInput.value);
-                    }
-                });
+            const searchInput = document.getElementById("search-box");
+            searchInput.addEventListener("keyup", evt => {
+                if (evt.keyCode == 13) {
+                    searchPlugin.query(searchInput.value);
+                }
+            });
 
-                plugins.push(searchPlugin);
+            plugins.push(searchPlugin);
         },
     },
     "groups": {
