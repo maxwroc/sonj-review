@@ -510,7 +510,7 @@ var SonjReview = (function (exports) {
                     return props;
                 }
                 return props
-                    .filter(p => pathsToShow === null || pathsToShow === void 0 ? void 0 : pathsToShow.some(path => path.startsWith(context.node.path + "/" + p)));
+                    .filter(p => pathsToShow.some(path => path.startsWith(context.node.path + "/" + p + "/")));
             },
             query: searchString => {
                 if (!rootNode) {
@@ -557,10 +557,10 @@ var SonjReview = (function (exports) {
                 Object.keys(data).forEach(k => {
                     const propPath = `${path}/${k}`;
                     if (k.includes(query)) {
-                        results.push(propPath);
+                        results.push(propPath + "/");
                     }
                     else {
-                        results = results.concat(getValueLocations(data[k], `${path}/${k}`, query));
+                        results = results.concat(getValueLocations(data[k], propPath, query));
                     }
                 });
                 break;
@@ -568,7 +568,7 @@ var SonjReview = (function (exports) {
                 data = data.toString();
             case "string":
                 if (data.includes(query)) {
-                    results.push(path);
+                    results.push(path + "/");
                 }
                 break;
         }

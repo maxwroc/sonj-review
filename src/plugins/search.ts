@@ -22,7 +22,7 @@ export const search: SonjReview.ISearchPluginInitializer = (data) => {
             }
 
             return props
-                .filter(p => pathsToShow?.some(path => path.startsWith(context.node.path + "/" + p)));;
+                .filter(p => pathsToShow!.some(path => path.startsWith(context.node.path + "/" + p + "/")));;
         },
         query: searchString => {
             if (!rootNode) {
@@ -80,10 +80,10 @@ function getValueLocations(data: any, path: string, query: string): string[] {
                 const propPath = `${path}/${k}`;
 
                 if (k.includes(query)) {
-                    results.push(propPath);
+                    results.push(propPath + "/");
                 }
                 else {
-                    results = results.concat(getValueLocations(data[k], `${path}/${k}`, query));
+                    results = results.concat(getValueLocations(data[k], propPath, query));
                 }
             });
 
@@ -93,7 +93,7 @@ function getValueLocations(data: any, path: string, query: string): string[] {
             data = (<number>data).toString();
         case "string":
             if ((<string>data).includes(query)) {
-                results.push(path);
+                results.push(path + "/");
             }
 
             break;

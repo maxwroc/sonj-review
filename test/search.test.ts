@@ -27,6 +27,42 @@ test("Multiple results", async () => {
     expect(await page.$("#root-company")).toBeTruthy();
 });
 
+test("Search for number", async () => {
+    await initPageAndReturnViewerElem(testData);
+
+    await page.focus("#inputElem");
+    await page.keyboard.type("234");
+    await page.keyboard.press("Enter");
+
+    expect((await page.$$(".prop-value")).length).toBe(1);
+    expect(await page.$("#root-office-employees")).toBeTruthy();
+});
+
+test("Search for property name", async () => {
+    await initPageAndReturnViewerElem(testData);
+
+    await page.focus("#inputElem");
+    await page.keyboard.type("job_title");
+    await page.keyboard.press("Enter");
+
+    expect((await page.$$(".prop-value")).length).toBe(3);
+    expect(await page.$("#root-collection-0-job_title")).toBeTruthy();
+    expect(await page.$("#root-collection-0-job_title")).toBeTruthy();
+    expect(await page.$("#root-collection-0-job_title")).toBeTruthy();
+});
+
+test("Result which path partially matches the other existing path", async () => {
+    await initPageAndReturnViewerElem(testData);
+
+    await page.focus("#inputElem");
+    await page.keyboard.type("microbots");
+    await page.keyboard.press("Enter");
+
+    expect((await page.$$(".prop-value")).length).toBe(1);
+    expect((await page.$$(".prop-name")).length).toBe(4);
+    expect(await page.$("#root-products-nanobots-name")).toBeTruthy();
+});
+
 const initPageAndReturnViewerElem = async (data: any) => {
     await page.evaluate((dataInternal: any) => {
         const addNodeIds: SonjReview.IPlugin = {
@@ -55,30 +91,38 @@ const initPageAndReturnViewerElem = async (data: any) => {
 }
 
 const testData = {
-    collection: [
+    "collection": [
         {
-            name: "James Jones",
-            job_title: "CEO",
-            company: "Contoso",
+            "name": "James Jones",
+            "job_title": "CEO",
+            "company": "Contoso"
         },
         {
-            name: "Wendy Moore",
-            job_title: "Office manager",
-            company: "Contoso",
+            "name": "Wendy Moore",
+            "job_title": "Office manager",
+            "company": "Contoso"
         },
         {
-            name: "Jack Marble",
-            job_title: "Assistant",
-            mobile_phone: "07777666555"
+            "name": "Jack Marble",
+            "job_title": "Assistant",
+            "mobile_phone": "07777666555"
         }
     ],
-    company: "Contoso Ltd",
-    office: {
-        location: {
-            street: "10 Downing Street",
-            post_code: "SW1A 2AA",
-            city: "London",
+    "company": "Contoso Ltd",
+    "office": {
+        "location": {
+            "street": "10 Downing Street",
+            "post_code": "SW1A 2AA",
+            "city": "London"
         },
-        employees: 234,
+        "employees": 234
+    },
+    "products": {
+        "nano": {
+            "name": "micro"
+        },
+        "nanobots": {
+            "name": "microbots"
+        }
     }
 }
