@@ -63,15 +63,42 @@ test("Result which path partially matches the other existing path", async () => 
     expect(await page.$("#root-products-nanobots-name")).toBeTruthy();
 });
 
-const initPageAndReturnViewerElem = async (data: any) => {
-    await page.evaluate((dataInternal: any) => {
+test("Case sensitive search", async () => {
+    await initPageAndReturnViewerElem(testData, { caseSensitive: true });
+
+    await page.focus("#inputElem");
+    await page.keyboard.type("james");
+    await page.keyboard.press("Enter");
+
+    expect((await page.$$(".prop-value")).length).toBe(0);
+
+    await page.evaluate(() => (<any>document).getElementById("inputElem").value = "")
+    await page.keyboard.type("James");
+    await page.keyboard.press("Enter");
+    
+    expect((await page.$$(".prop-value")).length).toBe(1);
+    expect(await page.$("#root-collection-0-name")).toBeTruthy();
+});
+
+test("Special characters in query", async () => {
+    await initPageAndReturnViewerElem(testData);
+
+    await page.focus("#inputElem");
+    await page.keyboard.type(`$%^&*()\\`);
+    await page.keyboard.press("Enter");
+
+    expect((await page.$$(".prop-value")).length).toBe(2);
+});
+
+const initPageAndReturnViewerElem = async (data: any, options?: SonjReview.ISearchOptions) => {
+    await page.evaluate((dataInternal: any, options?: SonjReview.ISearchOptions) => {
         const addNodeIds: SonjReview.IPlugin = {
             afterRender: context => {
                 context.node.header.elem!.setAttribute("id", context.node.path.replace(/\//g, "-"));
             }
         }
 
-        const searchPlugin = SonjReview.plugins.search(dataInternal);
+        const searchPlugin = SonjReview.plugins.search(dataInternal, options);
 
         const inputElem = document.createElement("input");
         inputElem.setAttribute("id", "inputElem");
@@ -85,7 +112,7 @@ const initPageAndReturnViewerElem = async (data: any) => {
 
         const viewer = new SonjReview.JsonViewer(dataInternal, "root", [ searchPlugin, addNodeIds ]);
         viewer.render("viewer");
-    }, data);
+    }, data, <any>options);
 
     return await page.$("#viewer");
 }
@@ -124,5 +151,9 @@ const testData = {
         "nanobots": {
             "name": "microbots"
         }
+    },
+    "spacial_chars": {
+        "value": "special_chars_$%^&*()\\",
+        "special_chars_$%^&*()\\": "property_name_with_special_chars"
     }
 }

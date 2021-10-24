@@ -40,12 +40,16 @@ const availablePlugins = {
     },
     "search": {
         name: "Search",
+        options: {
+            caseSensitive: false
+        },
         init: (plugins, options, data) => {
-            const searchPlugin = SonjReview.plugins.search(data);
+            options = JSON.parse(options);
+            const searchPlugin = SonjReview.plugins.search(data, options);
 
             const searchInput = document.getElementById("search-box");
             searchInput.addEventListener("keyup", evt => {
-                if (evt.keyCode == 13) {
+                if (evt.code == "Enter") {
                     searchPlugin.query(searchInput.value);
                 }
             });

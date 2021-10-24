@@ -1,6 +1,6 @@
 import { JsonViewer } from "../index";
 
-export const search: SonjReview.ISearchPluginInitializer = (data) => {
+export const search: SonjReview.ISearchPluginInitializer = (data, options?: SonjReview.ISearchOptions) => {
 
     let rootNode: JsonViewer | null = null;
 
@@ -32,7 +32,7 @@ export const search: SonjReview.ISearchPluginInitializer = (data) => {
             // collapse root node
             rootNode.toggleExpand(false);
 
-            let resultPromise = searchInternal(data, rootNode.path, searchString)
+            let resultPromise = searchInternal(data, rootNode.path, searchString, options)
                 .then(paths => {
                     // set the collection off paths to show
                     pathsToShow = paths;
@@ -53,9 +53,10 @@ export const search: SonjReview.ISearchPluginInitializer = (data) => {
 }
 
 
-function searchInternal(data: any, root: string, query: string): Promise<string[]> {
+function searchInternal(data: any, root: string, query: string, options?: SonjReview.ISearchOptions): Promise<string[]> {
+    const isMatching = getMatcher(query, !!options?.caseSensitive);
     return new Promise((resolve, reject) => {
-        const result = getValueLocations(data, root, query);
+        const result = getValueLocations(data, root, isMatching, options);
         resolve(result);
     })
 }
@@ -64,9 +65,9 @@ function searchInternal(data: any, root: string, query: string): Promise<string[
  * Search function which walks through given object and finds locations of the nodes containing query string
  * @param data Data object to be searched
  * @param path Current path
- * @param query Searched query
+ * @param isMatching Query matcher
  */
-function getValueLocations(data: any, path: string, query: string): string[] {
+function getValueLocations(data: any, path: string, isMatching: IMatcher, options?: SonjReview.ISearchOptions): string[] {
     let results = [] as string[];
 
     switch (typeof data) {
@@ -79,11 +80,11 @@ function getValueLocations(data: any, path: string, query: string): string[] {
 
                 const propPath = `${path}/${k}`;
 
-                if (k.includes(query)) {
+                if (isMatching(k)) {
                     results.push(propPath + "/");
                 }
                 else {
-                    results = results.concat(getValueLocations(data[k], propPath, query));
+                    results = results.concat(getValueLocations(data[k], propPath, isMatching, options));
                 }
             });
 
@@ -92,7 +93,7 @@ function getValueLocations(data: any, path: string, query: string): string[] {
         case "number":
             data = (<number>data).toString();
         case "string":
-            if ((<string>data).includes(query)) {
+            if (isMatching(<string>data)) {
                 results.push(path + "/");
             }
 
@@ -100,4 +101,27 @@ function getValueLocations(data: any, path: string, query: string): string[] {
     }
 
     return results;
+}
+
+const getMatcher = ((query: string, caseSensitiveSearch: boolean) => {
+    let pattern: RegExp;
+    return (dataString: string): boolean => {
+        if (caseSensitiveSearch) {
+            return dataString.includes(query);
+        }
+
+        if (!pattern) {
+            pattern = new RegExp(escapeRegExp(query), "i");
+        }
+
+        return pattern.test(dataString);
+    };
+});
+
+function escapeRegExp(text: string): string {
+    return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
+
+interface IMatcher {
+    (dataString: string): boolean
 }

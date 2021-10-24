@@ -492,7 +492,7 @@ var SonjReview = (function (exports) {
 }
 `;
 
-    const search = (data) => {
+    const search = (data, options) => {
         let rootNode = null;
         let pathsToShow = null;
         return {
@@ -518,7 +518,7 @@ var SonjReview = (function (exports) {
                 }
                 // collapse root node
                 rootNode.toggleExpand(false);
-                let resultPromise = searchInternal(data, rootNode.path, searchString)
+                let resultPromise = searchInternal(data, rootNode.path, searchString, options)
                     .then(paths => {
                     // set the collection off paths to show
                     pathsToShow = paths;
@@ -535,9 +535,10 @@ var SonjReview = (function (exports) {
             }
         };
     };
-    function searchInternal(data, root, query) {
+    function searchInternal(data, root, query, options) {
+        const isMatching = getMatcher(query, !!(options === null || options === void 0 ? void 0 : options.caseSensitive));
         return new Promise((resolve, reject) => {
-            const result = getValueLocations(data, root, query);
+            const result = getValueLocations(data, root, isMatching);
             resolve(result);
         });
     }
@@ -545,9 +546,9 @@ var SonjReview = (function (exports) {
      * Search function which walks through given object and finds locations of the nodes containing query string
      * @param data Data object to be searched
      * @param path Current path
-     * @param query Searched query
+     * @param isMatching Query matcher
      */
-    function getValueLocations(data, path, query) {
+    function getValueLocations(data, path, isMatching, options) {
         let results = [];
         switch (typeof data) {
             case "object":
@@ -556,23 +557,38 @@ var SonjReview = (function (exports) {
                 }
                 Object.keys(data).forEach(k => {
                     const propPath = `${path}/${k}`;
-                    if (k.includes(query)) {
+                    if (isMatching(k)) {
                         results.push(propPath + "/");
                     }
                     else {
-                        results = results.concat(getValueLocations(data[k], propPath, query));
+                        results = results.concat(getValueLocations(data[k], propPath, isMatching));
                     }
                 });
                 break;
             case "number":
                 data = data.toString();
             case "string":
-                if (data.includes(query)) {
+                if (isMatching(data)) {
                     results.push(path + "/");
                 }
                 break;
         }
         return results;
+    }
+    const getMatcher = ((query, caseSensitiveSearch) => {
+        let pattern;
+        return (dataString) => {
+            if (caseSensitiveSearch) {
+                return dataString.includes(query);
+            }
+            if (!pattern) {
+                pattern = new RegExp(escapeRegExp(query), "i");
+            }
+            return pattern.test(dataString);
+        };
+    });
+    function escapeRegExp(text) {
+        return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
     }
 
     /**
