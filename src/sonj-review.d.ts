@@ -163,10 +163,13 @@ declare module SonjReview {
     /** PLUGIN INTERFACES */
 
     interface ISearchPluginInitializer {
-        (data: any): ISearchPlugin;
+        (data: any, options?: ISearchOptions): ISearchPlugin;
     }
     interface ISearchPlugin extends IPlugin {
         query: (searchString: string) => Promise<string[]>;
+    }
+    interface ISearchOptions {
+        caseSensitive?: boolean,
     }
 
     interface ITeaserPluginInitializer {
