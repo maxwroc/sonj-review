@@ -50,7 +50,11 @@ const autoExpandPlugin = SonjReview.plugins.autoExpand(2);
 Allows you to find a string in the JSON regardless if it is in the property name or value.
 
 ```js
-const searchPlugin = SonjReview.plugins.search(data);
+const searchPlugin = SonjReview.plugins.search(
+    data, {
+        // whether to turn on/off case-sensitive search
+        caseSensitive: false
+    });
 
 const searchInput = document.getElementById("search-box");
 searchInput.addEventListener("keyup", evt => evt.keyCode == 13 && searchPlugin.query(searchInput.value));
