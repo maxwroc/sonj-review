@@ -130,7 +130,28 @@ const menuPlugin = SonjReview.plugins.propertyMenu();
 
 ![image](https://user-images.githubusercontent.com/8268674/124652129-a4b7cd80-de93-11eb-83a6-c4ae483ceb35.png)
 
-Menu item definition example
+
+#### Default menu items
+* `copyName` - Copies property name to clippord
+* `copyValue` - Copies property value to clipboard (in case of the object it converts it to JSON string)
+* `copyFormattedValue` - Copies formatted JSON value (this option is available only for object value types) 
+
+#### Converting JSON string to object - menu item
+
+![image](https://user-images.githubusercontent.com/8268674/138968966-0dcdd245-caf1-4caa-943a-b5dda35b4f42.gif)
+
+This menu item has to be added manually (it is not a part of the default menu items set).
+
+```typescript
+const menuItems = SonjReview.plugins.propertyMenu.items;
+const menuPlugin = SonjReview.plugins.propertyMenu([
+    menuItems.parseJsonValue, // menu item for converting JSON strings
+    menuItems.copyName,
+    menuItems.copyValue,
+]
+```
+
+#### Custom menu item definition example
 
 ```typescript
 const copyFormattedValue: IPropertyMenuItem = {
@@ -144,7 +165,6 @@ const copyFormattedValue: IPropertyMenuItem = {
     }
 };
 ```
-
 Initialization with custom menu item example
 
 ```js
