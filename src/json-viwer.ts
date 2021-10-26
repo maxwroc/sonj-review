@@ -3,7 +3,7 @@ import { MiniQuery, $ } from "./mquery";
 // TODO: this can break if object key/property contains slash
 const pathSeparator = "/";
 
-export class JsonViewer implements SonjReview.IJsonViever {
+export class JsonViewer implements SonjReview.IJsonViewer {
 
     /**
      * Main wrapper for this node
@@ -43,26 +43,7 @@ export class JsonViewer implements SonjReview.IJsonViever {
      */
     constructor(public data: any, public path: string, public plugins: SonjReview.IPlugin[]) {
         this.nodeName = path.split(pathSeparator).pop() as string;
-
-        switch (typeof(data)) {
-            case "bigint":
-            case "boolean":
-            case "number":
-            case "string":
-            case "undefined":
-                this.isExpandable = false;
-                break;
-            case "object":
-                this.isExpandable = data != null && Object.keys(data).length > 0;
-                break;
-            default:
-                throw "Type not supported";
-        }
-        
-        this.plugins.forEach((p, i) => {
-            this.pluginContext[i] = { node: this };
-            p.nodeInit?.call(p, this.pluginContext[i]);
-        });
+        this.init();
     }
 
     /**
@@ -77,39 +58,15 @@ export class JsonViewer implements SonjReview.IJsonViever {
             }
         }
 
-        const wrapper = $("div").addClass("prop-wrapper");
-
-        const dataToRender: SonjReview.INameValuePair = {
-            name: this.nodeName,
-            value: this.data,
+        for(const i in this.pluginContext) {
+            this.pluginContext[i].node.reRender = () => {
+                this.wrapper.empty();
+                this.init();
+                this.renderInternal(container as HTMLElement);
+            }
         }
 
-        this.plugins.forEach((p, i) => p.beforeRender?.call(p, this.pluginContext[i], dataToRender));
-
-        this.header = $("div")
-            .addClass("prop-header")
-            .appendTo(wrapper)
-            .append($("span").text(dataToRender.name).addClass("prop-name"));
-
-        if (this.isExpandable) {
-            this.childrenWrapper = $("div").addClass("prop-children");
-            this.header
-                .append($("span").addClass("prop-expand")).on("click", () => this.toggleExpand());
-            wrapper
-                .append(this.childrenWrapper);
-        }
-        else {
-            this.header
-                .append($("span").text(":").addClass("prop-separator"))
-                .append($("span").addClass("prop-value", "prop-type-" + typeof(dataToRender.value)).text(getTextValue(dataToRender.value)));
-        }
-
-        this.wrapper = wrapper;
-
-        // update DOM only once at the end
-        container.appendChild(this.wrapper.elem);
-
-        this.plugins.forEach((p, i) => p.afterRender?.call(p, this.pluginContext[i]))
+        this.renderInternal(container);
     }
 
     /**
@@ -161,6 +118,64 @@ export class JsonViewer implements SonjReview.IJsonViever {
     renderProperties(conatiner: MiniQuery, propsToRender: string[]) {
         propsToRender.forEach(propName => 
             new JsonViewer(this.data[propName], this.path + pathSeparator + propName, this.plugins).render(conatiner.elem));
+    }
+
+    private renderInternal(container: HTMLElement) {
+        const wrapper = $("div").addClass("prop-wrapper");
+
+        const dataToRender: SonjReview.INameValuePair = {
+            name: this.nodeName,
+            value: this.data,
+        }
+
+        this.plugins.forEach((p, i) => p.beforeRender?.call(p, this.pluginContext[i], dataToRender));
+
+        this.header = $("div")
+            .addClass("prop-header")
+            .appendTo(wrapper)
+            .append($("span").text(dataToRender.name).addClass("prop-name"));
+
+        if (this.isExpandable) {
+            this.childrenWrapper = $("div").addClass("prop-children");
+            this.header
+                .append($("span").addClass("prop-expand")).on("click", () => this.toggleExpand());
+            wrapper
+                .append(this.childrenWrapper);
+        }
+        else {
+            this.header
+                .append($("span").text(":").addClass("prop-separator"))
+                .append($("span").addClass("prop-value", "prop-type-" + typeof(dataToRender.value)).text(getTextValue(dataToRender.value)));
+        }
+
+        this.wrapper = wrapper;
+
+        // update DOM only once at the end
+        container.appendChild(this.wrapper.elem);
+
+        this.plugins.forEach((p, i) => p.afterRender?.call(p, this.pluginContext[i]))
+    }
+
+    private init() {
+        switch (typeof(this.data)) {
+            case "bigint":
+            case "boolean":
+            case "number":
+            case "string":
+            case "undefined":
+                this.isExpandable = false;
+                break;
+            case "object":
+                this.isExpandable = this.data != null && Object.keys(this.data).length > 0;
+                break;
+            default:
+                throw "Type not supported";
+        }
+        
+        this.plugins.forEach((p, i) => {
+            this.pluginContext[i] = { node: this };
+            p.nodeInit?.call(p, this.pluginContext[i]);
+        });
     }
 }
 

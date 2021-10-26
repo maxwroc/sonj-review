@@ -1,8 +1,7 @@
-import { JsonViewer } from "../index";
 
 export const search: SonjReview.ISearchPluginInitializer = (data, options?: SonjReview.ISearchOptions) => {
 
-    let rootNode: JsonViewer | null = null;
+    let rootNode: SonjReview.IJsonViewer | null = null;
 
     let pathsToShow: string[] | null = null;
 

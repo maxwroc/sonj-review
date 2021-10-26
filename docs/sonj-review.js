@@ -75,25 +75,7 @@ var SonjReview = (function (exports) {
              */
             this.pluginContext = {};
             this.nodeName = path.split(pathSeparator).pop();
-            switch (typeof (data)) {
-                case "bigint":
-                case "boolean":
-                case "number":
-                case "string":
-                case "undefined":
-                    this.isExpandable = false;
-                    break;
-                case "object":
-                    this.isExpandable = data != null && Object.keys(data).length > 0;
-                    break;
-                default:
-                    throw "Type not supported";
-            }
-            this.plugins.forEach((p, i) => {
-                var _a;
-                this.pluginContext[i] = { node: this };
-                (_a = p.nodeInit) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i]);
-            });
+            this.init();
         }
         /**
          * Renders node
@@ -106,32 +88,14 @@ var SonjReview = (function (exports) {
                     throw new Error(`Container element with id '${container}' not found`);
                 }
             }
-            const wrapper = $("div").addClass("prop-wrapper");
-            const dataToRender = {
-                name: this.nodeName,
-                value: this.data,
-            };
-            this.plugins.forEach((p, i) => { var _a; return (_a = p.beforeRender) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i], dataToRender); });
-            this.header = $("div")
-                .addClass("prop-header")
-                .appendTo(wrapper)
-                .append($("span").text(dataToRender.name).addClass("prop-name"));
-            if (this.isExpandable) {
-                this.childrenWrapper = $("div").addClass("prop-children");
-                this.header
-                    .append($("span").addClass("prop-expand")).on("click", () => this.toggleExpand());
-                wrapper
-                    .append(this.childrenWrapper);
+            for (const i in this.pluginContext) {
+                this.pluginContext[i].node.reRender = () => {
+                    this.wrapper.empty();
+                    this.init();
+                    this.renderInternal(container);
+                };
             }
-            else {
-                this.header
-                    .append($("span").text(":").addClass("prop-separator"))
-                    .append($("span").addClass("prop-value", "prop-type-" + typeof (dataToRender.value)).text(getTextValue(dataToRender.value)));
-            }
-            this.wrapper = wrapper;
-            // update DOM only once at the end
-            container.appendChild(this.wrapper.elem);
-            this.plugins.forEach((p, i) => { var _a; return (_a = p.afterRender) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i]); });
+            this.renderInternal(container);
         }
         /**
          * Shows or hides node properties/children
@@ -171,6 +135,55 @@ var SonjReview = (function (exports) {
          */
         renderProperties(conatiner, propsToRender) {
             propsToRender.forEach(propName => new JsonViewer(this.data[propName], this.path + pathSeparator + propName, this.plugins).render(conatiner.elem));
+        }
+        renderInternal(container) {
+            const wrapper = $("div").addClass("prop-wrapper");
+            const dataToRender = {
+                name: this.nodeName,
+                value: this.data,
+            };
+            this.plugins.forEach((p, i) => { var _a; return (_a = p.beforeRender) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i], dataToRender); });
+            this.header = $("div")
+                .addClass("prop-header")
+                .appendTo(wrapper)
+                .append($("span").text(dataToRender.name).addClass("prop-name"));
+            if (this.isExpandable) {
+                this.childrenWrapper = $("div").addClass("prop-children");
+                this.header
+                    .append($("span").addClass("prop-expand")).on("click", () => this.toggleExpand());
+                wrapper
+                    .append(this.childrenWrapper);
+            }
+            else {
+                this.header
+                    .append($("span").text(":").addClass("prop-separator"))
+                    .append($("span").addClass("prop-value", "prop-type-" + typeof (dataToRender.value)).text(getTextValue(dataToRender.value)));
+            }
+            this.wrapper = wrapper;
+            // update DOM only once at the end
+            container.appendChild(this.wrapper.elem);
+            this.plugins.forEach((p, i) => { var _a; return (_a = p.afterRender) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i]); });
+        }
+        init() {
+            switch (typeof (this.data)) {
+                case "bigint":
+                case "boolean":
+                case "number":
+                case "string":
+                case "undefined":
+                    this.isExpandable = false;
+                    break;
+                case "object":
+                    this.isExpandable = this.data != null && Object.keys(this.data).length > 0;
+                    break;
+                default:
+                    throw "Type not supported";
+            }
+            this.plugins.forEach((p, i) => {
+                var _a;
+                this.pluginContext[i] = { node: this };
+                (_a = p.nodeInit) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i]);
+            });
         }
     }
     const getTextValue = (val) => {
@@ -422,6 +435,15 @@ var SonjReview = (function (exports) {
             }
         }
     }
+    const jsonPattern = /^[\{\[].*?[\}\}]$/;
+    const parseJsonValue = {
+        text: "Parse JSON",
+        isHidden: context => typeof (context.node.data) != "string" || !jsonPattern.test(context.node.data),
+        onClick: context => {
+            context.node.data = JSON.parse(context.node.data);
+            context.node.reRender && context.node.reRender();
+        }
+    };
     const copyName = {
         text: "Copy name",
         onClick: context => {
@@ -444,7 +466,7 @@ var SonjReview = (function (exports) {
     /**
      * Exposing menu items (they can be used with custom menu items)
      */
-    (propertyMenu["items"]) = { copyName, copyValue, copyFormattedValue };
+    (propertyMenu["items"]) = { copyName, copyValue, copyFormattedValue, parseJsonValue };
     const cssCode$2 = `
 * {
     --sonj-prop-menu-background: var(--sonj-primary-bgcolor);

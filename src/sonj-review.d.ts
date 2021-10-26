@@ -20,10 +20,10 @@ declare module SonjReview {
          * @param rootNodeName Name of the root node
          * @param plugins List of the plugins
          */
-         new(data: any, rootNodeName: string, plugins: IPlugin[]): IJsonViever;
+         new(data: any, rootNodeName: string, plugins: IPlugin[]): IJsonViewer;
     }
 
-    interface IJsonViever {         
+    interface IJsonViewer {
         /**
          * Main wrapper for this node
          */
@@ -150,8 +150,12 @@ declare module SonjReview {
         afterToggleExpand?: { (context: IPluginContext, expanded: boolean): void };
     }
 
+    interface IPluginContextJsonViewer extends IJsonViewer {
+        reRender?: { (): void }
+    }
+
     interface IPluginContext {
-        node: IJsonViever;
+        node: IPluginContextJsonViewer;
         [key: string]: any;
     }
 
@@ -214,13 +218,20 @@ declare module SonjReview {
     }
     
     interface IPropertyMenuPluginInitializer {
-        (menuItems?: IPropertyMenuItem[]): IPlugin
+        items?: IMenuItems;
+        (menuItems?: IPropertyMenuItem[]): IPlugin;
     }
     interface IPropertyMenuItem {
         text: string;
         isDisabled?: (context: SonjReview.IPluginContext) => boolean;
         isHidden?: (context: SonjReview.IPluginContext) => boolean;
         onClick: (context: SonjReview.IPluginContext) => void;
+    }
+    interface IMenuItems {
+        parseJsonValue: IPropertyMenuItem,
+        copyName: IPropertyMenuItem,
+        copyValue: IPropertyMenuItem,
+        copyFormattedValue: IPropertyMenuItem,
     }
 
     interface IPropertyGroupsPluginInitializer {
