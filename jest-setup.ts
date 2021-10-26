@@ -7,6 +7,9 @@ setupJestScreenshot({
 });
 
 export const setupTest = async () => {
+    
+    page.on('pageerror', ({ message }) => console.log(message));
+
     await page.setViewport({
         width: 640,
         height: 480,

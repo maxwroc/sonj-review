@@ -6,7 +6,7 @@ import { JsonViewer } from "../json-viwer";
  * Plugin for menu rendered next to each property
  * @returns Menu plugin
  */
-export const propertyMenu = (menuItems: SonjReview.IPropertyMenuItem[] = []): SonjReview.IPlugin => {
+export const propertyMenu: SonjReview.IPropertyMenuPluginInitializer = (menuItems: SonjReview.IPropertyMenuItem[] = []): SonjReview.IPlugin => {
 
     injectCss("propertyMenu", cssCode);
 
@@ -26,7 +26,7 @@ class PropertyMenu implements SonjReview.IPlugin {
     /**
      * Root node
      */
-    private rootNode: JsonViewer;
+    private rootNode: SonjReview.IJsonViewer;
 
     constructor(private menuItems: SonjReview.IPropertyMenuItem[] = []) {
         document.body.addEventListener("click", () => this.closeActiveMenu());
@@ -133,6 +133,17 @@ class PropertyMenu implements SonjReview.IPlugin {
     }
 }
 
+const jsonPattern = /^[\{\[].*?[\}\}]$/;
+
+const parseJsonValue: SonjReview.IPropertyMenuItem = {
+    text: "Parse JSON",
+    isHidden: context => typeof(context.node.data) != "string" || !jsonPattern.test(context.node.data),
+    onClick: context => {
+        context.node.data = JSON.parse(context.node.data);
+        context.node.reRender && context.node.reRender();
+    }
+}
+
 const copyName: SonjReview.IPropertyMenuItem = {
     text: "Copy name",
     onClick: context => {
@@ -159,7 +170,7 @@ const copyFormattedValue: SonjReview.IPropertyMenuItem = {
 /**
  * Exposing menu items (they can be used with custom menu items)
  */
-((<any>propertyMenu)["items"]) = { copyName, copyValue, copyFormattedValue };
+propertyMenu.items = { copyName, copyValue, copyFormattedValue, parseJsonValue };
 
 
 const cssCode = `

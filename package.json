@@ -40,7 +40,12 @@
     "reporters": [
       "default",
       "jest-screenshot/reporter"
-    ]
+    ],
+    "globals": {
+      "ts-jest": {
+        "isolatedModules": true
+      }
+    }
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^9.0.0",
