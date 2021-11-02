@@ -110,9 +110,9 @@ const truncatePlugin = SonjReview.plugins.truncate({
     // max length for property value
     maxValueLength: 40,
     // whether to show full length info pill
-    showLength: true, 
+    showLengthPill: true, 
     // whether to make info pill clickable (showing full, not truncated value)
-    enableShowFull: true,
+    enableClickToExpand: true,
 })
 ```
 
@@ -140,7 +140,7 @@ const menuPlugin = SonjReview.plugins.propertyMenu();
 
 ![image](https://user-images.githubusercontent.com/8268674/138968966-0dcdd245-caf1-4caa-943a-b5dda35b4f42.gif)
 
-This menu item has to be added manually (it is not a part of the default menu items set).
+This menu item has to be added manually (it is not a part of the default menu items set). It appears only when value looks like a JSON object.
 
 ```typescript
 const menuItems = SonjReview.plugins.propertyMenu.items;

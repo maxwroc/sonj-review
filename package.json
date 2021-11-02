@@ -33,7 +33,7 @@
   "jest": {
     "preset": "./jest-preset.js",
     "testMatch": [
-      "**/test/*.test.ts"
+      "**/test/**/*.test.ts"
     ],
     "verbose": false,
     "setupFilesAfterEnv": ["<rootDir>/jest-setup.ts"],

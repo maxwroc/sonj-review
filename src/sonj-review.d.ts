@@ -260,11 +260,11 @@ declare module SonjReview {
         /**
          * Whether to show length (on hover) when truncated
          */
-        showLength?: boolean;
+        showLengthPill?: boolean;
 
         /**
          * Whether to make length info button clickable
          */
-        enableShowFull?: boolean | string;
+         enableClickToExpand?: boolean | string;
     }
 }
