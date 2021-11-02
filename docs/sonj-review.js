@@ -466,7 +466,7 @@ var SonjReview = (function (exports) {
     /**
      * Exposing menu items (they can be used with custom menu items)
      */
-    (propertyMenu["items"]) = { copyName, copyValue, copyFormattedValue, parseJsonValue };
+    propertyMenu.items = { copyName, copyValue, copyFormattedValue, parseJsonValue };
     const cssCode$2 = `
 * {
     --sonj-prop-menu-background: var(--sonj-primary-bgcolor);
@@ -663,8 +663,9 @@ var SonjReview = (function (exports) {
             pill
                 .addClass("prop-clickable")
                 .attr("title", typeof (enableShowingFull) == "string" ? enableShowingFull : "Show full value")
-                .on("click", () => {
+                .on("click", evt => {
                 targetElem.empty().text(isNameElement ? context.node.nodeName : context.node.data);
+                evt.stopPropagation();
             });
         }
     }

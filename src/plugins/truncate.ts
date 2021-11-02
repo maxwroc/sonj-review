@@ -67,8 +67,9 @@ function addLengthInfoPill(context: SonjReview.IPluginContext, isNameElement: bo
         pill
             .addClass("prop-clickable")
             .attr("title", typeof(enableShowingFull) == "string" ? enableShowingFull : "Show full value")
-            .on("click", () => {
-                targetElem.empty().text(isNameElement ? context.node.nodeName : context.node.data)
+            .on("click", evt => {
+                targetElem.empty().text(isNameElement ? context.node.nodeName : context.node.data);
+                evt.stopPropagation();
             });
     }
 }
