@@ -13,6 +13,8 @@ export const truncate: SonjReview.ITruncatePluginInitializer = (options) => {
     options = {
         maxNameLength: 20,
         maxValueLength: 40,
+        showLengthPill: true,
+        enableClickToExpand: true,
         ...options
     };
 
@@ -38,23 +40,23 @@ export const truncate: SonjReview.ITruncatePluginInitializer = (options) => {
             }
         },
         afterRender: (context: ITruncateContext) => {
-            if (!options.showLength || (!context.fullNameLength && !context.fullValueLength)) {
+            if (!options.showLengthPill || (!context.fullNameLength && !context.fullValueLength)) {
                 return;
             }
 
             if (context.fullValueLength) {
-                addLengthInfoPill(context, false, context.fullValueLength, options.enableShowFull);
+                addLengthInfoPill(context, false, context.fullValueLength, options.enableClickToExpand);
             }
 
             if (context.fullNameLength) {
-                addLengthInfoPill(context, true, context.fullNameLength, options.enableShowFull);
+                addLengthInfoPill(context, true, context.fullNameLength, options.enableClickToExpand);
             }
 
         }
     }
 }
 
-function addLengthInfoPill(context: SonjReview.IPluginContext, isNameElement: boolean, length: number, enableShowingFull: boolean | string | undefined) {
+function addLengthInfoPill(context: SonjReview.IPluginContext, isNameElement: boolean, length: number, enableClickToExpand: boolean | string | undefined) {
     const targetElem = $(context.node.header.elem.querySelector(isNameElement ? ".prop-name" : ".prop-value") as HTMLElement);
     targetElem.addClass("prop-truncated");
 
@@ -63,10 +65,10 @@ function addLengthInfoPill(context: SonjReview.IPluginContext, isNameElement: bo
         .text(formatBytes(length))
         .appendTo(targetElem);
 
-    if (enableShowingFull) {
+    if (enableClickToExpand) {
         pill
             .addClass("prop-clickable")
-            .attr("title", typeof(enableShowingFull) == "string" ? enableShowingFull : "Show full value")
+            .attr("title", typeof(enableClickToExpand) == "string" ? enableClickToExpand : "Show full value")
             .on("click", evt => {
                 targetElem.empty().text(isNameElement ? context.node.nodeName : context.node.data);
                 evt.stopPropagation();

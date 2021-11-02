@@ -96,7 +96,7 @@ const availablePlugins = {
     },
     "truncate": {
         name: "Truncate",
-        options: { showLength: true, enableShowFull: true },
+        options: { showLengthPill: true, enableClickToExpand: true },
         init: (plugins, options) => {
             if (!options) {
                 options = "{}";

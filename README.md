@@ -110,9 +110,9 @@ const truncatePlugin = SonjReview.plugins.truncate({
     // max length for property value
     maxValueLength: 40,
     // whether to show full length info pill
-    showLength: true, 
+    showLengthPill: true, 
     // whether to make info pill clickable (showing full, not truncated value)
-    enableShowFull: true,
+    enableClickToExpand: true,
 })
 ```
 
