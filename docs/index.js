@@ -1,7 +1,4 @@
 const defaultData = {
-    veryLongPropertyNameWithObjectAsValue: {
-        val: 1
-    },
     arrayOfObjects: [
         {
             id: 1,

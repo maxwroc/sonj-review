@@ -1,4 +1,4 @@
-import { setupTest } from "../jest-setup";
+import { setupTest } from "../../jest-setup";
 
 beforeEach(() => setupTest());
 
