@@ -1,9 +1,11 @@
-import { setupTest } from "../../jest-setup";
+import { initPageAndReturnViewerElem, setupTest } from "../../jest-setup";
 
 beforeEach(() => setupTest());
 
 test("Appearance", async () => {
-    const viewerElem = await initPageAndReturnViewerElem(testData, { maxNameLength: 12, maxValueLength: 8 });
+    const viewerElem = await initPageAndReturnViewerElem(testData, () => {
+        testSonjPlugins.push(SonjReview.plugins.truncate({ maxNameLength: 12, maxValueLength: 8 }));
+    });
 
     await page.click("#root");
     await page.click("#root-thisIsVeryLongPropertyName");
@@ -14,7 +16,9 @@ test("Appearance", async () => {
 });
 
 test("Pill disabled", async () => {
-    await initPageAndReturnViewerElem(testData, { showLengthPill: false, maxNameLength: 12, maxValueLength: 8 });
+    await initPageAndReturnViewerElem(testData, () => {
+        testSonjPlugins.push(SonjReview.plugins.truncate({ showLengthPill: false, maxNameLength: 12, maxValueLength: 8 }));
+    });
 
     await page.click("#root");
     await page.click("#root-thisIsVeryLongPropertyName");
@@ -28,7 +32,9 @@ test.each([
     ["name", "jetAnothe...26", "jetAnotherLongPropertyName"]
 ])("Click on pill reveals full text", async (fieldType: string, expectedTruncatedVal: string, expectedFullVal: string) => {
 
-    await initPageAndReturnViewerElem(testData, { maxNameLength: 12, maxValueLength: 8 });
+    await initPageAndReturnViewerElem(testData, () => {
+        testSonjPlugins.push(SonjReview.plugins.truncate({ maxNameLength: 12, maxValueLength: 8 }));
+    });
     await page.click("#root");
 
     const propertyValueElem = await page.$(`#root-jetAnotherLongPropertyName .prop-${fieldType}`);
@@ -42,7 +48,9 @@ test.each([
 });
 
 test("Click on pill doesn't expand node", async () => {
-    await initPageAndReturnViewerElem(testData, { maxNameLength: 12, maxValueLength: 8 });
+    await initPageAndReturnViewerElem(testData, () => {
+        testSonjPlugins.push(SonjReview.plugins.truncate({ maxNameLength: 12, maxValueLength: 8 }));
+    });
     await page.click("#root");
 
     expect((await page.$$(".prop-name")).length).toBe(3);
@@ -51,23 +59,6 @@ test("Click on pill doesn't expand node", async () => {
 
     expect((await page.$$(".prop-name")).length).toBe(3);
 });
-
-const initPageAndReturnViewerElem = async (data: any, options: SonjReview.ITruncateOptions) => {
-    await page.evaluate((dataInternal: any, options: SonjReview.ITruncateOptions) => {
-        const addNodeIds: SonjReview.IPlugin = {
-            afterRender: context => {
-                context.node.header.elem!.setAttribute("id", context.node.path.replace(/\//g, "-"));
-            }
-        }
-
-        const truncatePlugin = SonjReview.plugins.truncate(options);
-
-        const viewer = new SonjReview.JsonViewer(dataInternal, "root", [ truncatePlugin, addNodeIds ]);
-        viewer.render("viewer");
-    }, data, <any>options);
-
-    return await page.$("#viewer");
-}
 
 const testData = {
     thisIsVeryLongPropertyName: {
