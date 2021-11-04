@@ -1,6 +1,6 @@
 {
   "name": "sonj-review",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Extensible JSON Viewer",
   "main": "dist/sonj-review.js",
   "types": "src/sonj-review.d.ts",
