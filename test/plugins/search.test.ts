@@ -1,10 +1,10 @@
-import { setupTest } from "../../jest-setup";
+import { initPageAndReturnViewerElem, setupTest } from "../../jest-setup";
 
 
 beforeEach(() => setupTest());
 
 test("Single result", async () => {
-    await initPageAndReturnViewerElem(testData);
+    await initPageWithSearchPlugin(testData);
 
     await page.focus("#inputElem");
     await page.keyboard.type("James");
@@ -15,7 +15,7 @@ test("Single result", async () => {
 });
 
 test("Multiple results", async () => {
-    await initPageAndReturnViewerElem(testData);
+    await initPageWithSearchPlugin(testData);
 
     await page.focus("#inputElem");
     await page.keyboard.type("Contoso");
@@ -28,7 +28,7 @@ test("Multiple results", async () => {
 });
 
 test("Search for number", async () => {
-    await initPageAndReturnViewerElem(testData);
+    await initPageWithSearchPlugin(testData);
 
     await page.focus("#inputElem");
     await page.keyboard.type("234");
@@ -39,7 +39,7 @@ test("Search for number", async () => {
 });
 
 test("Search for property name", async () => {
-    await initPageAndReturnViewerElem(testData);
+    await initPageWithSearchPlugin(testData);
 
     await page.focus("#inputElem");
     await page.keyboard.type("job_title");
@@ -52,7 +52,7 @@ test("Search for property name", async () => {
 });
 
 test("Result which path partially matches the other existing path", async () => {
-    await initPageAndReturnViewerElem(testData);
+    await initPageWithSearchPlugin(testData);
 
     await page.focus("#inputElem");
     await page.keyboard.type("microbots");
@@ -64,7 +64,7 @@ test("Result which path partially matches the other existing path", async () => 
 });
 
 test("Case sensitive search", async () => {
-    await initPageAndReturnViewerElem(testData, { caseSensitive: true });
+    await initPageWithSearchPlugin(testData, { caseSensitive: true });
 
     await page.focus("#inputElem");
     await page.keyboard.type("james");
@@ -81,7 +81,7 @@ test("Case sensitive search", async () => {
 });
 
 test("Special characters in query", async () => {
-    await initPageAndReturnViewerElem(testData);
+    await initPageWithSearchPlugin(testData);
 
     await page.focus("#inputElem");
     await page.keyboard.type(`$%^&*()\\`);
@@ -90,15 +90,9 @@ test("Special characters in query", async () => {
     expect((await page.$$(".prop-value")).length).toBe(2);
 });
 
-const initPageAndReturnViewerElem = async (data: any, options?: SonjReview.ISearchOptions) => {
-    await page.evaluate((dataInternal: any, options?: SonjReview.ISearchOptions) => {
-        const addNodeIds: SonjReview.IPlugin = {
-            afterRender: context => {
-                context.node.header.elem!.setAttribute("id", context.node.path.replace(/\//g, "-"));
-            }
-        }
-
-        const searchPlugin = SonjReview.plugins.search(dataInternal, options);
+const initPageWithSearchPlugin = async (data: any, options?: SonjReview.ISearchOptions) => 
+    initPageAndReturnViewerElem(data, (dataInternal: any, optionsInternal: SonjReview.ISearchOptions) => {
+        const searchPlugin = SonjReview.plugins.search(dataInternal, optionsInternal);
 
         const inputElem = document.createElement("input");
         inputElem.setAttribute("id", "inputElem");
@@ -110,12 +104,9 @@ const initPageAndReturnViewerElem = async (data: any, options?: SonjReview.ISear
             }
         });
 
-        const viewer = new SonjReview.JsonViewer(dataInternal, "root", [ searchPlugin, addNodeIds ]);
-        viewer.render("viewer");
-    }, data, <any>options);
+        testSonjPlugins.push(searchPlugin);
+    }, options);
 
-    return await page.$("#viewer");
-}
 
 const testData = {
     "collection": [

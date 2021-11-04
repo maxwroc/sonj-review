@@ -1,9 +1,9 @@
-import { setupTest } from "../../jest-setup";
+import { initPageAndReturnViewerElem, setupTest } from "../../jest-setup";
 
 beforeEach(() => setupTest());
 
 test("Hover property appearance", async () => {
-    const viewerElem = await initPageAndReturnViewerElem(testData);
+    const viewerElem = await initPageWithMenuPlugin(testData);
 
     await page.click("#root");
     await page.hover("#root-number_value");
@@ -13,7 +13,7 @@ test("Hover property appearance", async () => {
 });
 
 test("Hover menu button appearance", async () => {
-    const viewerElem = await initPageAndReturnViewerElem(testData);
+    const viewerElem = await initPageWithMenuPlugin(testData);
 
     await page.click("#root");
     await page.hover("#root-number_value .prop-menu-button");
@@ -24,7 +24,7 @@ test("Hover menu button appearance", async () => {
 
 
 test("Menu appearance", async () => {
-    const viewerElem = await initPageAndReturnViewerElem(testData);
+    const viewerElem = await initPageWithMenuPlugin(testData);
 
     await page.click("#root");
     await page.click("#root-number_value .prop-menu-button");
@@ -41,7 +41,7 @@ test.each([
     ["array", 2, 3, "Copy value", `[1,2,3,4]`],
     ["array", 3, 3, "Copy formatted JSON", `[\n  1,\n  2,\n  3,\n  4\n]`]
 ])("Copy property name/value", async (propertyName: string, itemPos: number, expectedMenuItemCount: number, expectedText: string, expectedCopiedValue: any) => {
-    await initPageAndReturnViewerElem(testData);
+    await initPageWithMenuPlugin(testData);
 
     await page.click("#root");
     await page.click(`#root-${propertyName} .prop-menu-button`);
@@ -57,7 +57,7 @@ test.each([
 });
 
 test("Parse JSON", async () => {
-    const viewerElem = await initPageAndReturnViewerElem(testData);
+    const viewerElem = await initPageWithMenuPlugin(testData);
 
     await page.click("#root");
     await page.click(`#root-json .prop-menu-button`);
@@ -74,39 +74,25 @@ test("Parse JSON", async () => {
     expect(await viewerElem!.screenshot()).toMatchImageSnapshot();
 });
 
-const initPageAndReturnViewerElem = async (data: any) => {
+const initPageWithMenuPlugin = async (data: any) => initPageAndReturnViewerElem(data, () => {
 
-    await page.evaluate((dataInternal: any) => {
+    // mock clipboard
+    let clipboardText: string | null = null;
+    (<any>window)["navigator"]["clipboard"] = {
+        writeText: (text: string) => new Promise(resolve => clipboardText = text),
+        readText: () => new Promise(resolve => resolve(clipboardText)),
+    }
 
-        // mock clipboard
-        let clipboardText: string | null = null;
-        (<any>window)["navigator"]["clipboard"] = {
-            writeText: (text: string) => new Promise(resolve => clipboardText = text),
-            readText: () => new Promise(resolve => resolve(clipboardText)),
-        }
+    const propertyMenuPlugin = SonjReview.plugins.propertyMenu;
 
-        const addNodeIds: SonjReview.IPlugin = {
-            afterRender: context => {
-                context.node.header.elem!.setAttribute("id", context.node.path.replace(/\//g, "-"));
-            }
-        }
-
-        const propertyMenuPlugin = SonjReview.plugins.propertyMenu;
-
-        const menuItems: SonjReview.IPropertyMenuItem[] = [
-            propertyMenuPlugin.items!.parseJsonValue,
-            propertyMenuPlugin.items!.copyName,
-            propertyMenuPlugin.items!.copyValue,
-            propertyMenuPlugin.items!.copyFormattedValue,
-        ];
-        const propertyMenu = propertyMenuPlugin(menuItems);
-
-        const viewer = new SonjReview.JsonViewer(dataInternal, "root", [ propertyMenu, addNodeIds ]);
-        viewer.render("viewer");
-    }, data);
-
-    return await page.$("#viewer");
-}
+    const menuItems: SonjReview.IPropertyMenuItem[] = [
+        propertyMenuPlugin.items!.parseJsonValue,
+        propertyMenuPlugin.items!.copyName,
+        propertyMenuPlugin.items!.copyValue,
+        propertyMenuPlugin.items!.copyFormattedValue,
+    ];
+    testSonjPlugins.push(propertyMenuPlugin(menuItems));
+});
 
 const testData = {
     "string_value": "value",
