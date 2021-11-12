@@ -1,4 +1,4 @@
-import { setupTest } from "../jest-setup";
+import { setupTest, initPageAndReturnViewerElem } from "../jest-setup";
 
 beforeEach(() => setupTest());
 
@@ -40,16 +40,20 @@ test("Root element clicked twice", async () => {
     expect(await page.$("#root-number")).toBeTruthy();
 });
 
-const initPageAndReturnViewerElem = async (data: any) => {
-    await page.evaluate((dataInternal: any) => {
-        const addNodeIds: SonjReview.IPlugin = {
-            afterRender: context => {
-                context.node.header.elem!.setAttribute("id", context.node.path.replace(/\//g, "-"));
-            }
-        }
-        const viewer = new SonjReview.JsonViewer(dataInternal, "root", [ addNodeIds ]);
-        viewer.render("viewer");
-    }, data);
+test("Object with special characters in property names", async () => {
+    const elem = await initPageAndReturnViewerElem({
+        "name_!@#$%^&*()-=_\"[]{}:<>?/\\": "value_!@#$%^&*()-=_\"[]{}:<>?/\\"
+     });
+     
+    await page.click("#root");
 
-    return await page.$("#viewer");
-}
+    const childrenNodes = await page.$$("#root + .prop-children > *");
+
+    expect(childrenNodes.length).toBe(1);
+
+    const name = await page.$("#root + .prop-children .prop-name")
+    expect(await page.evaluate(el => el.textContent, name)).toBe("name_!@#$%^&*()-=_\"[]{}:<>?/\\");
+
+    const val = await page.$("#root + .prop-children .prop-value")
+    expect(await page.evaluate(el => el.textContent, val)).toBe("value_!@#$%^&*()-=_\"[]{}:<>?/\\");
+})

@@ -3,7 +3,7 @@ export const search: SonjReview.ISearchPluginInitializer = (data, options?: Sonj
 
     let rootNode: SonjReview.IJsonViewer | null = null;
 
-    let pathsToShow: string[] | null = null;
+    let pathsToShow: string[][] | null = null;
 
     return {
         nodeInit: context => {
@@ -21,7 +21,7 @@ export const search: SonjReview.ISearchPluginInitializer = (data, options?: Sonj
             }
 
             return props
-                .filter(p => pathsToShow!.some(path => path.startsWith(context.node.path + "/" + p + "/")));;
+                .filter(p => pathsToShow!.some(pathToShow => isSubpath(pathToShow, context.node.path) && isSubpath(pathToShow, [...context.node.path, p])));
         },
         query: searchString => {
             if (!rootNode) {
@@ -52,7 +52,7 @@ export const search: SonjReview.ISearchPluginInitializer = (data, options?: Sonj
 }
 
 
-function searchInternal(data: any, root: string, query: string, options?: SonjReview.ISearchOptions): Promise<string[]> {
+function searchInternal(data: any, root: string[], query: string, options?: SonjReview.ISearchOptions): Promise<string[][]> {
     const isMatching = getMatcher(query, !!options?.caseSensitive);
     return new Promise((resolve, reject) => {
         const result = getValueLocations(data, root, isMatching, options);
@@ -66,8 +66,8 @@ function searchInternal(data: any, root: string, query: string, options?: SonjRe
  * @param path Current path
  * @param isMatching Query matcher
  */
-function getValueLocations(data: any, path: string, isMatching: IMatcher, options?: SonjReview.ISearchOptions): string[] {
-    let results = [] as string[];
+function getValueLocations(data: any, path: string[], isMatching: IMatcher, options?: SonjReview.ISearchOptions): string[][] {
+    let results = [] as string[][];
 
     switch (typeof data) {
         case "object":
@@ -77,10 +77,10 @@ function getValueLocations(data: any, path: string, isMatching: IMatcher, option
 
             Object.keys(data).forEach(k => {
 
-                const propPath = `${path}/${k}`;
+                const propPath = [...path, k];
 
                 if (isMatching(k)) {
-                    results.push(propPath + "/");
+                    results.push(propPath);
                 }
                 else {
                     results = results.concat(getValueLocations(data[k], propPath, isMatching, options));
@@ -93,7 +93,7 @@ function getValueLocations(data: any, path: string, isMatching: IMatcher, option
             data = (<number>data).toString();
         case "string":
             if (isMatching(<string>data)) {
-                results.push(path + "/");
+                results.push(path);
             }
 
             break;
@@ -102,6 +102,9 @@ function getValueLocations(data: any, path: string, isMatching: IMatcher, option
     return results;
 }
 
+/**
+ * Returns case-sensitive or case-insensitive matcher
+ */
 const getMatcher = ((query: string, caseSensitiveSearch: boolean) => {
     let pattern: RegExp;
     return (dataString: string): boolean => {
@@ -117,8 +120,27 @@ const getMatcher = ((query: string, caseSensitiveSearch: boolean) => {
     };
 });
 
+/**
+ * Escapes regex special chars
+ * @param text Text to process
+ * @returns Safe regex query
+ */
 function escapeRegExp(text: string): string {
     return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+}
+
+/**
+ * Checks whether given subpath is part of the full path
+ * @param basePath Full path
+ * @param subpathToCheck Subpath to check
+ * @returns True when given subpath is part of the full path
+ */
+const isSubpath = (basePath: string[], subpathToCheck: string[]) => {
+    if (subpathToCheck.length > basePath.length) {
+        return false;
+    }
+
+    return subpathToCheck.every((val, i) => val == basePath[i]);
 }
 
 interface IMatcher {
