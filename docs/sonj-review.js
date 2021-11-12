@@ -88,14 +88,16 @@ var SonjReview = (function (exports) {
                     throw new Error(`Container element with id '${container}' not found`);
                 }
             }
+            this.wrapper = $("div").addClass("prop-wrapper");
+            container.appendChild(this.wrapper.elem);
             for (const i in this.pluginContext) {
                 this.pluginContext[i].node.reRender = () => {
                     this.wrapper.empty();
                     this.init();
-                    this.renderInternal(container);
+                    this.renderInternal();
                 };
             }
-            this.renderInternal(container);
+            this.renderInternal();
         }
         /**
          * Shows or hides node properties/children
@@ -136,8 +138,7 @@ var SonjReview = (function (exports) {
         renderProperties(conatiner, propsToRender) {
             propsToRender.forEach(propName => new JsonViewer(this.data[propName], this.path + pathSeparator + propName, this.plugins).render(conatiner.elem));
         }
-        renderInternal(container) {
-            const wrapper = $("div").addClass("prop-wrapper");
+        renderInternal() {
             const dataToRender = {
                 name: this.nodeName,
                 value: this.data,
@@ -145,13 +146,13 @@ var SonjReview = (function (exports) {
             this.plugins.forEach((p, i) => { var _a; return (_a = p.beforeRender) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i], dataToRender); });
             this.header = $("div")
                 .addClass("prop-header")
-                .appendTo(wrapper)
+                .appendTo(this.wrapper)
                 .append($("span").text(dataToRender.name).addClass("prop-name"));
             if (this.isExpandable) {
                 this.childrenWrapper = $("div").addClass("prop-children");
                 this.header
                     .append($("span").addClass("prop-expand")).on("click", () => this.toggleExpand());
-                wrapper
+                this.wrapper
                     .append(this.childrenWrapper);
             }
             else {
@@ -159,9 +160,6 @@ var SonjReview = (function (exports) {
                     .append($("span").text(":").addClass("prop-separator"))
                     .append($("span").addClass("prop-value", "prop-type-" + typeof (dataToRender.value)).text(getTextValue(dataToRender.value)));
             }
-            this.wrapper = wrapper;
-            // update DOM only once at the end
-            container.appendChild(this.wrapper.elem);
             this.plugins.forEach((p, i) => { var _a; return (_a = p.afterRender) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i]); });
         }
         init() {

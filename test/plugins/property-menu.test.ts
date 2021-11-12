@@ -74,6 +74,29 @@ test("Parse JSON", async () => {
     expect(await viewerElem!.screenshot()).toMatchImageSnapshot();
 });
 
+test("Parse JSON - property position not changed after re-render", async () => {
+    const viewerElem = await initPageWithMenuPlugin({
+        "first_property": "value 1",
+        "json": "{\"val1\": \"value1\", \"val2\": 2}",
+        "last_property": "value 2"
+    });
+
+    await page.click("#root");
+    await page.click(`#root-json .prop-menu-button`);
+
+    expect((await page.$$("#root + .prop-children > *")).length).toBe(3);
+
+    const menuItem = await page.$(`.prop-menu .prop-menu-item:nth-child(1)`);
+    expect(await page.evaluate(el => el.textContent, menuItem)).toBe("Parse JSON");
+
+    await menuItem!.click();
+
+    expect((await page.$$("#root + .prop-children > *")).length).toBe(3);
+
+    const secondProperty = await page.$("#root + .prop-children > .prop-wrapper:nth-child(2) > .prop-header > .prop-name");
+    expect(await page.evaluate(el => el.textContent, secondProperty)).toBe("json");
+});
+
 const initPageWithMenuPlugin = async (data: any) => initPageAndReturnViewerElem(data, () => {
 
     // mock clipboard

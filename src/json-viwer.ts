@@ -58,15 +58,18 @@ export class JsonViewer implements SonjReview.IJsonViewer {
             }
         }
 
+        this.wrapper = $("div").addClass("prop-wrapper");
+        container.appendChild(this.wrapper.elem);
+
         for(const i in this.pluginContext) {
             this.pluginContext[i].node.reRender = () => {
                 this.wrapper.empty();
                 this.init();
-                this.renderInternal(container as HTMLElement);
+                this.renderInternal();
             }
         }
 
-        this.renderInternal(container);
+        this.renderInternal();
     }
 
     /**
@@ -120,8 +123,7 @@ export class JsonViewer implements SonjReview.IJsonViewer {
             new JsonViewer(this.data[propName], this.path + pathSeparator + propName, this.plugins).render(conatiner.elem));
     }
 
-    private renderInternal(container: HTMLElement) {
-        const wrapper = $("div").addClass("prop-wrapper");
+    private renderInternal() {
 
         const dataToRender: SonjReview.INameValuePair = {
             name: this.nodeName,
@@ -132,14 +134,14 @@ export class JsonViewer implements SonjReview.IJsonViewer {
 
         this.header = $("div")
             .addClass("prop-header")
-            .appendTo(wrapper)
+            .appendTo(this.wrapper)
             .append($("span").text(dataToRender.name).addClass("prop-name"));
 
         if (this.isExpandable) {
             this.childrenWrapper = $("div").addClass("prop-children");
             this.header
                 .append($("span").addClass("prop-expand")).on("click", () => this.toggleExpand());
-            wrapper
+            this.wrapper
                 .append(this.childrenWrapper);
         }
         else {
@@ -147,11 +149,6 @@ export class JsonViewer implements SonjReview.IJsonViewer {
                 .append($("span").text(":").addClass("prop-separator"))
                 .append($("span").addClass("prop-value", "prop-type-" + typeof(dataToRender.value)).text(getTextValue(dataToRender.value)));
         }
-
-        this.wrapper = wrapper;
-
-        // update DOM only once at the end
-        container.appendChild(this.wrapper.elem);
 
         this.plugins.forEach((p, i) => p.afterRender?.call(p, this.pluginContext[i]))
     }
