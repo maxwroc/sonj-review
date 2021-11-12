@@ -47,9 +47,9 @@ test("Object with special characters in property names", async () => {
      
     await page.click("#root");
 
-    const dd = await page.$$("#root + .prop-children > *");
+    const childrenNodes = await page.$$("#root + .prop-children > *");
 
-    expect(dd.length).toBe(1);
+    expect(childrenNodes.length).toBe(1);
 
     const name = await page.$("#root + .prop-children .prop-name")
     expect(await page.evaluate(el => el.textContent, name)).toBe("name_!@#$%^&*()-=_\"[]{}:<>?/\\");
