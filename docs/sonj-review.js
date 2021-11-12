@@ -57,8 +57,6 @@ var SonjReview = (function (exports) {
     }
     const $ = (input) => new MiniQuery(input);
 
-    // TODO: this can break if object key/property contains slash
-    const pathSeparator = "/";
     class JsonViewer {
         /**
          * Constructor
@@ -68,13 +66,13 @@ var SonjReview = (function (exports) {
          */
         constructor(data, path, plugins) {
             this.data = data;
-            this.path = path;
             this.plugins = plugins;
             /**
              * Plugin context data
              */
             this.pluginContext = {};
-            this.nodeName = path.split(pathSeparator).pop();
+            this.path = Array.isArray(path) ? path : [path];
+            this.nodeName = this.path[this.path.length - 1];
             this.init();
         }
         /**
@@ -136,7 +134,7 @@ var SonjReview = (function (exports) {
          * @param propsToRender List of properties to render
          */
         renderProperties(conatiner, propsToRender) {
-            propsToRender.forEach(propName => new JsonViewer(this.data[propName], this.path + pathSeparator + propName, this.plugins).render(conatiner.elem));
+            propsToRender.forEach(propName => new JsonViewer(this.data[propName], [...this.path, propName], this.plugins).render(conatiner.elem));
         }
         renderInternal() {
             const dataToRender = {
@@ -208,7 +206,7 @@ var SonjReview = (function (exports) {
     const autoExpand = (depth) => {
         return {
             afterRender: context => {
-                if (depth && (context.node.path.split("/").length - 1 >= depth)) {
+                if (depth && (context.node.path.length - 1 >= depth)) {
                     return;
                 }
                 context.node.toggleExpand(true /*forceExpand*/);
@@ -530,7 +528,7 @@ var SonjReview = (function (exports) {
                     return props;
                 }
                 return props
-                    .filter(p => pathsToShow.some(path => path.startsWith(context.node.path + "/" + p + "/")));
+                    .filter(p => pathsToShow.some(pathToShow => isSubpath(pathToShow, context.node.path) && isSubpath(pathToShow, [...context.node.path, p])));
             },
             query: searchString => {
                 if (!rootNode) {
@@ -576,9 +574,9 @@ var SonjReview = (function (exports) {
                     return results;
                 }
                 Object.keys(data).forEach(k => {
-                    const propPath = `${path}/${k}`;
+                    const propPath = [...path, k];
                     if (isMatching(k)) {
-                        results.push(propPath + "/");
+                        results.push(propPath);
                     }
                     else {
                         results = results.concat(getValueLocations(data[k], propPath, isMatching));
@@ -589,12 +587,15 @@ var SonjReview = (function (exports) {
                 data = data.toString();
             case "string":
                 if (isMatching(data)) {
-                    results.push(path + "/");
+                    results.push(path);
                 }
                 break;
         }
         return results;
     }
+    /**
+     * Returns case-sensitive or case-insensitive matcher
+     */
     const getMatcher = ((query, caseSensitiveSearch) => {
         let pattern;
         return (dataString) => {
@@ -607,9 +608,26 @@ var SonjReview = (function (exports) {
             return pattern.test(dataString);
         };
     });
+    /**
+     * Escapes regex special chars
+     * @param text Text to process
+     * @returns Safe regex query
+     */
     function escapeRegExp(text) {
         return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
     }
+    /**
+     * Checks whether given subpath is part of the full path
+     * @param basePath Full path
+     * @param subpathToCheck Subpath to check
+     * @returns True when given subpath is part of the full path
+     */
+    const isSubpath = (basePath, subpathToCheck) => {
+        if (subpathToCheck.length > basePath.length) {
+            return false;
+        }
+        return subpathToCheck.every((val, i) => val == basePath[i]);
+    };
 
     /**
      * Plugin for truncating long node name and/or value

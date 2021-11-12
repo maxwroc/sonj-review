@@ -1,9 +1,11 @@
 import { MiniQuery, $ } from "./mquery";
 
-// TODO: this can break if object key/property contains slash
-const pathSeparator = "/";
-
 export class JsonViewer implements SonjReview.IJsonViewer {
+
+    /**
+     * Current node path
+     */
+    public path: string[];
 
     /**
      * Main wrapper for this node
@@ -41,8 +43,9 @@ export class JsonViewer implements SonjReview.IJsonViewer {
      * @param path Node path (with name in the last chunk/part)
      * @param plugins Collection of plugins
      */
-    constructor(public data: any, public path: string, public plugins: SonjReview.IPlugin[]) {
-        this.nodeName = path.split(pathSeparator).pop() as string;
+    constructor(public data: any, path: string[] | string, public plugins: SonjReview.IPlugin[]) {
+        this.path = Array.isArray(path) ? path : [path];
+        this.nodeName = this.path[this.path.length - 1];
         this.init();
     }
 
@@ -120,7 +123,7 @@ export class JsonViewer implements SonjReview.IJsonViewer {
      */
     renderProperties(conatiner: MiniQuery, propsToRender: string[]) {
         propsToRender.forEach(propName => 
-            new JsonViewer(this.data[propName], this.path + pathSeparator + propName, this.plugins).render(conatiner.elem));
+            new JsonViewer(this.data[propName], [...this.path, propName], this.plugins).render(conatiner.elem));
     }
 
     private renderInternal() {

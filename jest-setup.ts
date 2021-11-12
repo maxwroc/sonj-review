@@ -35,7 +35,7 @@ export const initPageAndReturnViewerElem = async (data: any, additionalSetup?: {
         // plugin for adding unique IDs on each node
         const addNodeIds: SonjReview.IPlugin = {
             afterRender: context => {
-                context.node.header.elem!.setAttribute("id", context.node.path.replace(/\//g, "-"));
+                context.node.header.elem!.setAttribute("id", context.node.path.join("-"));
             }
         }
 

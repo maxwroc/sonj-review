@@ -6,7 +6,7 @@
 export const autoExpand: SonjReview.IAutoExpandPluginInitializer = (depth) => {
     return {
         afterRender: context => {
-            if (depth && (context.node.path.split("/").length - 1 >= depth)) {
+            if (depth && (context.node.path.length - 1 >= depth)) {
                 return;
             }
 

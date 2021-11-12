@@ -49,9 +49,15 @@ declare module SonjReview {
          */
         isExpandable: boolean;
 
+        /**
+         * Node value/data
+         */
         data: any;
         
-        path: string;
+        /**
+         * Node path
+         */
+        path: string[];
         
         plugins: SonjReview.IPlugin[];
 
@@ -170,7 +176,7 @@ declare module SonjReview {
         (data: any, options?: ISearchOptions): ISearchPlugin;
     }
     interface ISearchPlugin extends IPlugin {
-        query: (searchString: string) => Promise<string[]>;
+        query: (searchString: string) => Promise<string[][]>;
     }
     interface ISearchOptions {
         caseSensitive?: boolean,
