@@ -119,6 +119,7 @@ const availablePlugins = {
                 SonjReview.plugins.propertyMenu.items.copyName,
                 SonjReview.plugins.propertyMenu.items.copyValue,
                 SonjReview.plugins.propertyMenu.items.copyFormattedValue,
+                SonjReview.plugins.propertyMenu.items.sortProperties,
             ]
             plugins.push(SonjReview.plugins.propertyMenu(menuItems));
         }

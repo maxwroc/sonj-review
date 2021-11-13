@@ -84,8 +84,6 @@ export class JsonViewer implements SonjReview.IJsonViewer {
             return;
         }
 
-        const expandedClassName = "prop-expanded";
-
         const currentlyExpanded = this.wrapper.hasClass(expandedClassName);
         expand = expand === undefined ? !currentlyExpanded : expand;
 
@@ -94,6 +92,7 @@ export class JsonViewer implements SonjReview.IJsonViewer {
         }
 
         if (expand) {
+            console.log("expand");
             this.wrapper.addClass(expandedClassName);
 
             let propsToRender = Object.keys(this.data) as string[];
@@ -109,6 +108,7 @@ export class JsonViewer implements SonjReview.IJsonViewer {
             this.plugins.forEach((p, i) => p.afterRenderProperties?.call(p, this.pluginContext[i], propsToRender));
         }
         else {
+            console.log("collapse");
             this.wrapper.removeClass(expandedClassName);
             this.childrenWrapper.empty();
         }
@@ -132,6 +132,8 @@ export class JsonViewer implements SonjReview.IJsonViewer {
             name: this.nodeName,
             value: this.data,
         }
+
+        this.wrapper.removeClass(expandedClassName);
 
         this.plugins.forEach((p, i) => p.beforeRender?.call(p, this.pluginContext[i], dataToRender));
 
@@ -198,3 +200,5 @@ const getTextValue = (val: any): string => {
 
     return val.toString();
 } 
+
+const expandedClassName = "prop-expanded";

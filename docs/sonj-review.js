@@ -105,13 +105,13 @@ var SonjReview = (function (exports) {
             if (!this.isExpandable) {
                 return;
             }
-            const expandedClassName = "prop-expanded";
             const currentlyExpanded = this.wrapper.hasClass(expandedClassName);
             expand = expand === undefined ? !currentlyExpanded : expand;
             if (expand == currentlyExpanded) {
                 return;
             }
             if (expand) {
+                console.log("expand");
                 this.wrapper.addClass(expandedClassName);
                 let propsToRender = Object.keys(this.data);
                 this.plugins.forEach((p, i) => {
@@ -123,6 +123,7 @@ var SonjReview = (function (exports) {
                 this.plugins.forEach((p, i) => { var _a; return (_a = p.afterRenderProperties) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i], propsToRender); });
             }
             else {
+                console.log("collapse");
                 this.wrapper.removeClass(expandedClassName);
                 this.childrenWrapper.empty();
             }
@@ -141,6 +142,7 @@ var SonjReview = (function (exports) {
                 name: this.nodeName,
                 value: this.data,
             };
+            this.wrapper.removeClass(expandedClassName);
             this.plugins.forEach((p, i) => { var _a; return (_a = p.beforeRender) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i], dataToRender); });
             this.header = $("div")
                 .addClass("prop-header")
@@ -197,6 +199,7 @@ var SonjReview = (function (exports) {
         }
         return val.toString();
     };
+    const expandedClassName = "prop-expanded";
 
     /**
      * Plugin for auto-expanding nodes
@@ -332,6 +335,63 @@ var SonjReview = (function (exports) {
         return text.substr(0, maxLength - 3) + "...";
     };
 
+    const copyName = {
+        text: "Copy name",
+        onClick: context => {
+            navigator.clipboard.writeText(context.node.nodeName);
+        }
+    };
+    const copyValue = {
+        text: "Copy value",
+        onClick: context => {
+            navigator.clipboard.writeText(context.node.isExpandable ? JSON.stringify(context.node.data) : context.node.data);
+        }
+    };
+    const copyFormattedValue = {
+        text: "Copy formatted JSON",
+        isHidden: context => !context.node.isExpandable,
+        onClick: context => {
+            navigator.clipboard.writeText(context.node.isExpandable ? JSON.stringify(context.node.data, null, 2) : context.node.data);
+        }
+    };
+
+    const jsonPattern = /^[\{\[].*?[\}\}]$/;
+    const parseJsonValue = {
+        text: "Parse JSON",
+        isHidden: context => typeof (context.node.data) != "string" || !jsonPattern.test(context.node.data),
+        onClick: context => {
+            context.node.data = JSON.parse(context.node.data);
+            context.node.reRender && context.node.reRender();
+        }
+    };
+
+    const sortProperties = {
+        text: "Sort",
+        isHidden: context => !context.node.isExpandable,
+        onClick: context => {
+            if (Array.isArray(context.node.data)) {
+                context.node.data = context.node.data.sort();
+            }
+            else {
+                context.node.data = Object.keys(context.node.data).sort().reduce((acc, curr) => {
+                    acc[curr] = context.node.data[curr];
+                    return acc;
+                }, {});
+            }
+            context.node.reRender && context.node.reRender();
+            context.node.toggleExpand(true);
+        }
+    };
+
+    var availableMenuItems = /*#__PURE__*/Object.freeze({
+        __proto__: null,
+        copyName: copyName,
+        copyValue: copyValue,
+        copyFormattedValue: copyFormattedValue,
+        parseJsonValue: parseJsonValue,
+        sortProperties: sortProperties
+    });
+
     /**
      * Plugin for menu rendered next to each property
      * @returns Menu plugin
@@ -431,38 +491,10 @@ var SonjReview = (function (exports) {
             }
         }
     }
-    const jsonPattern = /^[\{\[].*?[\}\}]$/;
-    const parseJsonValue = {
-        text: "Parse JSON",
-        isHidden: context => typeof (context.node.data) != "string" || !jsonPattern.test(context.node.data),
-        onClick: context => {
-            context.node.data = JSON.parse(context.node.data);
-            context.node.reRender && context.node.reRender();
-        }
-    };
-    const copyName = {
-        text: "Copy name",
-        onClick: context => {
-            navigator.clipboard.writeText(context.node.nodeName);
-        }
-    };
-    const copyValue = {
-        text: "Copy value",
-        onClick: context => {
-            navigator.clipboard.writeText(context.node.isExpandable ? JSON.stringify(context.node.data) : context.node.data);
-        }
-    };
-    const copyFormattedValue = {
-        text: "Copy formatted JSON",
-        isHidden: context => !context.node.isExpandable,
-        onClick: context => {
-            navigator.clipboard.writeText(context.node.isExpandable ? JSON.stringify(context.node.data, null, 2) : context.node.data);
-        }
-    };
     /**
      * Exposing menu items (they can be used with custom menu items)
      */
-    propertyMenu.items = { copyName, copyValue, copyFormattedValue, parseJsonValue };
+    propertyMenu.items = availableMenuItems;
     const cssCode$2 = `
 * {
     --sonj-prop-menu-background: var(--sonj-primary-bgcolor);
@@ -710,14 +742,14 @@ var SonjReview = (function (exports) {
 }
 `;
 
-    var plugins = /*#__PURE__*/Object.freeze({
+    var index = /*#__PURE__*/Object.freeze({
         __proto__: null,
         autoExpand: autoExpand,
-        search: search,
         propertyGroups: propertyGroups,
         propertyTeaser: propertyTeaser,
-        truncate: truncate,
-        propertyMenu: propertyMenu
+        propertyMenu: propertyMenu,
+        search: search,
+        truncate: truncate
     });
 
     var e=[],t=[];function n(n,r){if(n&&"undefined"!=typeof document){var a,s=!0===r.prepend?"prepend":"append",d=!0===r.singleTag,i="string"==typeof r.container?document.querySelector(r.container):document.getElementsByTagName("head")[0];if(d){var u=e.indexOf(i);-1===u&&(u=e.push(i)-1,t[u]={}),a=t[u]&&t[u][s]?t[u][s]:t[u][s]=c();}else a=c();65279===n.charCodeAt(0)&&(n=n.substring(1)),a.styleSheet?a.styleSheet.cssText+=n:a.appendChild(document.createTextNode(n));}function c(){var e=document.createElement("style");if(e.setAttribute("type","text/css"),r.attributes)for(var t=Object.keys(r.attributes),n=0;n<t.length;n++)e.setAttribute(t[n],r.attributes[t[n]]);var a="prepend"===s?"afterbegin":"beforeend";return i.insertAdjacentElement(a,e),e}}
@@ -726,7 +758,7 @@ var SonjReview = (function (exports) {
     n(css,{});
 
     exports.JsonViewer = JsonViewer;
-    exports.plugins = plugins;
+    exports.plugins = index;
 
     return exports;
 

@@ -238,6 +238,7 @@ declare module SonjReview {
         copyName: IPropertyMenuItem,
         copyValue: IPropertyMenuItem,
         copyFormattedValue: IPropertyMenuItem,
+        sortProperties: IPropertyMenuItem,
     }
 
     interface IPropertyGroupsPluginInitializer {
