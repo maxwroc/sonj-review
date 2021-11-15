@@ -90,9 +90,10 @@ class PropertyMenu implements SonjReview.IPlugin {
                 return;
             }
 
+            const text = typeof(item.text) == "function" ? item.text(context): item.text;
             const isDisabled = item.isDisabled?.call(item, context);
             $("div")
-                .text(item.text)
+                .text(text)
                 .addClass("prop-menu-item", isDisabled ? "disabled" : "enabled")
                 .on("click", evt => {
                     item.onClick(context);

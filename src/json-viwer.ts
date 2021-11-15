@@ -92,7 +92,6 @@ export class JsonViewer implements SonjReview.IJsonViewer {
         }
 
         if (expand) {
-            console.log("expand");
             this.wrapper.addClass(expandedClassName);
 
             let propsToRender = Object.keys(this.data) as string[];
@@ -175,7 +174,8 @@ export class JsonViewer implements SonjReview.IJsonViewer {
         }
         
         this.plugins.forEach((p, i) => {
-            this.pluginContext[i] = { node: this };
+            // we want to keep the context in case of re-render
+            this.pluginContext[i] = this.pluginContext[i] || { node: this };
             p.nodeInit?.call(p, this.pluginContext[i]);
         });
     }

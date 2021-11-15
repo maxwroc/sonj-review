@@ -228,7 +228,7 @@ declare module SonjReview {
         (menuItems?: IPropertyMenuItem[]): IPlugin;
     }
     interface IPropertyMenuItem {
-        text: string;
+        text: string | { (context: SonjReview.IPluginContext): string };
         isDisabled?: (context: SonjReview.IPluginContext) => boolean;
         isHidden?: (context: SonjReview.IPluginContext) => boolean;
         onClick: (context: SonjReview.IPluginContext) => void;

@@ -179,7 +179,8 @@ var SonjReview = (function (exports) {
             }
             this.plugins.forEach((p, i) => {
                 var _a;
-                this.pluginContext[i] = { node: this };
+                // we want to keep the context in case of re-render
+                this.pluginContext[i] = this.pluginContext[i] || { node: this };
                 (_a = p.nodeInit) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i]);
             });
         }
@@ -366,18 +367,30 @@ var SonjReview = (function (exports) {
     };
 
     const sortProperties = {
-        text: "Sort",
+        text: (ctx) => {
+            console.log("menu", ctx.sortedAsc);
+            return ctx.sortedAsc ? "Sort desc" : "Sort asc";
+        },
         isHidden: context => !context.node.isExpandable,
-        onClick: context => {
+        onClick: (context) => {
             if (Array.isArray(context.node.data)) {
                 context.node.data = context.node.data.sort();
+                if (context.sortedAsc) {
+                    context.node.data = context.node.data.reverse();
+                }
             }
             else {
-                context.node.data = Object.keys(context.node.data).sort().reduce((acc, curr) => {
+                let keys = Object.keys(context.node.data).sort();
+                if (context.sortedAsc) {
+                    keys = keys.reverse();
+                }
+                context.node.data = keys.reduce((acc, curr) => {
                     acc[curr] = context.node.data[curr];
                     return acc;
                 }, {});
             }
+            context.sortedAsc = !context.sortedAsc;
+            console.log("sorted", context.sortedAsc);
             context.node.reRender && context.node.reRender();
             context.node.toggleExpand(true);
         }
@@ -457,9 +470,10 @@ var SonjReview = (function (exports) {
                 if ((_a = item.isHidden) === null || _a === void 0 ? void 0 : _a.call(item, context)) {
                     return;
                 }
+                const text = typeof (item.text) == "function" ? item.text(context) : item.text;
                 const isDisabled = (_b = item.isDisabled) === null || _b === void 0 ? void 0 : _b.call(item, context);
                 $("div")
-                    .text(item.text)
+                    .text(text)
                     .addClass("prop-menu-item", isDisabled ? "disabled" : "enabled")
                     .on("click", evt => {
                     item.onClick(context);
