@@ -1,4 +1,5 @@
 import { initPageAndReturnViewerElem, setupTest } from "../../jest-setup";
+import { clickMenuItem } from "./property-menu-items/helpers";
 
 beforeEach(() => setupTest());
 
@@ -44,57 +45,10 @@ test.each([
     await initPageWithMenuPlugin(testData);
 
     await page.click("#root");
-    await page.click(`#root-${propertyName} .prop-menu-button`);
     
-    expect((await page.$$(".prop-menu .prop-menu-item")).length).toBe(expectedMenuItemCount);
-
-    const menuItem = await page.$(`.prop-menu .prop-menu-item:nth-child(${itemPos})`);
-    expect(await page.evaluate(el => el.textContent, menuItem)).toBe(expectedText);
-
-    await menuItem!.click();
+    await clickMenuItem(`#root-${propertyName}`, itemPos, expectedText, expectedMenuItemCount);
 
     expect(await page.evaluate(() => navigator.clipboard.readText())).toEqual(expectedCopiedValue);
-});
-
-test("Parse JSON", async () => {
-    const viewerElem = await initPageWithMenuPlugin(testData);
-
-    await page.click("#root");
-    await page.click(`#root-json .prop-menu-button`);
-    
-    expect((await page.$$(".prop-menu .prop-menu-item")).length).toBe(3);
-
-    const menuItem = await page.$(`.prop-menu .prop-menu-item:nth-child(1)`);
-    expect(await page.evaluate(el => el.textContent, menuItem)).toBe("Parse JSON");
-
-    await menuItem!.click();
-    await page.click(`#root-json`);
-    await new Promise((r) => setTimeout(r, 500));
-
-    expect(await viewerElem!.screenshot()).toMatchImageSnapshot();
-});
-
-test("Parse JSON - property position not changed after re-render", async () => {
-    const viewerElem = await initPageWithMenuPlugin({
-        "first_property": "value 1",
-        "json": "{\"val1\": \"value1\", \"val2\": 2}",
-        "last_property": "value 2"
-    });
-
-    await page.click("#root");
-    await page.click(`#root-json .prop-menu-button`);
-
-    expect((await page.$$("#root + .prop-children > *")).length).toBe(3);
-
-    const menuItem = await page.$(`.prop-menu .prop-menu-item:nth-child(1)`);
-    expect(await page.evaluate(el => el.textContent, menuItem)).toBe("Parse JSON");
-
-    await menuItem!.click();
-
-    expect((await page.$$("#root + .prop-children > *")).length).toBe(3);
-
-    const secondProperty = await page.$("#root + .prop-children > .prop-wrapper:nth-child(2) > .prop-header > .prop-name");
-    expect(await page.evaluate(el => el.textContent, secondProperty)).toBe("json");
 });
 
 const initPageWithMenuPlugin = async (data: any) => initPageAndReturnViewerElem(data, () => {
@@ -109,7 +63,6 @@ const initPageWithMenuPlugin = async (data: any) => initPageAndReturnViewerElem(
     const propertyMenuPlugin = SonjReview.plugins.propertyMenu;
 
     const menuItems: SonjReview.IPropertyMenuItem[] = [
-        propertyMenuPlugin.items!.parseJsonValue,
         propertyMenuPlugin.items!.copyName,
         propertyMenuPlugin.items!.copyValue,
         propertyMenuPlugin.items!.copyFormattedValue,
@@ -124,6 +77,5 @@ const testData = {
         "val1": 1,
         "val2": 2
     },
-    "array": [1,2,3,4],
-    "json": "{\"val1\": \"value1\", \"val2\": 2}"
+    "array": [1,2,3,4]
 }
