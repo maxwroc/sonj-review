@@ -107,7 +107,6 @@ export class JsonViewer implements SonjReview.IJsonViewer {
             this.plugins.forEach((p, i) => p.afterRenderProperties?.call(p, this.pluginContext[i], propsToRender));
         }
         else {
-            console.log("collapse");
             this.wrapper.removeClass(expandedClassName);
             this.childrenWrapper.empty();
         }
