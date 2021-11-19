@@ -151,6 +151,21 @@ const menuPlugin = SonjReview.plugins.propertyMenu([
 ]
 ```
 
+#### Sort menu item
+
+Sorts values (in case of arrays) or properties (in case of objects). Sorting twice does the reverse/descending sort.
+
+This menu item has to be added manually.
+
+```typescript
+const menuItems = SonjReview.plugins.propertyMenu.items;
+const menuPlugin = SonjReview.plugins.propertyMenu([
+    menuItems.sortProperties, // sorting menu item
+    menuItems.copyName,
+    menuItems.copyValue,
+]
+```
+
 #### Custom menu item definition example
 
 ```typescript

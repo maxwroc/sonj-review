@@ -1,6 +1,6 @@
 import { injectCss } from "../helpers";
 import { $, MiniQuery } from "../mquery";
-import { JsonViewer } from "../json-viwer";
+import * as availableMenuItems from "./property-menu-items"
 
 /**
  * Plugin for menu rendered next to each property
@@ -33,9 +33,9 @@ class PropertyMenu implements SonjReview.IPlugin {
 
         // adding default menu items
         if (menuItems.length == 0) {
-            this.menuItems.push(copyName);
-            this.menuItems.push(copyValue);
-            this.menuItems.push(copyFormattedValue);
+            this.menuItems.push(availableMenuItems.copyName);
+            this.menuItems.push(availableMenuItems.copyValue);
+            this.menuItems.push(availableMenuItems.copyFormattedValue);
         }
     }
 
@@ -90,9 +90,10 @@ class PropertyMenu implements SonjReview.IPlugin {
                 return;
             }
 
+            const text = typeof(item.text) == "function" ? item.text(context): item.text;
             const isDisabled = item.isDisabled?.call(item, context);
             $("div")
-                .text(item.text)
+                .text(text)
                 .addClass("prop-menu-item", isDisabled ? "disabled" : "enabled")
                 .on("click", evt => {
                     item.onClick(context);
@@ -133,45 +134,10 @@ class PropertyMenu implements SonjReview.IPlugin {
     }
 }
 
-const jsonPattern = /^[\{\[].*?[\}\}]$/;
-
-const parseJsonValue: SonjReview.IPropertyMenuItem = {
-    text: "Parse JSON",
-    isHidden: context => typeof(context.node.data) != "string" || !jsonPattern.test(context.node.data),
-    onClick: context => {
-        context.node.data = JSON.parse(context.node.data);
-        context.node.reRender && context.node.reRender();
-    }
-}
-
-const copyName: SonjReview.IPropertyMenuItem = {
-    text: "Copy name",
-    onClick: context => {
-        navigator.clipboard.writeText(context.node.nodeName);
-    }
-};
-
-const copyValue: SonjReview.IPropertyMenuItem = {
-    text: "Copy value",
-    onClick: context => {
-        navigator.clipboard.writeText(context.node.isExpandable ? JSON.stringify(context.node.data) : context.node.data);
-    }
-};
-
-const copyFormattedValue: SonjReview.IPropertyMenuItem = {
-    text: "Copy formatted JSON",
-    isHidden: context => !context.node.isExpandable,
-    onClick: context => {
-        navigator.clipboard.writeText(context.node.isExpandable ? JSON.stringify(context.node.data, null, 2) : context.node.data);
-    }
-};
-
-
 /**
  * Exposing menu items (they can be used with custom menu items)
  */
-propertyMenu.items = { copyName, copyValue, copyFormattedValue, parseJsonValue };
-
+propertyMenu.items = availableMenuItems;
 
 const cssCode = `
 * {

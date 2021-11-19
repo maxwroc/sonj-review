@@ -84,8 +84,6 @@ export class JsonViewer implements SonjReview.IJsonViewer {
             return;
         }
 
-        const expandedClassName = "prop-expanded";
-
         const currentlyExpanded = this.wrapper.hasClass(expandedClassName);
         expand = expand === undefined ? !currentlyExpanded : expand;
 
@@ -133,6 +131,8 @@ export class JsonViewer implements SonjReview.IJsonViewer {
             value: this.data,
         }
 
+        this.wrapper.removeClass(expandedClassName);
+
         this.plugins.forEach((p, i) => p.beforeRender?.call(p, this.pluginContext[i], dataToRender));
 
         this.header = $("div")
@@ -173,7 +173,8 @@ export class JsonViewer implements SonjReview.IJsonViewer {
         }
         
         this.plugins.forEach((p, i) => {
-            this.pluginContext[i] = { node: this };
+            // we want to keep the context in case of re-render
+            this.pluginContext[i] = this.pluginContext[i] || { node: this };
             p.nodeInit?.call(p, this.pluginContext[i]);
         });
     }
@@ -198,3 +199,5 @@ const getTextValue = (val: any): string => {
 
     return val.toString();
 } 
+
+const expandedClassName = "prop-expanded";
