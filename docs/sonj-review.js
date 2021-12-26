@@ -111,7 +111,6 @@ var SonjReview = (function (exports) {
                 return;
             }
             if (expand) {
-                console.log("expand");
                 this.wrapper.addClass(expandedClassName);
                 let propsToRender = Object.keys(this.data);
                 this.plugins.forEach((p, i) => {
@@ -123,7 +122,6 @@ var SonjReview = (function (exports) {
                 this.plugins.forEach((p, i) => { var _a; return (_a = p.afterRenderProperties) === null || _a === void 0 ? void 0 : _a.call(p, this.pluginContext[i], propsToRender); });
             }
             else {
-                console.log("collapse");
                 this.wrapper.removeClass(expandedClassName);
                 this.childrenWrapper.empty();
             }
@@ -367,10 +365,7 @@ var SonjReview = (function (exports) {
     };
 
     const sortProperties = {
-        text: (ctx) => {
-            console.log("menu", ctx.sortedAsc);
-            return ctx.sortedAsc ? "Sort desc" : "Sort asc";
-        },
+        text: (ctx) => ctx.sortedAsc ? "Sort desc" : "Sort asc",
         isHidden: context => !context.node.isExpandable,
         onClick: (context) => {
             if (Array.isArray(context.node.data)) {
@@ -390,7 +385,6 @@ var SonjReview = (function (exports) {
                 }, {});
             }
             context.sortedAsc = !context.sortedAsc;
-            console.log("sorted", context.sortedAsc);
             context.node.reRender && context.node.reRender();
             context.node.toggleExpand(true);
         }
