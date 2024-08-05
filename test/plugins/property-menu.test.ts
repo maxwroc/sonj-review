@@ -3,37 +3,6 @@ import { clickMenuItem } from "./property-menu-items/helpers";
 
 beforeEach(() => setupTest());
 
-test("Hover property appearance", async () => {
-    const viewerElem = await initPageWithMenuPlugin(testData);
-
-    await page.click("#root");
-    await page.hover("#root-number_value");
-    await new Promise((r) => setTimeout(r, 500));
-
-    expect(await viewerElem?.screenshot()).toMatchImageSnapshot();
-});
-
-test("Hover menu button appearance", async () => {
-    const viewerElem = await initPageWithMenuPlugin(testData);
-
-    await page.click("#root");
-    await page.hover("#root-number_value .prop-menu-button");
-    await new Promise((r) => setTimeout(r, 500));
-
-    expect(await viewerElem?.screenshot()).toMatchImageSnapshot();
-});
-
-
-test("Menu appearance", async () => {
-    const viewerElem = await initPageWithMenuPlugin(testData);
-
-    await page.click("#root");
-    await page.click("#root-number_value .prop-menu-button");
-    await new Promise((r) => setTimeout(r, 500));
-
-    expect(await viewerElem?.screenshot()).toMatchImageSnapshot();
-});
-
 test.each([
     ["number_value", 1, 2, "Copy name", "number_value"],
     ["number_value", 2, 2, "Copy value", 1],

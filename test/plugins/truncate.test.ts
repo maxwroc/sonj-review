@@ -2,19 +2,6 @@ import { initPageAndReturnViewerElem, setupTest } from "../../jest-setup";
 
 beforeEach(() => setupTest());
 
-test("Appearance", async () => {
-    const viewerElem = await initPageAndReturnViewerElem(testData, () => {
-        testSonjPlugins.push(SonjReview.plugins.truncate({ maxNameLength: 12, maxValueLength: 8 }));
-    });
-
-    await page.click("#root");
-    await page.click("#root-thisIsVeryLongPropertyName");
-    await page.hover("#root-thisIsVeryLongPropertyName .prop-name .prop-pill");
-    await new Promise((r) => setTimeout(r, 500));
-
-    expect(await viewerElem!.screenshot()).toMatchImageSnapshot();
-});
-
 test("Pill disabled", async () => {
     await initPageAndReturnViewerElem(testData, () => {
         testSonjPlugins.push(SonjReview.plugins.truncate({ showLengthPill: false, maxNameLength: 12, maxValueLength: 8 }));

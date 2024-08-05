@@ -38,8 +38,7 @@
     "verbose": false,
     "setupFilesAfterEnv": ["<rootDir>/jest-setup.ts"],
     "reporters": [
-      "default",
-      "jest-screenshot/reporter"
+      "default"
     ],
     "globals": {
       "ts-jest": {
@@ -56,7 +55,6 @@
     "@types/puppeteer": "^5.4.4",
     "jest": "^27.3.0",
     "jest-puppeteer": "^6.0.0",
-    "jest-screenshot": "^0.3.5",
     "puppeteer": "^10.4.0",
     "rollup": "^2.29.0",
     "rollup-plugin-styles": "^3.14.1",

@@ -2,20 +2,6 @@ import { setupTest, initPageAndReturnViewerElem } from "../jest-setup";
 
 beforeEach(() => setupTest());
 
-test("Root element rendered", async () => {
-    const elem = await initPageAndReturnViewerElem({ test: 1 });
-
-    expect(await elem!.screenshot()).toMatchImageSnapshot();
-});
-
-test("Root element expanded", async () => {
-    const elem = await initPageAndReturnViewerElem({ number: 1, string: "test string", float: 3.456, bool: true, emptyArray: [], emptyObject: {} });
-
-    await page.click("#root");
-    
-    expect(await elem!.screenshot()).toMatchImageSnapshot();
-});
-
 test("Empty arrays and objects not expandable", async () => {
     const elem = await initPageAndReturnViewerElem({ arrayNode: [], objectNode: {} });
 

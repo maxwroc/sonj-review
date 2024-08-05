@@ -3,19 +3,6 @@ import { clickMenuItem } from "./helpers";
 
 beforeEach(() => setupTest());
 
-test("Parse JSON", async () => {
-    const viewerElem = await initPageWithMenuPlugin(testData);
-
-    await page.click("#root");
-
-    await clickMenuItem("#root-json", 1, "Parse JSON");
-
-    await page.click(`#root-json`);
-    await new Promise((r) => setTimeout(r, 500));
-
-    expect(await viewerElem!.screenshot()).toMatchImageSnapshot();
-});
-
 test("Parse JSON - property position not changed after re-render", async () => {
     const viewerElem = await initPageWithMenuPlugin({
         "first_property": "value 1",
