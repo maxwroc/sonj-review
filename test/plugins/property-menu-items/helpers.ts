@@ -9,7 +9,7 @@ export const clickMenuItem = async (elemId: string, itemIndex: number, expectedI
     }
 
     const menuItem = await page.$(`.prop-menu .prop-menu-item:nth-child(${itemIndex})`);
-    expect(await page.evaluate(el => el.textContent, menuItem)).toBe(expectedItemText);
+    expect(await page.evaluate(el => el!.textContent, menuItem)).toBe(expectedItemText);
     // clicking on menu item
     await menuItem!.click();
 }

@@ -36,7 +36,9 @@
       "**/test/**/*.test.ts"
     ],
     "verbose": false,
-    "setupFilesAfterEnv": ["<rootDir>/jest-setup.ts"],
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest-setup.ts"
+    ],
     "reporters": [
       "default"
     ],
@@ -54,13 +56,13 @@
     "@types/jest-environment-puppeteer": "^4.4.1",
     "@types/puppeteer": "^5.4.4",
     "jest": "^27.3.0",
-    "jest-puppeteer": "^6.0.0",
-    "puppeteer": "^10.4.0",
+    "jest-puppeteer": "^10.0.1",
+    "puppeteer": "^23.0.1",
     "rollup": "^2.29.0",
-    "rollup-plugin-styles": "^3.14.1",
+    "rollup-plugin-styles": "^4.0.0",
     "rollup-plugin-terser": "^7.0.2",
     "ts-jest": "^27.0.7",
     "tslib": "^2.0.2",
-    "typescript": "^4.0.3"
+    "typescript": "^5.5.4"
   }
 }

@@ -27,11 +27,11 @@ test.each([
     const propertyValueElem = await page.$(`#root-jetAnotherLongPropertyName .prop-${fieldType}`);
 
     // before click
-    expect(await page.evaluate(el => el.textContent, propertyValueElem)).toBe(expectedTruncatedVal);
+    expect(await page.evaluate(el => el!.textContent, propertyValueElem)).toBe(expectedTruncatedVal);
     // click on pill
     await page.click(`#root-jetAnotherLongPropertyName .prop-${fieldType} .prop-pill`);
     // after click
-    expect(await page.evaluate(el => el.textContent, propertyValueElem)).toBe(expectedFullVal);
+    expect(await page.evaluate(el => el!.textContent, propertyValueElem)).toBe(expectedFullVal);
 });
 
 test("Click on pill doesn't expand node", async () => {

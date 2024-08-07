@@ -12,7 +12,7 @@ test("Sorting array asc", async () => {
     await page.click(`#root-array .prop-menu-button`);
 
     const menuItem = await page.$(`.prop-menu .prop-menu-item:nth-child(1)`);
-    expect(await page.evaluate(el => el.textContent, menuItem)).toBe("Sort asc");
+    expect(await page.evaluate(el => el!.textContent, menuItem)).toBe("Sort asc");
 
     await menuItem!.click();
 

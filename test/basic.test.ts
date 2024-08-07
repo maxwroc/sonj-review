@@ -38,8 +38,8 @@ test("Object with special characters in property names", async () => {
     expect(childrenNodes.length).toBe(1);
 
     const name = await page.$("#root + .prop-children .prop-name")
-    expect(await page.evaluate(el => el.textContent, name)).toBe("name_!@#$%^&*()-=_\"[]{}:<>?/\\");
+    expect(await page.evaluate(el => el!.textContent, name)).toBe("name_!@#$%^&*()-=_\"[]{}:<>?/\\");
 
     const val = await page.$("#root + .prop-children .prop-value")
-    expect(await page.evaluate(el => el.textContent, val)).toBe("value_!@#$%^&*()-=_\"[]{}:<>?/\\");
+    expect(await page.evaluate(el => el!.textContent, val)).toBe("value_!@#$%^&*()-=_\"[]{}:<>?/\\");
 })

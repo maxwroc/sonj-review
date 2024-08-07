@@ -18,7 +18,7 @@ test("Parse JSON - property position not changed after re-render", async () => {
     expect((await page.$$("#root + .prop-children > *")).length).toBe(3);
 
     const secondProperty = await page.$("#root + .prop-children > .prop-wrapper:nth-child(2) > .prop-header > .prop-name");
-    expect(await page.evaluate(el => el.textContent, secondProperty)).toBe("json");
+    expect(await page.evaluate(el => el!.textContent, secondProperty)).toBe("json");
 });
 
 
