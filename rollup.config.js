@@ -2,10 +2,10 @@ import typescript from '@rollup/plugin-typescript';
 import resolve from '@rollup/plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
 import styles from "rollup-plugin-styles";
-import copyBundleFiles from './build/rollup-plugin-copy-bundles';
-import pkg from './package.json';
+import copyBundleFiles from './build/rollup-plugin-copy-bundles.js';
+import pkg from './package.json' with { type: "json" };
 
-let targetFileName = pkg.main.replace(".es.js", ".js");
+let targetFileName = pkg.name + ".js";
 
 const plugins = [
   resolve(),

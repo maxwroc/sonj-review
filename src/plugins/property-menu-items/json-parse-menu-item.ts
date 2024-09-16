@@ -1,5 +1,5 @@
 
-const jsonPattern = /^[\{\[].*?[\}\}]$/;
+const jsonPattern = /^[\{\[].*?[\}\]]$/;
 
 export const parseJsonValue: SonjReview.IPropertyMenuItem = {
     text: "Parse JSON",
