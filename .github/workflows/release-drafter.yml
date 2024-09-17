@@ -24,7 +24,7 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org/
       - name: Installing dependencies
-        run: npm ci
+        run: npm ci --legacy-peer-deps
       - name: Build dev
         run: npm run build
       - name: Build release (minimized)
