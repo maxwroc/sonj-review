@@ -30,8 +30,3 @@ const initPageWithMenuPlugin = async (data: any) => initPageAndReturnViewerElem(
     ];
     testSonjPlugins.push(propertyMenuPlugin(menuItems));
 });
-
-
-const testData = {
-    "json": "{\"val1\": \"value1\", \"val2\": 2}"
-}
