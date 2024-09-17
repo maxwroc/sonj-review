@@ -13,3 +13,14 @@ export const clickMenuItem = async (elemId: string, itemIndex: number, expectedI
     // clicking on menu item
     await menuItem!.click();
 }
+
+export const getMenuItem = async (elemId: string, itemIndex: number, expectedMenuItemCount?: number) => {
+    // clicking manu button to open menu
+    await page.click(`${elemId} .prop-menu-button`);
+
+    if (expectedMenuItemCount != undefined) {
+        expect((await page.$$(".prop-menu .prop-menu-item")).length).toBe(expectedMenuItemCount);
+    }
+
+    return await page.$(`.prop-menu .prop-menu-item:nth-child(${itemIndex})`);
+}
