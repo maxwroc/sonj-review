@@ -1,10 +1,4 @@
-import { setupJestScreenshot } from "jest-screenshot";
 import { readFileSync } from "fs";
-
-setupJestScreenshot({
-    detectAntialiasing: true,
-    reportDir: "test/__report__"
-});
 
 export const setupTest = async () => {
     

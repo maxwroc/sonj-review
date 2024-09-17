@@ -2,10 +2,11 @@ import typescript from '@rollup/plugin-typescript';
 import resolve from '@rollup/plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
 import styles from "rollup-plugin-styles";
-import copyBundleFiles from './build/rollup-plugin-copy-bundles';
-import pkg from './package.json';
+import copyBundleFiles from './build/rollup-plugin-copy-bundles.js';
+import pkg from './package.json' with { type: "json" };
 
-let targetFileName = pkg.main.replace(".es.js", ".js");
+let prodFilePath = "dist/" + pkg.name + ".es.js";
+let targetFileName = prodFilePath.replace(".es.js", ".js");
 
 const plugins = [
   resolve(),
@@ -59,7 +60,7 @@ if (process.env.RELEASE) {
     input: 'src/index.ts',
     output: {
       globals: {},
-      file: pkg.main,
+      file: prodFilePath,
       format: 'es',
       sourcemap: true,
       sourcemapExcludeSources: true,

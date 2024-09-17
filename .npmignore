@@ -4,4 +4,4 @@
 !dist/*
 
 !src/
-!src/sonj-review.d.ts
+!src/**/*

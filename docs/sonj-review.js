@@ -232,7 +232,7 @@ var SonjReview = (function (exports) {
      * @returns Initialized plugin
      */
     const propertyGroups = (maxPropertiesCount) => {
-        injectCss("propertyGroups", cssCode);
+        injectCss("propertyGroups", cssCode$3);
         return {
             beforeRenderProperties: (context, propertiesToRender) => {
                 // store collection of properties for afterRenderProperties processing
@@ -241,7 +241,7 @@ var SonjReview = (function (exports) {
                 return propertiesToRender.slice(0, maxPropertiesCount);
             },
             afterRenderProperties: (context, renderedProperties) => {
-                const path = context.node.path;
+                context.node.path;
                 let nodePropsToRender = context.propsToRender;
                 delete context.propsToRender;
                 // check if there is anything what was not rendered already
@@ -272,7 +272,7 @@ var SonjReview = (function (exports) {
             }
         };
     };
-    const cssCode = `
+    const cssCode$3 = `
 .prop-group {
     margin: 2px 0 0 var(--sonj-prop-indent);
     display: inline-block;
@@ -286,7 +286,7 @@ var SonjReview = (function (exports) {
      * @returns Plugin instance
      */
     const propertyTeaser = (options) => {
-        injectCss("propertyTeaser", cssCode$1);
+        injectCss("propertyTeaser", cssCode$2);
         const getText = (data) => {
             const parts = [
                 options.showCounts === false ? "" : getPropertyCount(data),
@@ -318,7 +318,7 @@ var SonjReview = (function (exports) {
         }
         return trimString(values.map(v => trimString(v, options.properties.maxValueLength)).join(", "), options.maxTotalLenght);
     };
-    const cssCode$1 = `
+    const cssCode$2 = `
 .prop-expanded > * > .prop-value-teaser {
     display: none;
 }
@@ -354,7 +354,7 @@ var SonjReview = (function (exports) {
         }
     };
 
-    const jsonPattern = /^[\{\[].*?[\}\}]$/;
+    const jsonPattern = /^[\{\[].*?[\}\]]$/;
     const parseJsonValue = {
         text: "Parse JSON",
         isHidden: context => typeof (context.node.data) != "string" || !jsonPattern.test(context.node.data),
@@ -392,9 +392,9 @@ var SonjReview = (function (exports) {
 
     var availableMenuItems = /*#__PURE__*/Object.freeze({
         __proto__: null,
+        copyFormattedValue: copyFormattedValue,
         copyName: copyName,
         copyValue: copyValue,
-        copyFormattedValue: copyFormattedValue,
         parseJsonValue: parseJsonValue,
         sortProperties: sortProperties
     });
@@ -404,7 +404,7 @@ var SonjReview = (function (exports) {
      * @returns Menu plugin
      */
     const propertyMenu = (menuItems = []) => {
-        injectCss("propertyMenu", cssCode$2);
+        injectCss("propertyMenu", cssCode$1);
         return new PropertyMenu(menuItems);
     };
     /**
@@ -503,7 +503,7 @@ var SonjReview = (function (exports) {
      * Exposing menu items (they can be used with custom menu items)
      */
     propertyMenu.items = availableMenuItems;
-    const cssCode$2 = `
+    const cssCode$1 = `
 * {
     --sonj-prop-menu-background: var(--sonj-primary-bgcolor);
     --sonj-prop-menu-border: var(--sonj-secondary-bgcolor);
@@ -675,7 +675,7 @@ var SonjReview = (function (exports) {
      * @returns Plugin instance
      */
     const truncate = (options) => {
-        injectCss("truncatePlugin", cssCode$3);
+        injectCss("truncatePlugin", cssCode);
         options = Object.assign({ maxNameLength: 20, maxValueLength: 40, showLengthPill: true, enableClickToExpand: true }, options);
         const maxNameLength = options.maxNameLength;
         const maxValueLength = options.maxValueLength;
@@ -734,7 +734,7 @@ var SonjReview = (function (exports) {
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + (sizes[i] ? " " + sizes[i] : "");
     }
-    const cssCode$3 = `
+    const cssCode = `
 .prop-truncated {
     position: relative;
 }
@@ -754,8 +754,8 @@ var SonjReview = (function (exports) {
         __proto__: null,
         autoExpand: autoExpand,
         propertyGroups: propertyGroups,
-        propertyTeaser: propertyTeaser,
         propertyMenu: propertyMenu,
+        propertyTeaser: propertyTeaser,
         search: search,
         truncate: truncate
     });
@@ -770,5 +770,5 @@ var SonjReview = (function (exports) {
 
     return exports;
 
-}({}));
+})({});
 //# sourceMappingURL=sonj-review.js.map

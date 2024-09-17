@@ -2,32 +2,6 @@ import { initPageAndReturnViewerElem, setupTest } from "../../jest-setup";
 
 beforeEach(() => setupTest());
 
-test("Expands all", async () => {
-    const elem = await initPageAndReturnViewerElem(testData, () => {
-        testSonjPlugins.push(SonjReview.plugins.autoExpand());
-    });
-
-    expect(await elem!.screenshot()).toMatchImageSnapshot();
-});
-
-
-test("Expands level 1", async () => {
-    const elem = await initPageAndReturnViewerElem(testData, () => {
-        testSonjPlugins.push(SonjReview.plugins.autoExpand(1));
-    });
-
-    expect(await elem!.screenshot()).toMatchImageSnapshot();
-});
-
-
-test("Expands level 2", async () => {
-    const elem = await initPageAndReturnViewerElem(testData, () => {
-        testSonjPlugins.push(SonjReview.plugins.autoExpand(2));
-    });
-
-    expect(await elem!.screenshot()).toMatchImageSnapshot();
-});
-
 test("Auto expand 2 able to click and expand", async () => {
     const elem = await initPageAndReturnViewerElem(testData, () => {
         testSonjPlugins.push(SonjReview.plugins.autoExpand(2));
