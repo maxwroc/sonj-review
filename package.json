@@ -1,8 +1,9 @@
 {
   "name": "sonj-review",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Extensible JSON Viewer",
-  "main": "src/index.ts",
+  "main": "dist/sonj-review.es.js",
+  "types": "src/index.d.ts",
   "exportVar": "SonjReview",
   "type": "module",
   "scripts": {
